@@ -1,0 +1,35 @@
+[project]
+name = "nexuvo-core"
+version = "0.1.0"
+description = "Core orchestration service for NEXUVO"
+requires-python = ">=3.12"
+dependencies = [
+  "fastapi>=0.116,<1.0",
+  "httpx>=0.28,<1.0",
+  "pydantic>=2.11,<3.0",
+  "pydantic-settings>=2.10,<3.0",
+  "uvicorn[standard]>=0.35,<1.0",
+]
+
+[project.optional-dependencies]
+browser = [
+  "browser-use[core]>=0.13.6,<0.14",
+  "playwright>=1.61,<1.62",
+]
+dev = [
+  "pytest>=8.4,<9.0",
+  "pytest-asyncio>=1.1,<2.0",
+  "ruff>=0.12,<1.0",
+]
+
+[build-system]
+requires = ["hatchling>=1.27"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["nexuvo"]
+
+[tool.ruff]
+line-length = 100
+
+target-version = "py312"
