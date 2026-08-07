@@ -1,6 +1,6 @@
-# Legacy AURA Coworker README
+# Legacy Ophanim AI Coworker README
 
-This document has been superseded by the new **NEXUVO** product architecture.
+This document has been superseded by the new **Ophanim AI** product architecture.
 
 Please use [`README.md`](./README.md) as the current source of truth.
 
