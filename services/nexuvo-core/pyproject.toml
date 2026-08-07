@@ -12,6 +12,10 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
+browser = [
+  "browser-use[core]>=0.13.6,<0.14",
+  "playwright>=1.61,<1.62",
+]
 dev = [
   "pytest>=8.4,<9.0",
   "pytest-asyncio>=1.1,<2.0",
