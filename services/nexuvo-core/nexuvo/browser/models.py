@@ -20,7 +20,7 @@ class BrowserTask(BaseModel):
     allowed_domains: list[str] = Field(default_factory=list)
     action_type: BrowserActionType = BrowserActionType.READ
     max_steps: int = Field(default=20, ge=1, le=100)
-    require_approval: bool = True
+    require_approval: bool = False
 
     @field_validator("start_url")
     @classmethod
