@@ -21,6 +21,7 @@ class Settings(BaseSettings):
 
     browser_enabled: bool = Field(default=False)
     browser_headless: bool = Field(default=False)
+    browser_model: str = Field(default="")
     browser_max_steps: int = Field(default=20, ge=1, le=100)
     browser_allowed_domains: str = Field(default="")
     browser_require_approval_for_writes: bool = Field(default=True)
