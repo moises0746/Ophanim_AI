@@ -1,12 +1,12 @@
-# NEXUVO
+# Ophanim AI
 
 **Private AI Coworker Platform**
 
-NEXUVO is a local-first, context-aware AI coworker designed to understand conversations, enterprise knowledge, user intent, and connected tools while keeping the human in control.
+Ophanim AI is a local-first, context-aware AI coworker designed to understand conversations, enterprise knowledge, user intent, and connected tools while keeping the human in control.
 
-The platform is built around a simple idea: do not rebuild commodity AI infrastructure. NEXUVO uses proven components for knowledge and local inference, then focuses engineering effort on the differentiating layer — context awareness, voice intelligence, professional memory, tool orchestration, policy enforcement, and safe execution.
+The platform is built around a simple idea: do not rebuild commodity AI infrastructure. Ophanim AI uses proven components for knowledge and local inference, then focuses engineering effort on the differentiating layer — context awareness, voice intelligence, professional memory, tool orchestration, policy enforcement, and safe execution.
 
-> Working product name: **NEXUVO**
+> Working product name: **Ophanim AI**
 >
 > Product direction: **AI coworker, not another chatbot.**
 
@@ -14,7 +14,7 @@ The platform is built around a simple idea: do not rebuild commodity AI infrastr
 
 ## Product Vision
 
-NEXUVO should eventually behave like a trusted professional coworker that can:
+Ophanim AI should eventually behave like a trusted professional coworker that can:
 
 - understand who is speaking
 - determine who is being addressed
@@ -29,7 +29,7 @@ NEXUVO should eventually behave like a trusted professional coworker that can:
 - work locally when privacy matters
 - use cloud models when stronger reasoning is required
 
-NEXUVO is designed to remain useful across multiple roles rather than being limited to CloudOps. Specialized agents may later support engineering, operations, research, business, content creation, productivity, and enterprise workflows.
+Ophanim AI is designed to remain useful across multiple roles rather than being limited to CloudOps. Specialized agents may later support engineering, operations, research, business, content creation, productivity, and enterprise workflows.
 
 ---
 
@@ -41,7 +41,7 @@ A teammate asks:
 
 > "Moi, may expected downtime ba during deployment?"
 
-NEXUVO should:
+Ophanim AI should:
 
 1. detect that the speaker is not the owner
 2. determine that the question is directed to the owner
@@ -77,24 +77,24 @@ Example result:
 
 ## Architecture Strategy
 
-NEXUVO will not initially implement its own full RAG platform, vector management UI, model manager, document ingestion system, or generic agent framework.
+Ophanim AI will not initially implement its own full RAG platform, vector management UI, model manager, document ingestion system, or generic agent framework.
 
 Instead:
 
 - **AnythingLLM** provides the initial knowledge, RAG, workspace, document, and generic agent layer.
 - **LM Studio** provides local model serving and local inference through OpenAI-compatible APIs.
-- **NEXUVO Core** provides the differentiated coworker intelligence and orchestration layer.
-- **NEXUVO Desktop** provides the product experience and user-control surface.
+- **Ophanim AI Core** provides the differentiated coworker intelligence and orchestration layer.
+- **Ophanim AI Desktop** provides the product experience and user-control surface.
 
 ```text
-                         NEXUVO Desktop
+                         Ophanim AI Desktop
               Tauri + React + TypeScript
 
        Listening | Transcript | Suggestions | Tasks
            Knowledge | Agents | Approvals | Settings
                            |
                            v
-                     NEXUVO Core
+                     Ophanim AI Core
                        Python
 
        Audio / Speaker / Transcription / Context
@@ -122,7 +122,7 @@ Instead:
 
 ## Component Responsibilities
 
-### NEXUVO Desktop
+### Ophanim AI Desktop
 
 Recommended stack:
 
@@ -147,7 +147,7 @@ Responsibilities:
 
 Electron remains a fallback if faster JavaScript-only delivery becomes more valuable than memory footprint and native integration.
 
-### NEXUVO Core
+### Ophanim AI Core
 
 Recommended stack:
 
@@ -187,7 +187,7 @@ Initial responsibilities:
 - knowledge organization
 - generic agent capabilities where useful
 
-NEXUVO must communicate with AnythingLLM through an adapter boundary so the product is not tightly coupled to a specific upstream implementation.
+Ophanim AI must communicate with AnythingLLM through an adapter boundary so the product is not tightly coupled to a specific upstream implementation.
 
 ### LM Studio Adapter
 
@@ -201,12 +201,12 @@ Responsibilities:
 - model discovery
 - local/private reasoning
 
-NEXUVO should never assume LM Studio is the only model provider.
+Ophanim AI should never assume LM Studio is the only model provider.
 
 Provider interfaces should allow:
 
 ```text
-NEXUVO AI Provider
+Ophanim AI AI Provider
 ├── LM Studio
 ├── OpenAI
 ├── Anthropic
@@ -221,14 +221,14 @@ NEXUVO AI Provider
 
 ## Privacy Modes
 
-NEXUVO should expose explicit execution/privacy modes rather than hiding routing decisions from the user.
+Ophanim AI should expose explicit execution/privacy modes rather than hiding routing decisions from the user.
 
 ### Private Mode
 
 Use local components whenever possible.
 
 ```text
-NEXUVO
+Ophanim AI
   -> AnythingLLM
   -> LM Studio
   -> Local model
@@ -270,7 +270,7 @@ Routing decisions must be visible and auditable.
 
 ### Human in the Loop
 
-NEXUVO may automatically:
+Ophanim AI may automatically:
 
 - analyze
 - summarize
@@ -280,11 +280,11 @@ NEXUVO may automatically:
 - draft
 - classify
 
-NEXUVO must not automatically perform sensitive external actions such as sending communications or modifying production infrastructure unless an explicit future policy authorizes the specific action.
+Ophanim AI must not automatically perform sensitive external actions such as sending communications or modifying production infrastructure unless an explicit future policy authorizes the specific action.
 
 ### Conservative Intervention
 
-NEXUVO should prefer silence or review over confidently incorrect intervention.
+Ophanim AI should prefer silence or review over confidently incorrect intervention.
 
 Low-confidence example:
 
@@ -332,7 +332,7 @@ Initial policy:
 ```text
 IF speaker == OWNER
 AND wake_word_detected == true
-AND directed_to == NEXUVO
+AND directed_to == Ophanim AI
 THEN respond privately or through the configured private output
 
 IF speaker == OTHER
@@ -362,7 +362,7 @@ Thresholds must be calibrated using real evaluation data rather than treated as 
 The project should start as a modular monolith instead of prematurely creating many independent microservices.
 
 ```text
-nexuvo/
+Ophanim AI/
 ├── README.md
 ├── LICENSE
 ├── SECURITY.md
@@ -381,8 +381,8 @@ nexuvo/
 │       └── tests/
 │
 ├── services/
-│   └── nexuvo-core/
-│       ├── nexuvo/
+│   └── Ophanim AI-core/
+│       ├── Ophanim AI/
 │       │   ├── api/
 │       │   ├── audio/
 │       │   ├── speaker/
@@ -443,7 +443,7 @@ Microservices should be extracted later only when independent scaling, failure i
 
 ### Phase 1 — Foundation
 
-Goal: runnable NEXUVO development environment.
+Goal: runnable Ophanim AI development environment.
 
 - repository scaffold
 - Tauri desktop shell
@@ -507,12 +507,12 @@ Initial integrations should remain read-only where possible.
 
 ### Phase 6 — Operations Coworker
 
-NEXUVO can begin correlating operational evidence across tools.
+Ophanim AI can begin correlating operational evidence across tools.
 
 Example:
 
 ```text
-"NEXUVO, investigate why this deployment failed."
+"Ophanim AI, investigate why this deployment failed."
 
 GitHub / GitLab
        +
@@ -529,7 +529,7 @@ Previous incidents
 AnythingLLM knowledge
        |
        v
-NEXUVO reasoning
+Ophanim AI reasoning
        |
        v
 Investigation Summary
@@ -612,7 +612,7 @@ Developer mode may expose Prometheus-compatible metrics later.
 
 ## MVP Success Criteria
 
-The first milestone is successful when NEXUVO can reliably perform this path:
+The first milestone is successful when Ophanim AI can reliably perform this path:
 
 ```text
 Other person speaks
@@ -657,9 +657,9 @@ Key evaluation areas:
 
 ---
 
-## What NEXUVO Is Not
+## What Ophanim AI Is Not
 
-NEXUVO is not intended to be:
+Ophanim AI is not intended to be:
 
 - a renamed AnythingLLM fork
 - a generic ChatGPT clone
@@ -667,7 +667,7 @@ NEXUVO is not intended to be:
 - an uncontrolled autonomous operations bot
 - a system that hides where data or prompts are sent
 
-AnythingLLM and LM Studio are acceleration layers. NEXUVO remains the product and owns the user experience, context engine, safety model, orchestration, memory policy, integrations, and professional coworker behavior.
+AnythingLLM and LM Studio are acceleration layers. Ophanim AI remains the product and owns the user experience, context engine, safety model, orchestration, memory policy, integrations, and professional coworker behavior.
 
 ---
 
@@ -681,4 +681,4 @@ The immediate engineering objective is to build a runnable Phase 1 scaffold and 
 
 ## Naming Note
 
-NEXUVO is currently a working product brand selected after an initial collision screen. A formal trademark, domain, corporate-name, and jurisdiction-specific legal clearance should be completed before commercial launch.
+Ophanim AI is currently a working product brand selected after an initial collision screen. A formal trademark, domain, corporate-name, and jurisdiction-specific legal clearance should be completed before commercial launch.
