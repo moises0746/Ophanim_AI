@@ -28,4 +28,6 @@ Do not open a public issue containing credentials, private data, or a working ex
 - user desktop screenshots or recordings;
 - production logs containing prompts, retrieved documents, or personal information.
 
-See `docs/security/security-model.md` for the initial trust-boundary and approval design.
+See [`docs/security/README.md`](docs/security/README.md) for the security documentation index, including the S00-T07 threat model, trust boundaries, asset classification, abuse cases, and conceptual security test matrix. [`docs/security/security-model.md`](docs/security/security-model.md) remains the concise security overview.
+
+S00-T07 adds documentation only. Authentication, RBAC, secret storage, encryption implementation, database security controls, MCP/browser security runtime, and security tests remain deferred to their explicitly authorized implementation tasks. The MVP remains read-only.
