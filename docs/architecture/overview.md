@@ -39,7 +39,7 @@ API/UI -> application services -> domain contracts <- provider/tool adapters
 
 ## Data stores
 
-The first persistent implementation should use a local relational database with migrations. SQLite is sufficient for a single-user desktop milestone if queue leasing and concurrency behavior are tested. Store large artifacts as files with database metadata and content hashes rather than database blobs by default.
+PostgreSQL is the authoritative system-of-record database for workflow, policy, approval, and audit metadata. Persistence implementations must use migrations and preserve the transactional guarantees needed for task state and audit events. Store large artifacts as files or object storage with PostgreSQL metadata and content hashes rather than database blobs by default.
 
 Obsidian is not the task database. AnythingLLM is not the audit system. Each subsystem has a single clear responsibility.
 
