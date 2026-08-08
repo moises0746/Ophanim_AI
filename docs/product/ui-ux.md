@@ -49,7 +49,7 @@ The screen must answer:
 
 ## Animated Ophanim
 
-The animation is a functional status surface, not decoration.
+The Ophanim visual on the Home/Assistant surface is a functional, state-driven status surface, not decoration and not a static logo. Its state must be derived from authoritative Assistant and Agent activity emitted by Ophanim Core; arbitrary UI timers must never invent task, agent, tool, approval, completion, blocked, or error state.
 
 Suggested visual identity: concentric Ophanim-inspired rings/core with restrained enterprise motion.
 
@@ -72,6 +72,41 @@ State mapping:
 Evaluate Rive first because deterministic state machines map well to AssistantState events. Lottie is acceptable for simpler non-interactive effects.
 
 Reduced-motion mode is required.
+
+### Reserved Semantic Presentation States
+
+The UI architecture must eventually support:
+
+- `idle` - ready, with restrained ambient motion;
+- `listening` - microphone capture with an accessible listening indicator;
+- `understanding` - interpreting or transcribing user input;
+- `planning` - preparing the task plan;
+- `delegating` - connecting work to one or more bounded agents;
+- `working` - active orchestration, retrieval, browsing, investigation, or other governed work;
+- `waiting_for_tool` - paused on an authoritative tool lifecycle event;
+- `waiting_for_approval` - clearly indicates that user approval is required;
+- `speaking` - real playback/audio-reactive output, not a simulated timer;
+- `completed` - verified completion;
+- `blocked` - unable to proceed without a dependency, decision, authorization, or safe recovery;
+- `error` - a terminal or actionable failure.
+
+The later Assistant event-contract task must define the canonical event-to-presentation mapping and reconcile these semantic UI states with the current event-model vocabulary. This document does not define or implement that transport or contract.
+
+The future visualization architecture must reserve support for:
+
+- microphone/listening visualization;
+- real audio-reactive speaking visualization;
+- active-agent connection animation;
+- tool/activity visualization;
+- task progress;
+- approval-required state;
+- interruption and stop control;
+- accessibility and reduced-motion mode;
+- a text fallback for every visual state.
+
+Reduced-motion mode must preserve every semantic distinction without depending on motion. Color alone is insufficient; text, icons, and assistive-technology labels must communicate the same state.
+
+Animation, microphone/audio processing, voice playback, WebSocket/SSE transport, Assistant events, frontend state management, and the desktop runtime are not implemented by S00-T02. They are deferred to the appropriate Assistant/event-contract and desktop UI Sprints.
 
 ## Agent Mesh
 
@@ -110,7 +145,7 @@ Example:
 00:11  Ophanim            Correlating evidence
 ```
 
-Every row comes from sanitized backend events.
+Every row must correspond to a real, sanitized, auditable activity event emitted by Ophanim Core. The UI may format or group events for readability, but must not fabricate work, tool use, evidence, approvals, or completion through local timers or decorative animation.
 
 ## Voice UX
 
