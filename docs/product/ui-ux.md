@@ -55,19 +55,9 @@ Suggested visual identity: concentric Ophanim-inspired rings/core with restraine
 
 State mapping:
 
-- IDLE — slow subtle motion;
-- LISTENING — audio-reactive pulse;
-- TRANSCRIBING — focused inner-ring motion;
-- THINKING — reasoning pulse/rotation;
-- DELEGATING — connections illuminate from center to agents;
-- ORCHESTRATING — multiple active agent connections;
-- RETRIEVING — Knowledge node/ring active;
-- BROWSING — Browser node/ring active;
-- INVESTIGATING — evidence/correlation motion;
-- WAITING_FOR_APPROVAL — clear amber/static state;
-- SPEAKING — TTS waveform/core response;
-- COMPLETE — brief convergence/confirmation;
-- WARNING/ERROR — calm semantic warning, no dramatic flashing.
+The single canonical state model is defined in [Assistant State Projection](../assistant/assistant-state-projection.md). The detailed visual terms below are activity details mapped into those states, not competing top-level states. Events come from [Assistant Event Contracts](../assistant/assistant-event-contracts.md).
+
+Use the canonical semantic states and detail mappings in [Assistant State Projection](../assistant/assistant-state-projection.md). Specialized activity (transcription, retrieval, browsing, investigation, orchestration, and warnings) must not become a second top-level state model.
 
 Evaluate Rive first because deterministic state machines map well to AssistantState events. Lottie is acceptable for simpler non-interactive effects.
 

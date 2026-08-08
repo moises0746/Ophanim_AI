@@ -110,7 +110,7 @@ IDs are opaque, stable, globally unique within Ophanim, and contain no secret or
 
 ## Minimal Event Contracts
 
-Detailed vocabulary, transport, ordering, replay, and UI mapping belong to S00-T06. S00-T05 reserves common metadata only.
+The authoritative detailed vocabulary, transport, ordering, replay, and UI mappings are now defined by [Assistant Event Contracts](../assistant/assistant-event-contracts.md), [Agent Activity Events](../assistant/agent-activity-events.md), [Assistant State Projection](../assistant/assistant-state-projection.md), [Activity Feed Projection](../assistant/activity-feed-projection.md), and [Event Delivery Contracts](event-delivery-contracts.md). S00-T06 adds no runtime.
 
 ### AssistantStateEvent
 
