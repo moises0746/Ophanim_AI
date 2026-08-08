@@ -1,7 +1,6 @@
 from nexuvo.browser.models import BrowserActionType, BrowserTask
 from nexuvo.config import Settings
 
-
 WRITE_LIKE_ACTIONS = {
     BrowserActionType.INPUT,
     BrowserActionType.WRITE,

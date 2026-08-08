@@ -1,684 +1,391 @@
 # Ophanim AI
 
-**Private AI Coworker Platform**
+**A local-first AI coworker platform that can plan, delegate, execute approved work, remember context, and report back.**
 
-Ophanim AI is a local-first, context-aware AI coworker designed to understand conversations, enterprise knowledge, user intent, and connected tools while keeping the human in control.
+Ophanim AI is the product and control plane. LM Studio, Ollama, AnythingLLM, Obsidian, Codex, Claude, and future providers are replaceable capabilities behind stable internal contracts.
 
-The platform is built around a simple idea: do not rebuild commodity AI infrastructure. Ophanim AI uses proven components for knowledge and local inference, then focuses engineering effort on the differentiating layer — context awareness, voice intelligence, professional memory, tool orchestration, policy enforcement, and safe execution.
+The goal is not another chatbot. The goal is a dependable virtual team that can continue bounded work while the owner is away, ask for approval when needed, and leave a complete audit trail.
 
-> Working product name: **Ophanim AI**
->
-> Product direction: **AI coworker, not another chatbot.**
+> Project status: foundation and architecture stage. The current runnable component is `services/nexuvo-core`.
 
----
+## Product promise
 
-## Product Vision
+Ophanim AI should let the owner:
 
-Ophanim AI should eventually behave like a trusted professional coworker that can:
+- describe an objective in natural language;
+- delegate it to one or more specialized AI coworkers;
+- use local models for private and routine work;
+- use approved cloud models when greater capability is needed;
+- retrieve grounded knowledge from AnythingLLM and an Obsidian vault;
+- work through APIs, MCP, CLIs, browsers, and desktop applications;
+- review sensitive actions before execution;
+- receive concise progress, approval, failure, and completion notifications; and
+- inspect what every agent saw, decided, changed, and produced.
 
-- understand who is speaking
-- determine who is being addressed
-- recognize questions and requests directed to the user
-- maintain conversation and project context
-- retrieve answers from approved internal knowledge
-- recommend useful responses privately
-- investigate operational problems across connected systems
-- prepare emails, tickets, reports, changes, and workflows
-- request explicit approval before sensitive actions
-- execute approved actions through governed tools
-- work locally when privacy matters
-- use cloud models when stronger reasoning is required
+## Non-negotiable principles
 
-Ophanim AI is designed to remain useful across multiple roles rather than being limited to CloudOps. Specialized agents may later support engineering, operations, research, business, content creation, productivity, and enterprise workflows.
+1. **Human authority** — the owner can pause, deny, modify, or stop work at any time.
+2. **Local first** — private data and routine inference remain local when practical.
+3. **Least privilege** — every agent receives only the tools, data, and time required for its task.
+4. **Structured before visual** — prefer APIs and accessible UI controls before screenshot or mouse automation.
+5. **Durable work** — jobs survive UI restarts and preserve progress, artifacts, and audit events.
+6. **Replaceable providers** — no model runtime, knowledge system, or agent vendor becomes the product boundary.
+7. **Evidence over confidence** — important results include sources, verification, and uncertainty.
+8. **Safe failure** — uncertain or destructive operations stop for review instead of guessing.
 
----
-
-## MVP Objective
-
-The first real vertical slice is intentionally narrow.
-
-A teammate asks:
-
-> "Moi, may expected downtime ba during deployment?"
-
-Ophanim AI should:
-
-1. detect that the speaker is not the owner
-2. determine that the question is directed to the owner
-3. transcribe the question
-4. classify the topic and intent
-5. retrieve relevant approved context when available
-6. generate a private suggested response
-7. display confidence and missing information
-8. remain silent unless explicitly instructed otherwise
-
-Example result:
-
-```json
-{
-  "speaker": {
-    "identity": "other",
-    "confidence": 0.94
-  },
-  "addressee": "owner",
-  "intent": "operational_question",
-  "topic": "deployment downtime",
-  "requires_response": true,
-  "recommended_response": "No downtime is expected based on the approved implementation plan. We will monitor the service during and after deployment and execute rollback if required.",
-  "missing_information": [
-    "Confirm final implementation window",
-    "Confirm rollback readiness"
-  ],
-  "requires_user_approval": true
-}
-```
-
----
-
-## Architecture Strategy
-
-Ophanim AI will not initially implement its own full RAG platform, vector management UI, model manager, document ingestion system, or generic agent framework.
-
-Instead:
-
-- **AnythingLLM** provides the initial knowledge, RAG, workspace, document, and generic agent layer.
-- **LM Studio** provides local model serving and local inference through OpenAI-compatible APIs.
-- **Ophanim AI Core** provides the differentiated coworker intelligence and orchestration layer.
-- **Ophanim AI Desktop** provides the product experience and user-control surface.
+## System architecture
 
 ```text
-                         Ophanim AI Desktop
-              Tauri + React + TypeScript
-
-       Listening | Transcript | Suggestions | Tasks
-           Knowledge | Agents | Approvals | Settings
-                           |
-                           v
-                     Ophanim AI Core
-                       Python
-
-       Audio / Speaker / Transcription / Context
-        Policy / Approval / Tool Orchestration
-               Model Routing / Memory
-                    /             \
-                   v               v
-          AnythingLLM          LM Studio
-
-       RAG / Documents       Local LLM Runtime
-       Workspaces            Embeddings
-       Knowledge             Model Management
-       Generic Agents        GPU Inference
-                   \               /
-                    \             /
-                     v           v
-                  Integrations / Tools
-
-      GitHub | GitLab | Jira | Confluence | Gmail
-      Microsoft 365 | Google Workspace | AWS | Azure
-      Kubernetes | Linux | Terraform | Ansible | MCP
+User surfaces
+  Desktop app | system tray | chat | notifications | future mobile companion
+                                  |
+                                  v
+                         NEXUVO Core control plane
+  API | task service | scheduler | orchestration | policy | approvals | audit
+          |                 |                  |                 |
+          v                 v                  v                 v
+     Model router       Memory service      Tool gateway     Event/notify
+      |       |          |          |        |   |   |       |       |
+      v       v          v          v        v   v   v       v       v
+ LM Studio  Ollama   AnythingLLM  Obsidian  API MCP Desktop  Inbox  Channels
+      \       /                            browser/CLI/UIA
+       \     /
+     optional cloud models and specialist agents
+     OpenAI | Anthropic | Codex | Claude | others
 ```
 
----
+### Control plane ownership
 
-## Component Responsibilities
+NEXUVO Core owns:
 
-### Ophanim AI Desktop
+- task lifecycle and durable execution state;
+- agent delegation and budgets;
+- provider and capability routing;
+- policies, approvals, and emergency stops;
+- memory read/write policy;
+- tool permissions and credential boundaries;
+- audit events, artifacts, verification, and notifications.
 
-Recommended stack:
+Models may propose actions. Only the control plane may authorize tools to execute them.
 
-- Tauri
-- React
-- TypeScript
-- Vite
+## Major components
 
-Responsibilities:
+### Desktop application
 
-- system tray operation
-- visible listening state
-- transcript view
-- private response overlay
-- voice enrollment
-- AI provider configuration
-- knowledge/workspace selection
-- approval prompts
-- tool execution status
-- global pause and mute controls
-- privacy controls
+Planned stack: **Tauri, React, TypeScript, and Vite**.
 
-Electron remains a fallback if faster JavaScript-only delivery becomes more valuable than memory footprint and native integration.
+Primary areas:
 
-### Ophanim AI Core
+- **Home** — priorities, active coworkers, approvals, and system health;
+- **Chat** — streaming conversation and visible tool activity;
+- **Tasks** — queued, scheduled, active, blocked, and completed work;
+- **Memory** — searchable knowledge, sources, and proposed memory updates;
+- **Control Center** — models, providers, permissions, privacy, usage, and audit history.
 
-Recommended stack:
+The animated assistant must communicate real state: idle, listening, thinking, delegating, working, waiting for approval, completed, or failed. Desktop control must always display a visible banner and global stop control.
 
-- Python
-- FastAPI
-- Pydantic
-- asyncio
+### NEXUVO Core
 
-Responsibilities:
+Current stack: **Python 3.12+, FastAPI, Pydantic, HTTPX, and asyncio**.
 
-- microphone and audio pipeline coordination
-- voice activity detection
-- speaker verification
-- speech-to-text orchestration
-- addressee detection
-- question and intent detection
-- context management
-- knowledge retrieval coordination
-- model routing
-- response generation coordination
-- policy enforcement
-- risk classification
-- approval workflow
-- tool execution orchestration
-- audit events
+The core begins as a modular monolith. Services should be extracted only when scaling, isolation, deployment ownership, or a security boundary justifies it.
 
-### AnythingLLM Adapter
+### Model router
 
-AnythingLLM is treated as a replaceable subsystem, not the product itself.
+Applications request capabilities instead of naming a provider directly:
 
-Initial responsibilities:
+- `fast_chat`
+- `deep_reasoning`
+- `vision`
+- `tool_calling`
+- `embedding`
+- `code_generation`
+- `private_only`
 
-- document ingestion
-- workspace knowledge
-- RAG
-- vector retrieval
-- knowledge organization
-- generic agent capabilities where useful
+Routing considers privacy mode, model capability, health, latency, VRAM/RAM, queue depth, budget, and owner policy.
 
-Ophanim AI must communicate with AnythingLLM through an adapter boundary so the product is not tightly coupled to a specific upstream implementation.
+Initial providers:
 
-### LM Studio Adapter
+- **LM Studio** — primary local inference and model management;
+- **Ollama** — alternate local runtime behind the same contract;
+- **AnythingLLM** — initial RAG and document workspace subsystem;
+- optional cloud or specialist agents only when policy permits.
 
-LM Studio is the first local inference runtime.
+Do not load duplicate large models in LM Studio and Ollama by default. A resource manager will later coordinate loading, queueing, and idle eviction.
 
-Responsibilities:
+### Memory and knowledge
 
-- local language models
-- local embeddings where appropriate
-- OpenAI-compatible inference endpoint
-- model discovery
-- local/private reasoning
+**Obsidian is the human-readable source of truth** for preferences, projects, decisions, procedures, notes, and reports.
 
-Ophanim AI should never assume LM Studio is the only model provider.
+**AnythingLLM is the retrieval/index layer** for ingestion, embeddings, semantic search, workspace context, and citations.
 
-Provider interfaces should allow:
+Chat history is not trusted long-term memory. A memory record must include source, timestamp, scope, confidence, sensitivity, retention/expiry, and writer identity. Agent-created memories are proposals until policy accepts them.
+
+### Virtual team
+
+Start with functional roles instead of many personalities:
+
+| Role | Responsibility |
+| --- | --- |
+| Chief of Staff | Interpret priorities, decompose objectives, and delegate work. |
+| Researcher | Gather, compare, cite, and verify information. |
+| Builder | Create code, documents, configurations, and other artifacts. |
+| Operator | Run approved API, browser, CLI, and desktop workflows. |
+| Librarian | Retrieve knowledge and maintain proposed memory updates. |
+| Reviewer | Check accuracy, safety, completeness, and policy compliance. |
+| Reporter | Produce progress updates, exception alerts, and digests. |
+
+Every role uses the same task, identity, policy, approval, memory, and audit infrastructure.
+
+## Task lifecycle
+
+Every delegated objective becomes a durable task record with:
+
+- objective, owner, assignee, priority, and deadline;
+- inputs, dependencies, allowed tools, and privacy mode;
+- token/cost/time/tool-call budgets;
+- plan, current step, status, and heartbeat;
+- approval requirements and decisions;
+- artifacts, evidence, verification, and final summary;
+- complete append-only audit events.
+
+Canonical states:
 
 ```text
-Ophanim AI AI Provider
-├── LM Studio
-├── OpenAI
-├── Anthropic
-├── Google Gemini
-├── Azure OpenAI
-├── AWS Bedrock
-├── Ollama
-└── other OpenAI-compatible providers
+draft -> queued -> planning -> running -> verifying -> completed
+                         |          |
+                         v          v
+              waiting_for_approval  failed
+                         |
+                         v
+                      running
+
+Any active state -> paused | cancelled
 ```
 
----
+Workers must be idempotent where practical. A restarted worker must resume from durable state or safely retry a recorded step rather than silently duplicate it.
 
-## Privacy Modes
+## Autonomy and approvals
 
-Ophanim AI should expose explicit execution/privacy modes rather than hiding routing decisions from the user.
+Each task has one autonomy level:
 
-### Private Mode
+| Level | Meaning |
+| --- | --- |
+| Observe | Read, inspect, and summarize without changing external state. |
+| Prepare | Create drafts, patches, and plans without publishing or applying them. |
+| Act with approval | Pause before each consequential action or approved action group. |
+| Trusted automation | Execute only a narrowly defined recurring workflow authorized in advance. |
 
-Use local components whenever possible.
+Sensitive operations normally require approval, including external messages, publishing, purchases, deletion, overwriting, software installation, credential entry, production changes, permission changes, private uploads, and destructive source-control operations.
+
+An approval request must show the exact action, destination, affected resources, data leaving the device, risk, expected result, rollback options, and expiration.
+
+## Tool execution order
+
+Use the most structured and reliable interface available:
+
+1. official API or connector;
+2. MCP tool;
+3. local CLI or SDK;
+4. browser DOM automation;
+5. operating-system accessibility automation such as Windows UI Automation;
+6. screenshot-and-vision interaction;
+7. raw mouse coordinates and keyboard simulation.
+
+Desktop execution follows:
 
 ```text
-Ophanim AI
-  -> AnythingLLM
-  -> LM Studio
-  -> Local model
+observe -> identify target -> propose action -> policy check
+        -> execute -> observe again -> verify -> record evidence
 ```
 
-Suitable for:
+Raw input is a fallback, not an API replacement. Screen locks, popups, scaling, layout changes, and focus changes make coordinate automation unreliable. Unattended desktop workflows must run in a dedicated, unlocked session with explicit application and action allowlists.
 
-- meeting transcripts
-- internal documents
-- personal notes
-- local files
-- sensitive context
+## Notifications
 
-### Hybrid Mode
+- **Urgent** — security event, blocked high-priority work, or expiring approval.
+- **Important** — completion, deadline risk, or repeated failure.
+- **Digest** — routine progress and low-priority results.
 
-Keep sensitive retrieval and preprocessing local while allowing approved cloud reasoning for selected tasks.
+Start with an in-app inbox and Windows notifications. Add one authenticated remote channel later. Every notification links to its task and audit history.
 
-### Cloud Mode
+## Privacy modes
 
-Use configured cloud providers when maximum model capability is preferred and policy allows it.
+- **Private** — local storage, retrieval, models, and tools only.
+- **Hybrid** — sensitive retrieval/preprocessing stays local; specifically approved context may reach a cloud model.
+- **Cloud** — configured cloud providers may be used within task and organization policy.
 
-Routing decisions must be visible and auditable.
+The selected mode and every routing decision must be visible and auditable.
 
----
-
-## Core Product Principles
-
-### Privacy First
-
-- raw audio is not stored by default
-- VAD should run locally
-- speaker verification should run locally where practical
-- speaker embeddings must be encrypted at rest
-- listening state must always be visible
-- pause and mute must always be available
-- secrets must use an OS credential store or encrypted secret storage
-- sensitive integrations are read-only by default
-- cloud model use must be explicit and configurable
-
-### Human in the Loop
-
-Ophanim AI may automatically:
-
-- analyze
-- summarize
-- retrieve
-- recommend
-- prepare
-- draft
-- classify
-
-Ophanim AI must not automatically perform sensitive external actions such as sending communications or modifying production infrastructure unless an explicit future policy authorizes the specific action.
-
-### Conservative Intervention
-
-Ophanim AI should prefer silence or review over confidently incorrect intervention.
-
-Low-confidence example:
+## Repository map
 
 ```text
-Speaker identity uncertain.
-Question may be directed to you.
-Review suggested response.
+Ophanim_AI/
+|-- README.md                     # Product and architecture source of truth
+|-- AGENTS.md                     # Instructions for coding agents
+|-- CONTRIBUTING.md               # Development workflow
+|-- SECURITY.md                   # Security and vulnerability guidance
+|-- .env.example                  # Safe configuration template
+|-- apps/
+|   `-- desktop/                  # Planned Tauri desktop application
+|-- services/
+|   `-- nexuvo-core/              # Current Python control plane
+|       |-- nexuvo/
+|       |   |-- adapters/         # Current AnythingLLM/LM Studio boundaries
+|       |   `-- browser/          # Current governed browser fallback
+|       `-- tests/
+|-- packages/                     # Future shared contracts and UI packages
+|-- integrations/                 # Future governed tool integrations
+|-- docs/
+|   |-- architecture/             # Contracts, task model, execution design
+|   |-- product/                  # Scope, UX, roles, and milestones
+|   |-- security/                 # Threat model and approval policy
+|   |-- development/              # Local setup and implementation workflow
+|   `-- decisions/                # Architecture decision records (ADRs)
+|-- tests/                        # Future cross-component and E2E tests
+|-- Obsidian_Vault/               # Local knowledge vault; protect private data
+|-- anything-llm-master/          # Vendored upstream; avoid product logic here
+`-- ollama-main/                  # Vendored upstream; avoid product logic here
 ```
 
-### Replaceable Providers
+Empty future implementation folders are represented by local README files until their phase begins.
 
-AnythingLLM and LM Studio accelerate the initial product, but neither should become an architectural dependency that cannot be replaced.
+## Build order
 
-All external subsystems should sit behind versioned adapters and stable internal contracts.
+### Milestone 1 — Dependable control loop
 
----
-
-## Initial Audio and Voice Stack
-
-Candidate components:
-
-- sounddevice or PyAudio
-- WebRTC VAD or Silero VAD
-- optional RNNoise noise suppression
-- faster-whisper for local transcription
-- SpeechBrain speaker embeddings for the first implementation
-- pyannote.audio as an alternative/evaluation path
-
-MVP speaker identity should remain intentionally simple:
+Deliver one complete path:
 
 ```text
-OWNER   - enrolled owner voice
-OTHER   - confidently not the owner
-UNKNOWN - confidence is insufficient
+create task -> select provider -> retrieve context -> propose tool action
+-> approve if needed -> execute -> verify -> save evidence -> notify owner
 ```
 
-Do not attempt named identification of every coworker in the first release.
+Required work:
 
----
+- task, step, event, artifact, and approval schemas;
+- persistent local database and migrations;
+- durable queue, scheduler, recovery, and cancellation;
+- provider registry and capability router;
+- policy engine and append-only audit log;
+- streaming task/event API;
+- integration and recovery tests.
 
-## Decision Engine
+### Milestone 2 — Desktop control center
 
-Initial policy:
+- Tauri shell and local authenticated IPC;
+- Home, Chat, Tasks, Approvals, Memory, and Settings views;
+- streaming responses and task timelines;
+- tray operation, notifications, pause, and emergency stop;
+- accessible state-driven assistant animation.
 
-```text
-IF speaker == OWNER
-AND wake_word_detected == true
-AND directed_to == Ophanim AI
-THEN respond privately or through the configured private output
+### Milestone 3 — Knowledge and memory
 
-IF speaker == OTHER
-AND directed_to == OWNER
-AND question_detected == true
-THEN generate private suggested answer
+- AnythingLLM retrieval with source metadata;
+- Obsidian indexing and governed memory writes;
+- retention, sensitivity, and provenance controls;
+- citations in user-visible answers.
 
-IF speaker == OWNER
-AND directed_to == HUMAN
-THEN stay silent
+### Milestone 4 — Governed automation
 
-IF speaker == OTHER
-AND directed_to == OTHER
-THEN stay silent
+- API/MCP/CLI tool gateway;
+- browser authentication and approval workflow;
+- Windows UI Automation adapter;
+- screenshot/vision fallback;
+- application, domain, command, and action allowlists;
+- post-action verification and rollback metadata.
 
-IF confidence < configured_threshold
-THEN do not respond aloud
-AND optionally request review
+### Milestone 5 — Virtual team and unattended work
+
+- role profiles and delegation;
+- dependencies, budgets, retries, and timeouts;
+- scheduled workflows and daily digest;
+- remote notifications and approval links;
+- evaluator/reviewer agent and outcome metrics.
+
+Voice coworker features remain an important later vertical slice, but durable tasks and governed execution come first because they are the foundation for safe unattended work.
+
+## Current implementation
+
+Implemented:
+
+- FastAPI core health endpoint;
+- LM Studio and AnythingLLM health adapters;
+- optional Browser Use integration;
+- browser domain allowlists, maximum steps, and write-like approval gating;
+- initial unit tests and local setup documentation.
+
+Not yet implemented:
+
+- durable task database, queue, and scheduler;
+- approval continuation endpoint and authenticated desktop UI;
+- Ollama, Obsidian, desktop UI, UI Automation, or notification adapters;
+- multi-agent delegation and unattended execution;
+- production credential storage, threat model, and release hardening.
+
+## Development quick start
+
+Prerequisites:
+
+- Python 3.12+
+- LM Studio local server, normally at `http://localhost:1234/v1`
+- AnythingLLM, normally at `http://localhost:3001`
+
+```powershell
+cd services/nexuvo-core
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+pip install -e ".[dev]"
+Copy-Item ..\..\.env.example .env
+uvicorn nexuvo.main:app --reload --host 127.0.0.1 --port 8080
 ```
 
-Thresholds must be calibrated using real evaluation data rather than treated as permanent constants.
+Run checks:
 
----
-
-## Proposed Repository Structure
-
-The project should start as a modular monolith instead of prematurely creating many independent microservices.
-
-```text
-Ophanim AI/
-├── README.md
-├── LICENSE
-├── SECURITY.md
-├── CONTRIBUTING.md
-├── .editorconfig
-├── .gitignore
-├── .env.example
-├── package.json
-├── pnpm-workspace.yaml
-├── pyproject.toml
-│
-├── apps/
-│   └── desktop/
-│       ├── src/
-│       ├── src-tauri/
-│       └── tests/
-│
-├── services/
-│   └── Ophanim AI-core/
-│       ├── Ophanim AI/
-│       │   ├── api/
-│       │   ├── audio/
-│       │   ├── speaker/
-│       │   ├── transcription/
-│       │   ├── context/
-│       │   ├── knowledge/
-│       │   ├── inference/
-│       │   ├── policy/
-│       │   ├── tools/
-│       │   └── telemetry/
-│       └── tests/
-│
-├── adapters/
-│   ├── anythingllm/
-│   ├── lmstudio/
-│   ├── openai/
-│   ├── anthropic/
-│   ├── gemini/
-│   └── mcp/
-│
-├── integrations/
-│   ├── github/
-│   ├── gitlab/
-│   ├── jira/
-│   ├── confluence/
-│   ├── microsoft-365/
-│   ├── google-workspace/
-│   ├── aws/
-│   ├── azure/
-│   └── kubernetes/
-│
-├── packages/
-│   ├── contracts/
-│   ├── shared-types/
-│   ├── prompt-templates/
-│   └── telemetry/
-│
-├── docs/
-│   ├── architecture/
-│   ├── product/
-│   ├── security/
-│   ├── development/
-│   └── decisions/
-│
-└── tests/
-    ├── integration/
-    ├── end-to-end/
-    ├── audio-fixtures/
-    ├── performance/
-    └── security/
+```powershell
+cd services/nexuvo-core
+pytest
+ruff check .
 ```
 
-Microservices should be extracted later only when independent scaling, failure isolation, deployment ownership, or security boundaries justify them.
+See [local development setup](docs/development/local-setup.md), [implementation guide](docs/development/implementation-guide.md), and [contribution guidance](CONTRIBUTING.md).
 
----
+## Definition of done
 
-## Roadmap
+A feature is complete only when:
 
-### Phase 1 — Foundation
+- its behavior and boundaries are documented;
+- inputs and outputs use typed contracts;
+- policy and approval implications are explicit;
+- secrets and sensitive content are not logged;
+- success, denial, timeout, cancellation, and failure paths are handled;
+- tests cover the relevant behavior;
+- important actions produce audit events and verification evidence; and
+- user-facing state is understandable without reading logs.
 
-Goal: runnable Ophanim AI development environment.
+## What Ophanim AI is not
 
-- repository scaffold
-- Tauri desktop shell
-- Python core service
-- health/status API
-- AnythingLLM adapter
-- LM Studio adapter
-- provider discovery
-- secure configuration
-- structured logging
+Ophanim AI is not:
 
-### Phase 2 — Knowledge and AI Brain
+- a renamed AnythingLLM or Ollama fork;
+- a generic chat frontend;
+- an always-recording surveillance tool;
+- an unrestricted autonomous desktop bot;
+- a system that hides where information was sent;
+- a collection of agents with separate, inconsistent permission systems.
 
-Goal: useful private chat and grounded knowledge before voice complexity.
+The product owns the experience, control plane, safety model, memory policy, orchestration, integrations, and evidence trail.
 
-- AnythingLLM workspace integration
-- document ingestion workflow
-- retrieval interface
-- local LM Studio inference
-- model router
-- citations/source metadata
-- conversation context
-- prompt and policy layer
+## Documentation index
 
-### Phase 3 — Coworker Intelligence
+- [Architecture overview](docs/architecture/overview.md)
+- [Task and agent model](docs/architecture/task-and-agent-model.md)
+- [Desktop automation](docs/architecture/desktop-automation.md)
+- [Product milestones](docs/product/milestones.md)
+- [Security model](docs/security/security-model.md)
+- [Implementation guide](docs/development/implementation-guide.md)
+- [Architecture decisions](docs/decisions/README.md)
 
-Goal: complete the differentiating voice vertical slice.
+## Naming
 
-- microphone capture
-- VAD
-- speech-to-text
-- voice enrollment
-- owner/other/unknown speaker verification
-- question detection
-- addressee detection
-- private response overlay
-- confidence handling
-- latency measurement
-
-### Phase 4 — Professional Memory
-
-- project knowledge
-- company policies
-- MOPs and runbooks
-- architecture documentation
-- user-approved notes
-- scoped long-term memory
-- permissions and retention
-
-### Phase 5 — Enterprise Tools
-
-Initial integrations should remain read-only where possible.
-
-- GitHub / GitLab
-- Jira / Confluence
-- Gmail / Outlook
-- Google Calendar / Microsoft 365 Calendar
-- Teams / Slack
-- Google Drive
-- MCP tools
-
-### Phase 6 — Operations Coworker
-
-Ophanim AI can begin correlating operational evidence across tools.
-
-Example:
-
-```text
-"Ophanim AI, investigate why this deployment failed."
-
-GitHub / GitLab
-       +
-CI/CD logs
-       +
-Kubernetes
-       +
-Cloud logs
-       +
-Runbooks
-       +
-Previous incidents
-       +
-AnythingLLM knowledge
-       |
-       v
-Ophanim AI reasoning
-       |
-       v
-Investigation Summary
-```
-
-Supported domains may include:
-
-- AWS
-- Azure
-- Kubernetes
-- Linux
-- Terraform
-- Ansible
-
-The default lifecycle remains:
-
-```text
-READ -> ANALYZE -> RECOMMEND -> DRAFT -> APPROVE -> EXECUTE
-```
-
-### Phase 7 — Specialized AI Coworkers
-
-Once the platform and governance model are stable, introduce specialized agent profiles for areas such as:
-
-- engineering
-- CloudOps
-- DevOps
-- research
-- business operations
-- content creation
-- reporting
-- project coordination
-
-All agents should share the same approval, identity, audit, knowledge, and policy infrastructure.
-
----
-
-## Security Architecture
-
-Security is a product requirement, not a later hardening phase.
-
-Initial requirements:
-
-- least-privilege integration scopes
-- read-only by default
-- encrypted secrets
-- encrypted speaker embeddings
-- explicit cloud routing policy
-- structured audit trail
-- tool allowlists
-- command/action validation
-- human approval for sensitive mutations
-- prompt injection defenses around retrieved content
-- source provenance
-- configurable data retention
-- local-data deletion controls
-- signed release artifacts
-
-Before production enterprise integrations, create a formal threat model covering microphone capture, local IPC, AnythingLLM, model providers, MCP/tool execution, retrieved untrusted content, and credential boundaries.
-
----
-
-## Observability
-
-Initial observability:
-
-- structured JSON logs
-- correlation IDs
-- local log rotation
-- model/provider latency
-- transcription latency
-- retrieval latency
-- end-to-end suggestion latency
-- confidence telemetry without storing unnecessary sensitive content
-- OpenTelemetry-ready interfaces
-
-Developer mode may expose Prometheus-compatible metrics later.
-
----
-
-## MVP Success Criteria
-
-The first milestone is successful when Ophanim AI can reliably perform this path:
-
-```text
-Other person speaks
-      |
-      v
-Voice activity detected
-      |
-      v
-Speaker = OTHER
-      |
-      v
-Speech transcribed
-      |
-      v
-Directed to OWNER
-      |
-      v
-Question detected
-      |
-      v
-Relevant approved knowledge retrieved
-      |
-      v
-Suggested response generated
-      |
-      v
-Private desktop overlay
-```
-
-The system must also prove that it can correctly stay silent when the conversation is not directed to the owner.
-
-Key evaluation areas:
-
-- speaker verification accuracy
-- addressee detection precision
-- false intervention rate
-- transcription quality
-- retrieval grounding
-- response usefulness
-- end-to-end latency
-- privacy behavior
-
----
-
-## What Ophanim AI Is Not
-
-Ophanim AI is not intended to be:
-
-- a renamed AnythingLLM fork
-- a generic ChatGPT clone
-- an always-recording surveillance application
-- an uncontrolled autonomous operations bot
-- a system that hides where data or prompts are sent
-
-AnythingLLM and LM Studio are acceleration layers. Ophanim AI remains the product and owns the user experience, context engine, safety model, orchestration, memory policy, integrations, and professional coworker behavior.
-
----
-
-## Current Status
-
-**Status: architecture and foundation stage.**
-
-The immediate engineering objective is to build a runnable Phase 1 scaffold and prove AnythingLLM + LM Studio integration before implementing the full voice pipeline.
-
----
-
-## Naming Note
-
-Ophanim AI is currently a working product brand selected after an initial collision screen. A formal trademark, domain, corporate-name, and jurisdiction-specific legal clearance should be completed before commercial launch.
+**Ophanim AI** is the working product name. **NEXUVO Core** is the current internal name of the control-plane service. Before commercial launch, complete trademark, domain, corporate-name, and jurisdiction-specific legal review.
