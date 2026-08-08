@@ -173,6 +173,18 @@ services/ophanim-core/
 
 Sprint 00 task S00-T01 migrated the service, Python package, presentation strings, and configuration prefix to Ophanim without changing feature behavior. The runtime reads the `OPHANIM_*` environment namespace.
 
+## Repository Map
+
+- `apps/desktop/` - placeholder for the future desktop product surface; no Tauri/React scaffold exists.
+- `services/ophanim-core/` - implemented first-party runtime and service-local tests.
+- `packages/`, `adapters/`, `integrations/`, and `infrastructure/` - first-party ownership placeholders only.
+- `docs/` - implemented project documentation plus the placeholder `docs/ux/` boundary.
+- `tests/` - placeholder cross-component test boundaries; current executable tests remain service-local.
+- `anything-llm-master/` and `ollama-main/` - protected vendor source in temporary locations.
+- `Obsidian_Vault/` - protected private user data, not source code.
+
+See [`STRUCTURE.md`](STRUCTURE.md) for the complete implemented/placeholder/vendor/private/deferred classification.
+
 ## First Business MVP
 
 The first complete vertical slice is the **AI Transaction Investigation Agent**.
