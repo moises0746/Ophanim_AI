@@ -1,5 +1,5 @@
 # Integrations
 
-First-party governed integrations belong here when they are large enough to live outside NEXUVO Core. Early adapters should remain inside the modular monolith.
+The system-specific child directories are first-party ownership placeholders only. They contain no connector, credential, API, MCP, browser, or runtime implementation.
 
 Every integration requires least-privilege scopes, read-only defaults, typed inputs/outputs, timeouts, policy classification, audit events, and tests using fakes.

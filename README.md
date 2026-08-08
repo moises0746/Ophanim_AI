@@ -1,391 +1,245 @@
 # Ophanim AI
 
-**A local-first AI coworker platform that can plan, delegate, execute approved work, remember context, and report back.**
+**A local-first AI coworker, animated AI Assistant, and governed multi-agent orchestration platform.**
 
-Ophanim AI is the product and control plane. LM Studio, Ollama, AnythingLLM, Obsidian, Codex, Claude, and future providers are replaceable capabilities behind stable internal contracts.
+Ophanim AI is the product and control plane. It accepts goals through voice or text, coordinates specialized AI agents, retrieves grounded knowledge, uses approved tools and browser automation, captures evidence, and keeps humans in control of consequential actions.
 
-The goal is not another chatbot. The goal is a dependable virtual team that can continue bounded work while the owner is away, ask for approval when needed, and leave a complete audit trail.
+The Assistant is the default product experience. AnythingLLM, LM Studio, Ollama, MCP servers, cloud models, browser engines, and enterprise systems are replaceable subsystems behind Ophanim-owned contracts.
 
-> Project status: foundation and architecture stage. The current runnable component is `services/nexuvo-core`.
+> Project status: **Sprint 00 — repository reconciliation and architecture baseline.** Feature implementation should not proceed outside explicitly authorized Sprint tasks.
 
-## Product promise
+## Start Here
 
-Ophanim AI should let the owner:
+Before implementation, read these files in order:
 
-- describe an objective in natural language;
-- delegate it to one or more specialized AI coworkers;
-- use local models for private and routine work;
-- use approved cloud models when greater capability is needed;
-- retrieve grounded knowledge from AnythingLLM and an Obsidian vault;
-- work through APIs, MCP, CLIs, browsers, and desktop applications;
-- review sensitive actions before execution;
-- receive concise progress, approval, failure, and completion notifications; and
-- inspect what every agent saw, decided, changed, and produced.
+1. [`STRUCTURE.md`](STRUCTURE.md) — authoritative repository structure and dependency boundaries.
+2. [`BLUEPRINT.md`](BLUEPRINT.md) — product/system architecture.
+3. [`PROJECT_PLAN.md`](PROJECT_PLAN.md) — phases, Sprint model, Definition of Ready/Done.
+4. [`CODEX.md`](CODEX.md) — Codex operating contract.
+5. [`AGENTS.md`](AGENTS.md) — coding-agent repository rules.
+6. [`SECURITY.md`](SECURITY.md) — security expectations.
+7. [`docs/sprints/SPRINT-00.md`](docs/sprints/SPRINT-00.md) — current Sprint backlog.
+8. Relevant ADRs under [`docs/adr/`](docs/adr/).
 
-## Non-negotiable principles
+## Product Vision
 
-1. **Human authority** — the owner can pause, deny, modify, or stop work at any time.
-2. **Local first** — private data and routine inference remain local when practical.
-3. **Least privilege** — every agent receives only the tools, data, and time required for its task.
-4. **Structured before visual** — prefer APIs and accessible UI controls before screenshot or mouse automation.
-5. **Durable work** — jobs survive UI restarts and preserve progress, artifacts, and audit events.
-6. **Replaceable providers** — no model runtime, knowledge system, or agent vendor becomes the product boundary.
-7. **Evidence over confidence** — important results include sources, verification, and uncertainty.
-8. **Safe failure** — uncertain or destructive operations stop for review instead of guessing.
+Ophanim should behave like a dependable professional coworker that can:
 
-## System architecture
+- understand a user's goal;
+- plan and delegate bounded work to specialized agents;
+- listen/respond through an animated voice Assistant;
+- retrieve project/company knowledge through AnythingLLM and Obsidian;
+- use local models through LM Studio and optionally Ollama;
+- use approved cloud models when policy permits;
+- use APIs, MCP, deterministic browser skills, and AI browser reasoning;
+- investigate systems and correlate evidence;
+- prepare reports, messages, tickets and remediation plans;
+- request approval before consequential actions;
+- preserve task history, evidence and audit logs;
+- stop safely when confidence, policy or authorization is insufficient.
 
-```text
-User surfaces
-  Desktop app | system tray | chat | notifications | future mobile companion
-                                  |
-                                  v
-                         NEXUVO Core control plane
-  API | task service | scheduler | orchestration | policy | approvals | audit
-          |                 |                  |                 |
-          v                 v                  v                 v
-     Model router       Memory service      Tool gateway     Event/notify
-      |       |          |          |        |   |   |       |       |
-      v       v          v          v        v   v   v       v       v
- LM Studio  Ollama   AnythingLLM  Obsidian  API MCP Desktop  Inbox  Channels
-      \       /                            browser/CLI/UIA
-       \     /
-     optional cloud models and specialist agents
-     OpenAI | Anthropic | Codex | Claude | others
-```
+## Product Experience
 
-### Control plane ownership
-
-NEXUVO Core owns:
-
-- task lifecycle and durable execution state;
-- agent delegation and budgets;
-- provider and capability routing;
-- policies, approvals, and emergency stops;
-- memory read/write policy;
-- tool permissions and credential boundaries;
-- audit events, artifacts, verification, and notifications.
-
-Models may propose actions. Only the control plane may authorize tools to execute them.
-
-## Major components
-
-### Desktop application
-
-Planned stack: **Tauri, React, TypeScript, and Vite**.
-
-Primary areas:
-
-- **Home** — priorities, active coworkers, approvals, and system health;
-- **Chat** — streaming conversation and visible tool activity;
-- **Tasks** — queued, scheduled, active, blocked, and completed work;
-- **Memory** — searchable knowledge, sources, and proposed memory updates;
-- **Control Center** — models, providers, permissions, privacy, usage, and audit history.
-
-The animated assistant must communicate real state: idle, listening, thinking, delegating, working, waiting for approval, completed, or failed. Desktop control must always display a visible banner and global stop control.
-
-### NEXUVO Core
-
-Current stack: **Python 3.12+, FastAPI, Pydantic, HTTPX, and asyncio**.
-
-The core begins as a modular monolith. Services should be extracted only when scaling, isolation, deployment ownership, or a security boundary justifies it.
-
-### Model router
-
-Applications request capabilities instead of naming a provider directly:
-
-- `fast_chat`
-- `deep_reasoning`
-- `vision`
-- `tool_calling`
-- `embedding`
-- `code_generation`
-- `private_only`
-
-Routing considers privacy mode, model capability, health, latency, VRAM/RAM, queue depth, budget, and owner policy.
-
-Initial providers:
-
-- **LM Studio** — primary local inference and model management;
-- **Ollama** — alternate local runtime behind the same contract;
-- **AnythingLLM** — initial RAG and document workspace subsystem;
-- optional cloud or specialist agents only when policy permits.
-
-Do not load duplicate large models in LM Studio and Ollama by default. A resource manager will later coordinate loading, queueing, and idle eviction.
-
-### Memory and knowledge
-
-**Obsidian is the human-readable source of truth** for preferences, projects, decisions, procedures, notes, and reports.
-
-**AnythingLLM is the retrieval/index layer** for ingestion, embeddings, semantic search, workspace context, and citations.
-
-Chat history is not trusted long-term memory. A memory record must include source, timestamp, scope, confidence, sensitivity, retention/expiry, and writer identity. Agent-created memories are proposals until policy accepts them.
-
-### Virtual team
-
-Start with functional roles instead of many personalities:
-
-| Role | Responsibility |
-| --- | --- |
-| Chief of Staff | Interpret priorities, decompose objectives, and delegate work. |
-| Researcher | Gather, compare, cite, and verify information. |
-| Builder | Create code, documents, configurations, and other artifacts. |
-| Operator | Run approved API, browser, CLI, and desktop workflows. |
-| Librarian | Retrieve knowledge and maintain proposed memory updates. |
-| Reviewer | Check accuracy, safety, completeness, and policy compliance. |
-| Reporter | Produce progress updates, exception alerts, and digests. |
-
-Every role uses the same task, identity, policy, approval, memory, and audit infrastructure.
-
-## Task lifecycle
-
-Every delegated objective becomes a durable task record with:
-
-- objective, owner, assignee, priority, and deadline;
-- inputs, dependencies, allowed tools, and privacy mode;
-- token/cost/time/tool-call budgets;
-- plan, current step, status, and heartbeat;
-- approval requirements and decisions;
-- artifacts, evidence, verification, and final summary;
-- complete append-only audit events.
-
-Canonical states:
+The default route is the **Ophanim Assistant**, not the analytics dashboard.
 
 ```text
-draft -> queued -> planning -> running -> verifying -> completed
-                         |          |
-                         v          v
-              waiting_for_approval  failed
-                         |
-                         v
-                      running
-
-Any active state -> paused | cancelled
+User
+ ↓ voice/text
+Animated Ophanim Assistant
+ ↓
+Ophanim Core
+ ↓
+Agent Mesh
+ ├─ Knowledge Agent
+ ├─ Browser Agent
+ ├─ Operations Agent
+ ├─ Developer Agent
+ ├─ Research Agent
+ ├─ Communication Agent
+ └─ Content Agent
+ ↓
+Tools / MCP / APIs / Browser / Knowledge / Models
+ ↓
+Evidence + Result + Approval if required
 ```
 
-Workers must be idempotent where practical. A restarted worker must resume from durable state or safely retry a recorded step rather than silently duplicate it.
+The animation reflects real backend state such as listening, transcribing, thinking, delegating, orchestrating, retrieving, browsing, investigating, waiting for approval, speaking and completion. See [`docs/assistant/event-model.md`](docs/assistant/event-model.md) and [`docs/product/ui-ux.md`](docs/product/ui-ux.md).
 
-## Autonomy and approvals
-
-Each task has one autonomy level:
-
-| Level | Meaning |
-| --- | --- |
-| Observe | Read, inspect, and summarize without changing external state. |
-| Prepare | Create drafts, patches, and plans without publishing or applying them. |
-| Act with approval | Pause before each consequential action or approved action group. |
-| Trusted automation | Execute only a narrowly defined recurring workflow authorized in advance. |
-
-Sensitive operations normally require approval, including external messages, publishing, purchases, deletion, overwriting, software installation, credential entry, production changes, permission changes, private uploads, and destructive source-control operations.
-
-An approval request must show the exact action, destination, affected resources, data leaving the device, risk, expected result, rollback options, and expiration.
-
-## Tool execution order
-
-Use the most structured and reliable interface available:
-
-1. official API or connector;
-2. MCP tool;
-3. local CLI or SDK;
-4. browser DOM automation;
-5. operating-system accessibility automation such as Windows UI Automation;
-6. screenshot-and-vision interaction;
-7. raw mouse coordinates and keyboard simulation.
-
-Desktop execution follows:
+## Architecture
 
 ```text
-observe -> identify target -> propose action -> policy check
-        -> execute -> observe again -> verify -> record evidence
+                           OPHANIM AI
+
+                    Tauri + React Desktop UI
+                  Assistant / Voice / Agent Mesh
+                              |
+                              v
+                         Ophanim Core
+                 Python 3.12+ / FastAPI
+                              |
+       +----------------------+----------------------+
+       |                      |                      |
+       v                      v                      v
+ Orchestration            Policy/Approval         Events/Audit
+       |
+       v
+ Agent Registry + Capability Router
+       |
+       v
+ Tool Gateway / Integration Fabric
+       |
+ +-----+---------+-----------+--------------+----------------+
+ |               |           |              |                |
+ v               v           v              v                v
+API/SDK          MCP     SDK/CLI wrapper  Playwright     AI Browser/Vision
+
+Knowledge: AnythingLLM + Obsidian
+Local models: LM Studio, optional Ollama
+Persistence: PostgreSQL
+Cache/coordination: Redis
+Initial jobs: Celery
+Future durable orchestration: Temporal
+Observability: OpenTelemetry + Prometheus + Grafana
 ```
 
-Raw input is a fallback, not an API replacement. Screen locks, popups, scaling, layout changes, and focus changes make coordinate automation unreliable. Unattended desktop workflows must run in a dedicated, unlocked session with explicit application and action allowlists.
+## Integration Strategy
 
-## Notifications
+Use the safest reliable mechanism available:
 
-- **Urgent** — security event, blocked high-priority work, or expiring approval.
-- **Important** — completion, deadline risk, or repeated failure.
-- **Digest** — routine progress and low-priority results.
+1. official API/SDK;
+2. MCP;
+3. constrained local SDK/CLI wrapper;
+4. deterministic Playwright/DOM browser skill;
+5. AI browser reasoning;
+6. vision fallback;
+7. raw coordinate input only as a controlled last resort.
 
-Start with an in-app inbox and Windows notifications. Add one authenticated remote channel later. Every notification links to its task and audit history.
+MCP is a first-class tool protocol but never a policy bypass. All tool paths pass through capability authorization, tool allowlists, environment scope, policy, approval where required, evidence and audit.
 
-## Privacy modes
+## Native AI Browser
 
-- **Private** — local storage, retrieval, models, and tools only.
-- **Hybrid** — sensitive retrieval/preprocessing stays local; specifically approved context may reach a cloud model.
-- **Cloud** — configured cloud providers may be used within task and organization policy.
+Ophanim Browser is built on Chromium/Edge + Playwright rather than a new browser engine. It supports approved domains, isolated profiles, DOM/accessibility inspection, deterministic skills, AI-assisted navigation and vision fallback.
 
-The selected mode and every routing decision must be visible and auditable.
+MVP browser behavior is read-only investigation. See [`docs/browser/native-ai-browser.md`](docs/browser/native-ai-browser.md).
 
-## Repository map
+## Security Model
+
+Core rule:
 
 ```text
-Ophanim_AI/
-|-- README.md                     # Product and architecture source of truth
-|-- AGENTS.md                     # Instructions for coding agents
-|-- CONTRIBUTING.md               # Development workflow
-|-- SECURITY.md                   # Security and vulnerability guidance
-|-- .env.example                  # Safe configuration template
-|-- apps/
-|   `-- desktop/                  # Planned Tauri desktop application
-|-- services/
-|   `-- nexuvo-core/              # Current Python control plane
-|       |-- nexuvo/
-|       |   |-- adapters/         # Current AnythingLLM/LM Studio boundaries
-|       |   `-- browser/          # Current governed browser fallback
-|       `-- tests/
-|-- packages/                     # Future shared contracts and UI packages
-|-- integrations/                 # Future governed tool integrations
-|-- docs/
-|   |-- architecture/             # Contracts, task model, execution design
-|   |-- product/                  # Scope, UX, roles, and milestones
-|   |-- security/                 # Threat model and approval policy
-|   |-- development/              # Local setup and implementation workflow
-|   `-- decisions/                # Architecture decision records (ADRs)
-|-- tests/                        # Future cross-component and E2E tests
-|-- Obsidian_Vault/               # Local knowledge vault; protect private data
-|-- anything-llm-master/          # Vendored upstream; avoid product logic here
-`-- ollama-main/                  # Vendored upstream; avoid product logic here
+Goal
+ -> Plan
+ -> Capability Request
+ -> Identity/RBAC
+ -> Environment Scope
+ -> Tool Allowlist
+ -> Policy
+ -> Approval if required
+ -> Credential Resolution
+ -> Deterministic Execution
+ -> Verification
+ -> Evidence/Audit
 ```
 
-Empty future implementation folders are represented by local README files until their phase begins.
+Non-negotiable boundaries:
 
-## Build order
+- read-only MVP first;
+- no arbitrary SQL;
+- no arbitrary shell;
+- no unrestricted filesystem;
+- no unrestricted browser domains;
+- no agent-owned credentials;
+- no secret-bearing browser profiles committed to Git;
+- no production mutation without explicit authorization;
+- no vendor source used as an uncontrolled extension point;
+- every consequential tool call is auditable.
 
-### Milestone 1 — Dependable control loop
+## Vendor Source
 
-Deliver one complete path:
+The current repository contains copied upstream source such as `anything-llm-master/` and potentially `ollama-main/`. These are **vendored/upstream code**, not Ophanim product modules.
+
+Target boundary is documented in [`STRUCTURE.md`](STRUCTURE.md). Sprint 00 will decide/migrate final vendor paths deliberately. First-party code must use adapters/contracts rather than importing vendor internals.
+
+Do not edit vendored source unless an authorized task explicitly requires an upstream patch.
+
+## Current First-Party Runtime
+
+The first-party runtime is:
 
 ```text
-create task -> select provider -> retrieve context -> propose tool action
--> approve if needed -> execute -> verify -> save evidence -> notify owner
+services/ophanim-core/
+  ophanim/
 ```
 
-Required work:
+Sprint 00 task S00-T01 migrated the service, Python package, presentation strings, and configuration prefix to Ophanim without changing feature behavior. The runtime reads the `OPHANIM_*` environment namespace.
 
-- task, step, event, artifact, and approval schemas;
-- persistent local database and migrations;
-- durable queue, scheduler, recovery, and cancellation;
-- provider registry and capability router;
-- policy engine and append-only audit log;
-- streaming task/event API;
-- integration and recovery tests.
+## Repository Map
 
-### Milestone 2 — Desktop control center
+- `apps/desktop/` - placeholder for the future desktop product surface; no Tauri/React scaffold exists.
+- `services/ophanim-core/` - implemented first-party runtime and service-local tests.
+- `packages/`, `adapters/`, `integrations/`, and `infrastructure/` - first-party ownership placeholders only.
+- `docs/` - implemented project documentation plus the placeholder `docs/ux/` boundary.
+- `tests/` - placeholder cross-component test boundaries; current executable tests remain service-local.
+- `anything-llm-master/` and `ollama-main/` - protected vendor source in temporary locations.
+- `Obsidian_Vault/` - protected private user data, not source code.
 
-- Tauri shell and local authenticated IPC;
-- Home, Chat, Tasks, Approvals, Memory, and Settings views;
-- streaming responses and task timelines;
-- tray operation, notifications, pause, and emergency stop;
-- accessible state-driven assistant animation.
+See [`STRUCTURE.md`](STRUCTURE.md) for the complete implemented/placeholder/vendor/private/deferred classification.
 
-### Milestone 3 — Knowledge and memory
+## First Business MVP
 
-- AnythingLLM retrieval with source metadata;
-- Obsidian indexing and governed memory writes;
-- retention, sensitivity, and provenance controls;
-- citations in user-visible answers.
+The first complete vertical slice is the **AI Transaction Investigation Agent**.
 
-### Milestone 4 — Governed automation
-
-- API/MCP/CLI tool gateway;
-- browser authentication and approval workflow;
-- Windows UI Automation adapter;
-- screenshot/vision fallback;
-- application, domain, command, and action allowlists;
-- post-action verification and rollback metadata.
-
-### Milestone 5 — Virtual team and unattended work
-
-- role profiles and delegation;
-- dependencies, budgets, retries, and timeouts;
-- scheduled workflows and daily digest;
-- remote notifications and approval links;
-- evaluator/reviewer agent and outcome metrics.
-
-Voice coworker features remain an important later vertical slice, but durable tasks and governed execution come first because they are the foundation for safe unattended work.
-
-## Current implementation
-
-Implemented:
-
-- FastAPI core health endpoint;
-- LM Studio and AnythingLLM health adapters;
-- optional Browser Use integration;
-- browser domain allowlists, maximum steps, and write-like approval gating;
-- initial unit tests and local setup documentation.
-
-Not yet implemented:
-
-- durable task database, queue, and scheduler;
-- approval continuation endpoint and authenticated desktop UI;
-- Ollama, Obsidian, desktop UI, UI Automation, or notification adapters;
-- multi-agent delegation and unattended execution;
-- production credential storage, threat model, and release hardening.
-
-## Development quick start
-
-Prerequisites:
-
-- Python 3.12+
-- LM Studio local server, normally at `http://localhost:1234/v1`
-- AnythingLLM, normally at `http://localhost:3001`
-
-```powershell
-cd services/nexuvo-core
-python -m venv .venv
-.\.venv\Scripts\Activate.ps1
-pip install -e ".[dev]"
-Copy-Item ..\..\.env.example .env
-uvicorn nexuvo.main:app --reload --host 127.0.0.1 --port 8080
+```text
+Reference Number
+   ↓
+Ophanim Task
+   ├─ Browser Agent -> approved test portal
+   ├─ DB Read Tool -> approved lookup
+   ├─ Log Tool -> approved search
+   └─ Knowledge Agent -> policy/runbook/MOP
+          ↓
+Evidence Correlation
+          ↓
+Issue Classification
+          ↓
+Findings + Recommended Next Steps
 ```
 
-Run checks:
+The MVP stores screenshots/evidence/tool calls/audit history and performs **no remediation or write action** without explicit future authorization.
 
-```powershell
-cd services/nexuvo-core
-pytest
-ruff check .
-```
+## Delivery Phases
 
-See [local development setup](docs/development/local-setup.md), [implementation guide](docs/development/implementation-guide.md), and [contribution guidance](CONTRIBUTING.md).
+- **Phase 0:** Repository and architecture baseline.
+- **Phase 1:** Core platform/domain contracts/policy/audit.
+- **Phase 2:** AI runtime and knowledge.
+- **Phase 3:** Animated Ophanim Assistant and voice MVP.
+- **Phase 4:** Native AI Browser.
+- **Phase 5:** MCP and integration fabric.
+- **Phase 6:** Transaction Investigation MVP.
+- **Phase 7:** Voice/meeting intelligence.
+- **Phase 8:** Approval-gated actions.
+- **Phase 9:** Enterprise platform.
 
-## Definition of done
+See [`PROJECT_PLAN.md`](PROJECT_PLAN.md).
 
-A feature is complete only when:
+## Current Sprint
 
-- its behavior and boundaries are documented;
-- inputs and outputs use typed contracts;
-- policy and approval implications are explicit;
-- secrets and sensitive content are not logged;
-- success, denial, timeout, cancellation, and failure paths are handled;
-- tests cover the relevant behavior;
-- important actions produce audit events and verification evidence; and
-- user-facing state is understandable without reading logs.
+Sprint 00 establishes a safe baseline before Codex feature implementation. It includes repository reconciliation, legacy naming cleanup, structure, ADRs, Assistant event contracts, MCP, browser specification, threat modeling, test/CI standards and Codex governance.
 
-## What Ophanim AI is not
+See [`docs/sprints/SPRINT-00.md`](docs/sprints/SPRINT-00.md).
 
-Ophanim AI is not:
+## Development Rule
 
-- a renamed AnythingLLM or Ollama fork;
-- a generic chat frontend;
-- an always-recording surveillance tool;
-- an unrestricted autonomous desktop bot;
-- a system that hides where information was sent;
-- a collection of agents with separate, inconsistent permission systems.
+Codex or any other coding agent must implement **one explicitly authorized task at a time**. It must verify dependencies, scope, acceptance criteria and tests before coding, create a checkpoint after completion, and stop before the next task.
 
-The product owns the experience, control plane, safety model, memory policy, orchestration, integrations, and evidence trail.
+See [`CODEX.md`](CODEX.md).
 
-## Documentation index
+## Key ADRs
 
-- [Architecture overview](docs/architecture/overview.md)
-- [Task and agent model](docs/architecture/task-and-agent-model.md)
-- [Desktop automation](docs/architecture/desktop-automation.md)
-- [Product milestones](docs/product/milestones.md)
-- [Security model](docs/security/security-model.md)
-- [Implementation guide](docs/development/implementation-guide.md)
-- [Architecture decisions](docs/decisions/README.md)
+The accepted baseline contains ADR-001 through ADR-015, covering Core modularity, governed model/tool execution, replaceable knowledge and model runtimes, MCP, integration preference, browser foundation, credential custody, human approval, event-driven Assistant behavior, authoritative persistence, Obsidian knowledge, evidence/audit, read-only MVP scope, and vendor isolation.
 
-## Naming
+See the [`docs/adr/` index](docs/adr/README.md) for the authoritative titles and records.
 
-**Ophanim AI** is the working product name. **NEXUVO Core** is the current internal name of the control-plane service. Before commercial launch, complete trademark, domain, corporate-name, and jurisdiction-specific legal review.
+## Current Status
+
+**Do not start broad feature implementation yet.** The current authorized work is Sprint 00 repository/architecture reconciliation. Once Sprint 00 is reviewed and merged, Phase 1 implementation can begin from a single authoritative baseline.

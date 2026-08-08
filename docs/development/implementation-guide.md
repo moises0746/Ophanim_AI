@@ -1,41 +1,46 @@
 # Implementation Guide
 
+Apply the [Engineering Standards](engineering-standards.md), [Architecture Guardrails](architecture-guardrails.md), and [Implementation Definition of Done](implementation-definition-of-done.md) to every authorized implementation task. This guide remains directional and does not authorize runtime work by itself.
+
 ## Working approach
 
 Build vertical slices through the control plane. A slice should start at an API or UI command and finish with persisted state, policy evaluation, execution or simulation, evidence, and a user-visible result.
 
 Avoid creating all proposed directories at once. Introduce a module when its first tested behavior is implemented.
 
-## Recommended next slice
+## Future core slice direction
 
-Implement a durable local task service without agents first:
+After the owning Sprint tasks define and authorize the contracts, implement the smallest durable task-service slice without broad agent or integration work:
 
 1. Define `Task`, `TaskStep`, `TaskEvent`, `Artifact`, and `ApprovalRequest` models.
-2. Add SQLite persistence and migrations.
+2. Add PostgreSQL persistence and migrations.
 3. Add create, list, inspect, cancel, and event-list endpoints.
-4. Implement a deterministic test tool such as `write_workspace_note` restricted to a temporary test directory.
-5. Add risk classification and approval creation.
-6. Add an endpoint that approves the exact pending action and resumes execution.
-7. Verify the artifact hash and mark the task completed.
-8. Test restart recovery, denial, timeout, cancellation, and replay.
+4. Add risk classification and denial behavior without introducing a state-changing external tool.
+5. Persist evidence metadata and append-only audit events.
+6. Verify the result and mark the task completed.
+7. Test restart recovery, denial, timeout, cancellation, and replay.
 
-This establishes the contract later agents, schedulers, desktop UI, and real tools will use.
+This direction is informational and does not authorize implementation. The MVP remains read-only; approval-gated write tools belong to a later explicitly authorized phase.
 
 ## Suggested package progression
 
 ```text
-nexuvo/
+ophanim/
 |-- main.py
 |-- config.py
 |-- api/            # routers and transport models
 |-- tasks/          # domain models, service, repository protocol
-|-- persistence/    # SQLite implementation and migrations
+|-- persistence/    # PostgreSQL implementation and migrations
 |-- policy/         # risk and approval rules
-|-- tools/          # tool protocol, registry, and test tool
+|-- tools/          # governed tool contracts and registry
 |-- audit/          # event creation and querying
 |-- adapters/       # existing provider integrations
-`-- browser/        # existing browser adapter; migrate policy later
+`-- browser/        # target browser contracts; legacy adapter reconciled separately
 ```
+
+This is the target package direction. The current runtime package is `services/ophanim-core/ophanim`; further structural changes require their own authorized task.
+
+The target layering is Domain → Application → Ports/Interfaces → Adapters → Infrastructure. Existing experimental browser/provider modules remain preserved until an explicit migration or replacement task.
 
 ## Contract guidance
 
@@ -60,11 +65,13 @@ Tests use fakes by default. Live-provider checks must be opt-in and clearly labe
 
 Every new setting must:
 
-- use a `NEXUVO_` environment variable;
+- use the target `OPHANIM_` namespace after the S00-T01 compatibility migration;
 - have a safe default;
 - appear in `.env.example` without a real secret;
 - be validated by `Settings`;
 - be documented when it affects security or behavior.
+
+S00-T01 made a clean pre-release configuration rename. Legacy environment-variable names are not supported; use only the `OPHANIM_` namespace.
 
 ## Logging
 
