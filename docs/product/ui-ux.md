@@ -154,6 +154,8 @@ Microphone state and global mute/pause must always be visible.
 
 ## Browser UX
 
+Browser presentation must reflect the authoritative [browser action](../browser/browser-action-model.md), [evidence](../browser/browser-evidence.md), and [security](../browser/browser-security.md) contracts. Read and state-changing actions remain visually distinct; MVP state-changing actions are unavailable.
+
 ```text
 +--------------------------------------------------+-----------------------------+
 | Ophanim Browser                                  | Browser Agent               |

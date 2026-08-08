@@ -49,6 +49,8 @@ The Assistant accepts text interaction through Ophanim Core and consumes sanitiz
 
 ### Browser
 
+The authoritative browser contract is defined in [Browser Execution Contract](../browser/browser-execution-contract.md), [Approved Application Registry](../browser/approved-application-registry.md), [Browser Action Model](../browser/browser-action-model.md), [Browser Evidence](../browser/browser-evidence.md), and [Browser Security](../browser/browser-security.md). API callers cannot bypass those Core-owned boundaries.
+
 The target browser API accepts a bounded objective, registered application, environment, and permitted read/navigation action. Callers cannot supply arbitrary credentials, JavaScript, shell commands, unrestricted domains, or unclassified write actions.
 
 The existing experimental `/browser/tasks` endpoint under `services/ophanim-core/` predates this contract direction and is preserved without behavioral expansion. It is not the authoritative target API.

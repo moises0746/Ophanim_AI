@@ -1,5 +1,7 @@
 # Ophanim Native AI Browser
 
+This document is the concise entry point. The authoritative S00-T08 contracts are [Browser Execution Contract](browser-execution-contract.md), [Approved Application Registry](approved-application-registry.md), [Browser Action Model](browser-action-model.md), [Browser Evidence](browser-evidence.md), and [Browser Security](browser-security.md). No browser runtime is implemented by this specification.
+
 ## Goal
 
 Provide a governed browser execution environment for approved web applications when APIs/MCP are unavailable, incomplete, or uneconomical to integrate.
@@ -115,6 +117,12 @@ The AI should not rediscover stable workflows on every run.
 - emergency stop available between steps;
 - prompt injection from web content treated as untrusted input.
 
+Browser execution is subordinate to Ophanim Core policy and the integration preference order. Browser, Browser Agent, Playwright, AI reasoning, vision, and coordinate projections never become policy authority or credential owners.
+
 ## MVP Browser Acceptance
 
 Given an approved test portal and reference number, Ophanim can navigate/search/read transaction information, capture evidence and return structured findings without changing external state.
+
+## Legacy Disposition
+
+The existing optional `BrowserUseAgent` and `/browser/tasks` endpoint are preserved experimental behavior, not this target contract. Their reusable ideas are bounded objectives, configured domain allowlists, max-step limits, optional dependency handling, and browser cleanup. They conflict with the target in their lack of a first-party application registry, typed DOM-first action model, dedicated profile/session contract, full navigation/popup/download/clipboard controls, Core event/evidence integration, cancellation reconciliation, and complete read-only state-changing detection. A later task must wrap or replace them behind these contracts; S00-T08 does not modify or expand them.
