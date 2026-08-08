@@ -4,6 +4,8 @@
 
 This document records the selectively reconciled API baseline for future contract tasks. It is not an implemented API specification and does not authorize endpoint development. Exact schemas, authentication, transports, and compatibility policy must be finalized in their owning Sprint tasks.
 
+API resources preserve the authoritative domain meaning in [Core Domain Contracts](core-domain-contracts.md), [Lifecycle Contracts](lifecycle-contracts.md), [Evidence Contracts](evidence-contracts.md), and [Policy and Approval Contracts](policy-approval-contracts.md). An API may narrow presentation but cannot widen domain authority.
+
 The Ophanim Assistant is the default client experience. All clients communicate with Ophanim Core; no UI, model, agent, MCP server, or browser worker may bypass Core policy.
 
 ## Contract Principles
@@ -38,6 +40,8 @@ Agent endpoints expose versioned profiles, declared capabilities, availability, 
 Approval endpoints list requests visible to the approver and accept an explicit decision. A decision is valid only after checking approver identity, task state, action and normalized-parameter digest, destination, environment, expiry, and current preconditions. Approval does not replace post-action verification or audit.
 
 Approval APIs may be designed before writes are enabled, but the read-only MVP exposes no production mutation path.
+
+An approval grant cannot enable a tool or action prohibited by the read-only MVP baseline.
 
 ### Assistant and Events
 

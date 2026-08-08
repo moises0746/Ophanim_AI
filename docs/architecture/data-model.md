@@ -1,8 +1,8 @@
-# Ophanim AI Initial Data Model Direction
+# Ophanim AI Data Model Direction
 
 ## Status and Scope
 
-This document records the selectively reconciled domain and persistence baseline. It is a design input for future typed-contract tasks, not an implemented schema or authorization to create migrations.
+This document summarizes the domain/persistence direction. The authoritative conceptual entity specifications are [Core Domain Contracts](core-domain-contracts.md), [Lifecycle Contracts](lifecycle-contracts.md), [Evidence Contracts](evidence-contracts.md), and [Policy and Approval Contracts](policy-approval-contracts.md). None is an implemented schema or authorization to create migrations.
 
 ## Core Entities
 
@@ -63,7 +63,7 @@ Task
 AgentProfile --< AgentCapability >-- Capability --< ToolDefinition
 ```
 
-Exact cardinalities and aggregate boundaries remain deferred to the owning contract task.
+Exact cardinalities and aggregate/transaction boundaries remain deferred to implementation design.
 
 ## Persistence Rules
 
@@ -85,7 +85,7 @@ SQLite is not an alternative Ophanim application-persistence baseline.
 
 - exact Pydantic and database schemas;
 - aggregate ownership and transaction boundaries;
-- identifiers, enums, and lifecycle transition tables;
+- exact encoded identifiers, enums, and lifecycle transition tables;
 - event-store versus relational audit representation;
 - artifact store implementation and retention;
 - encryption and classification details;
