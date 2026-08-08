@@ -6,6 +6,7 @@
 2. Confirm the change belongs in first-party code rather than a vendored upstream directory.
 3. Identify privacy, permission, approval, and audit implications.
 4. Prefer a narrow vertical slice over unused framework scaffolding.
+5. Apply the [Engineering Standards](docs/development/engineering-standards.md), [Architecture Guardrails](docs/development/architecture-guardrails.md), and [Implementation Definition of Done](docs/development/implementation-definition-of-done.md).
 
 ## Local core workflow
 
@@ -41,6 +42,7 @@ Provider unavailability must not prevent the core from starting. Tests must not 
 - [ ] Documentation and `.env.example` are current.
 - [ ] `pytest` passes.
 - [ ] `ruff check .` passes.
+- [ ] Architecture/dependency direction, documentation links, and relevant security/negative checks pass.
 
 ## Commit guidance
 

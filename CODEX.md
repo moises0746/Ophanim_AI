@@ -16,6 +16,8 @@ Before changing code for any task, read:
 8. current Sprint under `docs/sprints/`
 9. previous task checkpoint if one exists
 
+For implementation tasks, also apply `docs/development/engineering-standards.md` and the relevant standards under `docs/development/`.
+
 ## Authorization Rule
 
 Implement only the explicitly authorized task ID.
@@ -72,6 +74,7 @@ If a blocker materially changes scope or architecture, stop and request a decisi
 - Explicit timeouts and bounded retries for external calls.
 - Idempotency where jobs may retry.
 - Audit/evidence for consequential tool execution.
+- See `docs/development/architecture-guardrails.md` for target layering; S00-T09 does not restructure the current runtime.
 
 ## Required Tests
 

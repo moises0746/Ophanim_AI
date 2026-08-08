@@ -1,5 +1,7 @@
 # Ophanim AI Testing Strategy Baseline
 
+The reusable implementation rules for test ownership, required negative scenarios, architecture checks, and merge gates are consolidated in [Testing Standards](testing-standards.md). This document remains the broader testing strategy and future CI direction.
+
 ## Status and Scope
 
 This document reconciles useful quality guidance from the stale foundation branch into the current Sprint 00 baseline. It defines expected test layers and future CI direction; it does not add tooling, dependencies, workflows, fixtures, or runtime tests in S00-T00.

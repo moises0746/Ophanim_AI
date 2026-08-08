@@ -18,6 +18,8 @@ Before changing code, read in this order:
 
 If implementation and documentation disagree, report the mismatch. Do not silently choose a new architecture.
 
+For implementation work, the authoritative engineering rules are `docs/development/engineering-standards.md`, `architecture-guardrails.md`, `python-standards.md`, `backend-standards.md`, `testing-standards.md`, `frontend-standards.md`, and `implementation-definition-of-done.md`.
+
 ## Scope Boundaries
 
 - Put first-party product logic under the Ophanim-owned modules described by `STRUCTURE.md`.

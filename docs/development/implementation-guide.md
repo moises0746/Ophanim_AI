@@ -1,5 +1,7 @@
 # Implementation Guide
 
+Apply the [Engineering Standards](engineering-standards.md), [Architecture Guardrails](architecture-guardrails.md), and [Implementation Definition of Done](implementation-definition-of-done.md) to every authorized implementation task. This guide remains directional and does not authorize runtime work by itself.
+
 ## Working approach
 
 Build vertical slices through the control plane. A slice should start at an API or UI command and finish with persisted state, policy evaluation, execution or simulation, evidence, and a user-visible result.
@@ -37,6 +39,8 @@ ophanim/
 ```
 
 This is the target package direction. The current runtime package is `services/ophanim-core/ophanim`; further structural changes require their own authorized task.
+
+The target layering is Domain → Application → Ports/Interfaces → Adapters → Infrastructure. Existing experimental browser/provider modules remain preserved until an explicit migration or replacement task.
 
 ## Contract guidance
 
