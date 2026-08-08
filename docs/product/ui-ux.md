@@ -149,6 +149,8 @@ Every row must correspond to a real, sanitized, auditable activity event emitted
 
 ## Voice UX
 
+In this section, voice MVP means the later Assistant voice increment. Push-to-talk, voice recognition, VAD, STT, TTS, wake word, and always-on microphone processing are not required for the first transaction-investigation backend slice, which must remain fully operable through text.
+
 Modes:
 
 - Push-to-Talk — default MVP;

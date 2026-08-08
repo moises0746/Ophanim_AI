@@ -203,7 +203,7 @@ The product requests capabilities such as reasoning, vision, embedding, coding, 
 
 ## Voice Architecture
 
-MVP progression:
+Later Assistant voice MVP progression; this is not required for the first transaction-investigation backend slice, which must be text-operable:
 
 ```text
 Push-to-talk
