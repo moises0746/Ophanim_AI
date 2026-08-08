@@ -164,16 +164,14 @@ Do not edit vendored source unless an authorized task explicitly requires an ups
 
 ## Current First-Party Runtime
 
-The repository still contains the legacy first-party path `services/nexuvo-core/`. This is a known Sprint 00 migration item, not the target name.
-
-Target:
+The first-party runtime is:
 
 ```text
 services/ophanim-core/
-  src/ophanim/
+  ophanim/
 ```
 
-The rename must be performed in `S00-T01` with import/config/test verification and without changing feature behavior.
+Sprint 00 task S00-T01 migrated the service, Python package, presentation strings, and configuration prefix to Ophanim without changing feature behavior. The runtime reads the `OPHANIM_*` environment namespace.
 
 ## First Business MVP
 

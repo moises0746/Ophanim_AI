@@ -6,15 +6,15 @@
 - AnythingLLM running locally or reachable over HTTP
 - LM Studio with its local server enabled
 
-## Run NEXUVO Core
+## Run Ophanim Core
 
 ```powershell
-cd services/nexuvo-core
+cd services/ophanim-core
 python -m venv .venv
 .\.venv\Scripts\Activate.ps1
 pip install -e ".[dev]"
 Copy-Item ../../.env.example .env
-uvicorn nexuvo.main:app --reload --host 127.0.0.1 --port 8080
+uvicorn ophanim.main:app --reload --host 127.0.0.1 --port 8080
 ```
 
 Check core health:
@@ -33,7 +33,7 @@ Expected behavior:
 
 - `anythingllm.status=available` when the configured AnythingLLM endpoint responds.
 - `lmstudio.status=available` when LM Studio responds to its OpenAI-compatible `/models` endpoint.
-- A provider being unavailable must not prevent NEXUVO Core itself from starting.
+- A provider being unavailable must not prevent Ophanim Core itself from starting.
 
 ## Browser Agent
 
@@ -42,7 +42,7 @@ Browser automation is an optional fallback for systems where a stable, approved 
 Install the optional browser dependencies:
 
 ```powershell
-cd services/nexuvo-core
+cd services/ophanim-core
 pip install -e ".[browser,dev]"
 python -m playwright install chromium
 ```
@@ -50,12 +50,12 @@ python -m playwright install chromium
 Configure `.env`:
 
 ```text
-NEXUVO_BROWSER_ENABLED=true
-NEXUVO_BROWSER_HEADLESS=false
-NEXUVO_BROWSER_MODEL=<model-id-loaded-in-lm-studio>
-NEXUVO_BROWSER_MAX_STEPS=20
-NEXUVO_BROWSER_ALLOWED_DOMAINS=example.com,*.example.com
-NEXUVO_BROWSER_REQUIRE_APPROVAL_FOR_WRITES=true
+OPHANIM_BROWSER_ENABLED=true
+OPHANIM_BROWSER_HEADLESS=false
+OPHANIM_BROWSER_MODEL=<model-id-loaded-in-lm-studio>
+OPHANIM_BROWSER_MAX_STEPS=20
+OPHANIM_BROWSER_ALLOWED_DOMAINS=example.com,*.example.com
+OPHANIM_BROWSER_REQUIRE_APPROVAL_FOR_WRITES=true
 ```
 
 Start with a read-only task:

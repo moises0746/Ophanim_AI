@@ -1,18 +1,18 @@
 from fastapi import FastAPI, HTTPException
 
-from nexuvo.adapters.anythingllm import AnythingLLMClient
-from nexuvo.adapters.lmstudio import LMStudioClient
-from nexuvo.browser.agent import BrowserAgentUnavailable, BrowserUseAgent
-from nexuvo.browser.models import BrowserTask, BrowserTaskResult
-from nexuvo.browser.policy import BrowserPolicyError
-from nexuvo.config import get_settings
+from ophanim.adapters.anythingllm import AnythingLLMClient
+from ophanim.adapters.lmstudio import LMStudioClient
+from ophanim.browser.agent import BrowserAgentUnavailable, BrowserUseAgent
+from ophanim.browser.models import BrowserTask, BrowserTaskResult
+from ophanim.browser.policy import BrowserPolicyError
+from ophanim.config import get_settings
 
-app = FastAPI(title="NEXUVO Core", version="0.1.0")
+app = FastAPI(title="Ophanim Core", version="0.1.0")
 
 
 @app.get("/health")
 async def health() -> dict[str, str]:
-    return {"status": "ok", "service": "nexuvo-core"}
+    return {"status": "ok", "service": "ophanim-core"}
 
 
 @app.get("/status/providers")

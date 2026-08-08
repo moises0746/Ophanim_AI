@@ -1,6 +1,6 @@
 from fastapi.testclient import TestClient
 
-from nexuvo.main import app
+from ophanim.main import app
 
 
 def test_health() -> None:
@@ -8,4 +8,4 @@ def test_health() -> None:
     response = client.get("/health")
 
     assert response.status_code == 200
-    assert response.json() == {"status": "ok", "service": "nexuvo-core"}
+    assert response.json() == {"status": "ok", "service": "ophanim-core"}

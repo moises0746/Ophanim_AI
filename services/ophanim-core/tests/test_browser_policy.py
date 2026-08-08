@@ -1,8 +1,8 @@
 import pytest
 
-from nexuvo.browser.models import BrowserActionType, BrowserTask
-from nexuvo.browser.policy import BrowserPolicyError, enforce_browser_policy
-from nexuvo.config import Settings
+from ophanim.browser.models import BrowserActionType, BrowserTask
+from ophanim.browser.policy import BrowserPolicyError, enforce_browser_policy
+from ophanim.config import Settings
 
 
 def test_browser_disabled_by_default() -> None:

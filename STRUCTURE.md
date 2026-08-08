@@ -124,12 +124,12 @@ Ophanim_AI/
 
 ## Current-to-Target Migration
 
-The current repository contains `anything-llm-master/`, `ollama-main/`, and `services/nexuvo-core/`. These are temporary current-state paths, not the final architecture.
+The current repository contains `anything-llm-master/` and `ollama-main/` as temporary vendor-source paths. The first-party runtime has been renamed to `services/ophanim-core/` with Python package `ophanim`; its remaining layout migration toward the full target structure must be deliberate.
 
 Sprint 00 must migrate them deliberately:
 
-1. Rename `services/nexuvo-core` to `services/ophanim-core` and Python package `nexuvo` to `ophanim` with tests and import verification.
-2. Move vendored upstream source under `vendor/` only after verifying history/licensing and ensuring no first-party code imports vendor internals directly.
+1. Move vendored upstream source under `vendor/` only after verifying history/licensing and ensuring no first-party code imports vendor internals directly.
+2. Reconcile the current `services/ophanim-core/ophanim` layout with the target `src/ophanim` layout only in an explicitly authorized structure task.
 3. Remove duplicate/legacy README files after content is reconciled into `README.md`.
 4. Keep upstream projects isolated behind adapter contracts.
 

@@ -47,7 +47,7 @@ The Assistant accepts text interaction through Ophanim Core and consumes sanitiz
 
 The target browser API accepts a bounded objective, registered application, environment, and permitted read/navigation action. Callers cannot supply arbitrary credentials, JavaScript, shell commands, unrestricted domains, or unclassified write actions.
 
-The existing legacy `/browser/tasks` endpoint under `services/nexuvo-core/` predates this contract direction and is preserved unchanged by S00-T00. It is experimental and not the authoritative target API.
+The existing experimental `/browser/tasks` endpoint under `services/ophanim-core/` predates this contract direction and is preserved without behavioral expansion. It is not the authoritative target API.
 
 ### Health and Control
 

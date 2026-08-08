@@ -10,14 +10,14 @@
 ## Local core workflow
 
 ```powershell
-cd services/nexuvo-core
+cd services/ophanim-core
 python -m venv .venv
 .\.venv\Scripts\Activate.ps1
 pip install -e ".[dev]"
 Copy-Item ..\..\.env.example .env
 pytest
 ruff check .
-uvicorn nexuvo.main:app --reload --host 127.0.0.1 --port 8080
+uvicorn ophanim.main:app --reload --host 127.0.0.1 --port 8080
 ```
 
 Provider unavailability must not prevent the core from starting. Tests must not depend on real credentials or mutate live user data.

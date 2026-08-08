@@ -1,8 +1,8 @@
 from typing import Any
 
-from nexuvo.browser.models import BrowserTask, BrowserTaskResult
-from nexuvo.browser.policy import enforce_browser_policy
-from nexuvo.config import Settings
+from ophanim.browser.models import BrowserTask, BrowserTaskResult
+from ophanim.browser.policy import enforce_browser_policy
+from ophanim.config import Settings
 
 
 class BrowserAgentUnavailable(RuntimeError):
@@ -12,7 +12,7 @@ class BrowserAgentUnavailable(RuntimeError):
 class BrowserUseAgent:
     """Local browser-agent adapter backed by Browser Use.
 
-    The dependency is optional so NEXUVO Core can run without browser automation.
+    The dependency is optional so Ophanim Core can run without browser automation.
     Sensitive/write-like tasks are stopped before execution when approval is required.
     """
 
@@ -33,12 +33,12 @@ class BrowserUseAgent:
             from browser_use import Agent, Browser, ChatOpenAI
         except ImportError as exc:
             raise BrowserAgentUnavailable(
-                "Browser agent dependencies are not installed. Install nexuvo-core[browser]."
+                "Browser agent dependencies are not installed. Install ophanim-core[browser]."
             ) from exc
 
         if not self._settings.browser_model:
             raise BrowserAgentUnavailable(
-                "NEXUVO_BROWSER_MODEL must name a model currently loaded in LM Studio"
+                "OPHANIM_BROWSER_MODEL must name a model currently loaded in LM Studio"
             )
 
         browser = Browser(

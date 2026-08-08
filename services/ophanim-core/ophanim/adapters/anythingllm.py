@@ -2,7 +2,7 @@ from typing import Any
 
 import httpx
 
-from nexuvo.config import Settings
+from ophanim.config import Settings
 
 
 class AnythingLLMClient:

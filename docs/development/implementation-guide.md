@@ -36,7 +36,7 @@ ophanim/
 `-- browser/        # target browser contracts; legacy adapter reconciled separately
 ```
 
-This is the target package direction after S00-T01. Do not expand or rename the existing `services/nexuvo-core/nexuvo` runtime outside that authorized task.
+This is the target package direction. The current runtime package is `services/ophanim-core/ophanim`; further structural changes require their own authorized task.
 
 ## Contract guidance
 
@@ -67,7 +67,7 @@ Every new setting must:
 - be validated by `Settings`;
 - be documented when it affects security or behavior.
 
-Until S00-T01 is authorized and completed, preserve existing `NEXUVO_` runtime compatibility without adding new legacy-prefixed settings.
+S00-T01 made a clean pre-release configuration rename. Legacy environment-variable names are not supported; use only the `OPHANIM_` namespace.
 
 ## Logging
 

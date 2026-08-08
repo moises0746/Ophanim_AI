@@ -2,11 +2,11 @@
 
 ## Boundary
 
-NEXUVO Core is the authoritative control plane. User interfaces, models, knowledge stores, agents, and tools connect through explicit contracts. No model or external agent may bypass NEXUVO policy to execute a governed tool.
+Ophanim Core is the authoritative control plane. User interfaces, models, knowledge stores, agents, and tools connect through explicit contracts. No model or external agent may bypass Ophanim policy to execute a governed tool.
 
 ## Logical modules
 
-The modular monolith should grow toward these modules inside `services/nexuvo-core/nexuvo`:
+The modular monolith should grow toward these modules inside `services/ophanim-core/ophanim`:
 
 ```text
 api/             HTTP and future local IPC transport

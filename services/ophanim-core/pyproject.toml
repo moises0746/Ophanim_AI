@@ -1,7 +1,7 @@
 [project]
-name = "nexuvo-core"
+name = "ophanim-core"
 version = "0.1.0"
-description = "Core orchestration service for NEXUVO"
+description = "Core orchestration service for Ophanim"
 requires-python = ">=3.12"
 dependencies = [
   "fastapi>=0.116,<1.0",
@@ -27,7 +27,7 @@ requires = ["hatchling>=1.27"]
 build-backend = "hatchling.build"
 
 [tool.hatch.build.targets.wheel]
-packages = ["nexuvo"]
+packages = ["ophanim"]
 
 [tool.ruff]
 line-length = 100
