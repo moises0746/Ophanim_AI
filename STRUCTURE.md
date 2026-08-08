@@ -19,6 +19,12 @@ Ophanim_AI/
 |-- services/                              # First-party
 |   `-- ophanim-core/                      # Implemented runtime
 |       |-- ophanim/                       # Current Python package layout
+|       |   |-- domain/                    # Ownership scaffold; no entities yet
+|       |   |-- application/               # Ownership scaffold; no services yet
+|       |   |-- ports/                     # Ownership scaffold; no concrete ports yet
+|       |   |-- api/                       # Ownership scaffold; no new routes yet
+|       |   |-- adapters/                  # Implemented provider adapters
+|       |   `-- browser/                   # Preserved experimental browser runtime
 |       `-- tests/                         # Implemented service tests
 |-- packages/                              # First-party placeholders
 |   |-- contracts/
@@ -73,11 +79,11 @@ The repository also contains root governance/configuration files, `.codex/` codi
 
 ## Implemented First-Party Areas
 
-- `services/ophanim-core/ophanim/` contains the current FastAPI runtime, configuration, provider adapters, and preserved experimental browser implementation.
+- `services/ophanim-core/ophanim/` contains the current FastAPI runtime, configuration, provider adapters, preserved experimental browser implementation, and S01-T01 ownership scaffolds for `domain/`, `application/`, `ports/`, and `api/`.
 - `services/ophanim-core/tests/` contains its current tests.
 - `docs/` contains the architecture, product, security, development, Sprint, and checkpoint baseline. A directory containing documentation is implemented as documentation even when the product capability it specifies is not implemented.
 
-Existing runtime code does not establish the final domain/application/port layering. Future tasks must reconcile it deliberately with the modular-monolith rules below.
+The S01-T01 scaffolds establish ownership only; they contain no domain entities, application services, ports, or new routes. Existing runtime code remains in place and future tasks must reconcile it deliberately with the modular-monolith rules below.
 
 ## Placeholder Areas
 
