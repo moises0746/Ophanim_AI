@@ -1,403 +1,255 @@
-# NEXUVO
+# Ophanim AI
 
-**Private AI Coworker Platform**
+**AI Coworker, Agent Orchestrator, Native AI Browser, and Local-First Assistant Platform**
 
-NEXUVO is a local-first, context-aware AI coworker designed to understand conversations, enterprise knowledge, user intent, and connected tools while keeping the human in control.
+Ophanim AI is a production-oriented AI coworker platform designed to understand user goals, work with approved knowledge, coordinate specialized AI agents, operate approved web applications through a governed native AI browser, and safely assist with real operational work.
 
-The platform is built around a simple idea: do not rebuild commodity AI infrastructure. NEXUVO uses proven components for knowledge and local inference, then focuses engineering effort on the differentiating layer — context awareness, voice intelligence, professional memory, tool orchestration, policy enforcement, and safe execution.
+Ophanim is not intended to be a generic chatbot or an unrestricted autonomous agent. AI performs planning, investigation, correlation, summarization, and recommendation. Deterministic tools perform execution. Sensitive actions require explicit approval and every tool action is auditable.
 
-> Working product name: **NEXUVO**
->
-> Product direction: **AI coworker, not another chatbot.**
+> Product principle: **READ -> ANALYZE -> RECOMMEND -> DRAFT -> APPROVE -> EXECUTE**
 
 ---
 
 ## Product Vision
 
-NEXUVO should eventually behave like a trusted professional coworker that can:
+Ophanim should feel like a persistent professional coworker rather than a chat window.
 
-- understand who is speaking
-- determine who is being addressed
-- recognize questions and requests directed to the user
-- maintain conversation and project context
-- retrieve answers from approved internal knowledge
-- recommend useful responses privately
-- investigate operational problems across connected systems
-- prepare emails, tickets, reports, changes, and workflows
-- request explicit approval before sensitive actions
-- execute approved actions through governed tools
-- work locally when privacy matters
-- use cloud models when stronger reasoning is required
+The user interacts with an animated and voice-aware **Ophanim Assistant**. Behind that assistant is an orchestrator that delegates work to specialized agents such as Browser, Knowledge, Operations, Developer, Research, Communication, and Content agents.
 
-NEXUVO is designed to remain useful across multiple roles rather than being limited to CloudOps. Specialized agents may later support engineering, operations, research, business, content creation, productivity, and enterprise workflows.
+Ophanim should eventually be able to:
 
----
-
-## MVP Objective
-
-The first real vertical slice is intentionally narrow.
-
-A teammate asks:
-
-> "Moi, may expected downtime ba during deployment?"
-
-NEXUVO should:
-
-1. detect that the speaker is not the owner
-2. determine that the question is directed to the owner
-3. transcribe the question
-4. classify the topic and intent
-5. retrieve relevant approved context when available
-6. generate a private suggested response
-7. display confidence and missing information
-8. remain silent unless explicitly instructed otherwise
-
-Example result:
-
-```json
-{
-  "speaker": {
-    "identity": "other",
-    "confidence": 0.94
-  },
-  "addressee": "owner",
-  "intent": "operational_question",
-  "topic": "deployment downtime",
-  "requires_response": true,
-  "recommended_response": "No downtime is expected based on the approved implementation plan. We will monitor the service during and after deployment and execute rollback if required.",
-  "missing_information": [
-    "Confirm final implementation window",
-    "Confirm rollback readiness"
-  ],
-  "requires_user_approval": true
-}
-```
+- understand natural-language goals
+- recognize the enrolled user and distinguish other speakers
+- determine whether speech is directed to Ophanim, the user, or another person
+- retrieve approved knowledge from Obsidian, AnythingLLM, documents, runbooks, and policies
+- use local models through LM Studio when privacy matters
+- use approved cloud models through replaceable provider adapters
+- browse and analyze approved web applications through Ophanim Browser
+- use APIs and deterministic tools when they are the safer or more reliable integration path
+- correlate evidence across portals, logs, source control, tickets, cloud platforms, and documentation
+- coordinate specialized AI agents without giving them direct ownership of credentials
+- capture screenshots, citations, browser evidence, tool calls, and audit events
+- request human approval before production changes, sends, deletes, restarts, retries, approvals, uploads, or other sensitive actions
 
 ---
 
-## Architecture Strategy
-
-NEXUVO will not initially implement its own full RAG platform, vector management UI, model manager, document ingestion system, or generic agent framework.
-
-Instead:
-
-- **AnythingLLM** provides the initial knowledge, RAG, workspace, document, and generic agent layer.
-- **LM Studio** provides local model serving and local inference through OpenAI-compatible APIs.
-- **NEXUVO Core** provides the differentiated coworker intelligence and orchestration layer.
-- **NEXUVO Desktop** provides the product experience and user-control surface.
+## High-Level Architecture
 
 ```text
-                         NEXUVO Desktop
-              Tauri + React + TypeScript
+                           OPHANIM AI
 
-       Listening | Transcript | Suggestions | Tasks
-           Knowledge | Agents | Approvals | Settings
-                           |
-                           v
-                     NEXUVO Core
-                       Python
+                    Animated AI Assistant
+                  Voice | Text | Desktop UI
+                            |
+                            v
+                    Ophanim Orchestrator
+        Planning | Context | Policy | Approval | Audit
+                            |
+           +----------------+----------------+
+           |                |                |
+           v                v                v
+      Agent Registry   Knowledge Layer   Model Router
+           |                |                |
+   +-------+------+     AnythingLLM       LM Studio
+   |       |      |     Obsidian/RAG      Cloud LLMs
+   v       v      v
+Browser  Ops   Developer
+Agent   Agent    Agent
+   |
+   v
+                   Ophanim Native AI Browser
+       Chromium + Playwright + DOM + Accessibility + Vision
+                            |
+             Approved Web Applications / Portals
 
-       Audio / Speaker / Transcription / Context
-        Policy / Approval / Tool Orchestration
-               Model Routing / Memory
-                    /             \
-                   v               v
-          AnythingLLM          LM Studio
+                            +
 
-       RAG / Documents       Local LLM Runtime
-       Workspaces            Embeddings
-       Knowledge             Model Management
-       Generic Agents        GPU Inference
-                   \               /
-                    \             /
-                     v           v
-                  Integrations / Tools
-
-      GitHub | GitLab | Jira | Confluence | Gmail
-      Microsoft 365 | Google Workspace | AWS | Azure
-      Kubernetes | Linux | Terraform | Ansible | MCP
+        APIs | MCP | GitHub | GitLab | Jira | Confluence
+      Microsoft 365 | Google Workspace | AWS | Azure | K8s
 ```
 
 ---
 
-## Component Responsibilities
+## Core Components
 
-### NEXUVO Desktop
+### Ophanim Assistant
 
-Recommended stack:
+The human-facing assistant.
 
-- Tauri
-- React
-- TypeScript
-- Vite
+- animated Ophanim avatar
+- push-to-talk and optional wake word
+- voice activity detection
+- speech-to-text
+- speaker verification
+- text-to-speech
+- assistant states such as Idle, Listening, Thinking, Browsing, Investigating, Waiting for Approval, Speaking, Complete, and Error
+- desktop overlay and system-tray controls
 
-Responsibilities:
+Animation is driven by deterministic application state events, not directly by an LLM.
 
-- system tray operation
-- visible listening state
-- transcript view
-- private response overlay
-- voice enrollment
-- AI provider configuration
-- knowledge/workspace selection
-- approval prompts
-- tool execution status
-- global pause and mute controls
-- privacy controls
+### Ophanim Core
 
-Electron remains a fallback if faster JavaScript-only delivery becomes more valuable than memory footprint and native integration.
+The platform control plane.
 
-### NEXUVO Core
+Recommended initial stack:
 
-Recommended stack:
-
-- Python
+- Python 3.12+
 - FastAPI
 - Pydantic
 - asyncio
+- PostgreSQL
+- Redis
+- Celery initially
+- OpenTelemetry-ready structured logging
 
 Responsibilities:
 
-- microphone and audio pipeline coordination
-- voice activity detection
-- speaker verification
-- speech-to-text orchestration
-- addressee detection
-- question and intent detection
+- goal intake
+- task decomposition
+- agent routing
 - context management
-- knowledge retrieval coordination
-- model routing
-- response generation coordination
 - policy enforcement
-- risk classification
 - approval workflow
-- tool execution orchestration
-- audit events
+- tool authorization
+- evidence correlation
+- audit logging
+- provider routing
+- workflow state
 
-### AnythingLLM Adapter
+### Ophanim Agent Mesh
 
-AnythingLLM is treated as a replaceable subsystem, not the product itself.
+Specialized agents are capability profiles, not independent security principals.
 
-Initial responsibilities:
+Initial profiles:
 
-- document ingestion
-- workspace knowledge
-- RAG
-- vector retrieval
-- knowledge organization
-- generic agent capabilities where useful
+- Browser Agent
+- Knowledge Agent
+- Operations Agent
+- Developer Agent
+- Research Agent
+- Communication Agent
+- Content Agent
 
-NEXUVO must communicate with AnythingLLM through an adapter boundary so the product is not tightly coupled to a specific upstream implementation.
+Agents never own production credentials directly. They request allowlisted capabilities from Ophanim Core.
 
-### LM Studio Adapter
+### Ophanim Knowledge
 
-LM Studio is the first local inference runtime.
+Initial knowledge stack:
 
-Responsibilities:
+- Obsidian as the human-readable project second brain
+- AnythingLLM as the initial RAG/workspace/document layer
+- provider-neutral retrieval contracts in Ophanim Core
+- future PostgreSQL + pgvector or another approved vector store when needed
 
-- local language models
-- local embeddings where appropriate
-- OpenAI-compatible inference endpoint
+AnythingLLM complements Ophanim; it is not the orchestration or security layer.
+
+### Ophanim Local AI
+
+LM Studio is the initial local model runtime.
+
+Use cases:
+
+- local/private inference
+- embeddings where appropriate
+- OpenAI-compatible model API
 - model discovery
-- local/private reasoning
+- offline-capable workflows after models are available locally
 
-NEXUVO should never assume LM Studio is the only model provider.
+Ophanim must keep model providers replaceable.
 
-Provider interfaces should allow:
+### Ophanim Native AI Browser
+
+Ophanim Browser is an AI-native browser product layer built on Chromium rather than a new browser engine.
+
+Execution priority:
 
 ```text
-NEXUVO AI Provider
-├── LM Studio
-├── OpenAI
-├── Anthropic
-├── Google Gemini
-├── Azure OpenAI
-├── AWS Bedrock
-├── Ollama
-└── other OpenAI-compatible providers
+1. Official API/SDK when stable and appropriate
+2. Deterministic Playwright/DOM automation
+3. AI browser reasoning for dynamic or unknown UI
+4. Vision-based interaction only as fallback
 ```
+
+Initial browser capabilities:
+
+- approved-domain navigation
+- DOM and accessibility-tree understanding
+- read-only page analysis
+- structured data extraction
+- screenshots and evidence capture
+- reusable browser skills
+- isolated persistent browser profiles
+- explicit approval for state-changing actions
+
+Ophanim Browser must never be used to bypass access controls, CAPTCHA, application restrictions, or authorization boundaries.
 
 ---
 
-## Privacy Modes
+## Security Model
 
-NEXUVO should expose explicit execution/privacy modes rather than hiding routing decisions from the user.
+Security is part of the architecture, not a later hardening task.
 
-### Private Mode
+Mandatory principles:
 
-Use local components whenever possible.
-
-```text
-NEXUVO
-  -> AnythingLLM
-  -> LM Studio
-  -> Local model
-```
-
-Suitable for:
-
-- meeting transcripts
-- internal documents
-- personal notes
-- local files
-- sensitive context
-
-### Hybrid Mode
-
-Keep sensitive retrieval and preprocessing local while allowing approved cloud reasoning for selected tasks.
-
-### Cloud Mode
-
-Use configured cloud providers when maximum model capability is preferred and policy allows it.
-
-Routing decisions must be visible and auditable.
+- least privilege
+- RBAC and capability-based authorization
+- explicit tool allowlists
+- read-only MVP
+- environment separation
+- credential vaulting / OS credential store
+- no secrets in prompts, logs, Git, or browser artifacts
+- isolated browser profiles
+- domain allowlists
+- human approval for sensitive writes
+- immutable or append-only audit records where practical
+- evidence provenance
+- prompt-injection defenses for retrieved and browser content
+- input/output validation for tools
+- rollback and verification for future mutation workflows
 
 ---
 
-## Core Product Principles
-
-### Privacy First
-
-- raw audio is not stored by default
-- VAD should run locally
-- speaker verification should run locally where practical
-- speaker embeddings must be encrypted at rest
-- listening state must always be visible
-- pause and mute must always be available
-- secrets must use an OS credential store or encrypted secret storage
-- sensitive integrations are read-only by default
-- cloud model use must be explicit and configurable
-
-### Human in the Loop
-
-NEXUVO may automatically:
-
-- analyze
-- summarize
-- retrieve
-- recommend
-- prepare
-- draft
-- classify
-
-NEXUVO must not automatically perform sensitive external actions such as sending communications or modifying production infrastructure unless an explicit future policy authorizes the specific action.
-
-### Conservative Intervention
-
-NEXUVO should prefer silence or review over confidently incorrect intervention.
-
-Low-confidence example:
+## Repository Structure
 
 ```text
-Speaker identity uncertain.
-Question may be directed to you.
-Review suggested response.
-```
-
-### Replaceable Providers
-
-AnythingLLM and LM Studio accelerate the initial product, but neither should become an architectural dependency that cannot be replaced.
-
-All external subsystems should sit behind versioned adapters and stable internal contracts.
-
----
-
-## Initial Audio and Voice Stack
-
-Candidate components:
-
-- sounddevice or PyAudio
-- WebRTC VAD or Silero VAD
-- optional RNNoise noise suppression
-- faster-whisper for local transcription
-- SpeechBrain speaker embeddings for the first implementation
-- pyannote.audio as an alternative/evaluation path
-
-MVP speaker identity should remain intentionally simple:
-
-```text
-OWNER   - enrolled owner voice
-OTHER   - confidently not the owner
-UNKNOWN - confidence is insufficient
-```
-
-Do not attempt named identification of every coworker in the first release.
-
----
-
-## Decision Engine
-
-Initial policy:
-
-```text
-IF speaker == OWNER
-AND wake_word_detected == true
-AND directed_to == NEXUVO
-THEN respond privately or through the configured private output
-
-IF speaker == OTHER
-AND directed_to == OWNER
-AND question_detected == true
-THEN generate private suggested answer
-
-IF speaker == OWNER
-AND directed_to == HUMAN
-THEN stay silent
-
-IF speaker == OTHER
-AND directed_to == OTHER
-THEN stay silent
-
-IF confidence < configured_threshold
-THEN do not respond aloud
-AND optionally request review
-```
-
-Thresholds must be calibrated using real evaluation data rather than treated as permanent constants.
-
----
-
-## Proposed Repository Structure
-
-The project should start as a modular monolith instead of prematurely creating many independent microservices.
-
-```text
-nexuvo/
+Ophanim_AI/
 ├── README.md
-├── LICENSE
 ├── SECURITY.md
 ├── CONTRIBUTING.md
-├── .editorconfig
-├── .gitignore
 ├── .env.example
+├── .gitignore
+├── docker-compose.dev.yml
+├── pyproject.toml
 ├── package.json
 ├── pnpm-workspace.yaml
-├── pyproject.toml
 │
 ├── apps/
-│   └── desktop/
-│       ├── src/
-│       ├── src-tauri/
-│       └── tests/
+│   ├── desktop/                  # Tauri + React + TypeScript
+│   └── browser-shell/            # Ophanim Browser UI shell
 │
 ├── services/
-│   └── nexuvo-core/
-│       ├── nexuvo/
+│   └── ophanim-core/             # FastAPI orchestration/control plane
+│       ├── ophanim/
 │       │   ├── api/
-│       │   ├── audio/
-│       │   ├── speaker/
-│       │   ├── transcription/
+│       │   ├── agents/
+│       │   ├── approvals/
+│       │   ├── audit/
+│       │   ├── browser/
 │       │   ├── context/
+│       │   ├── domain/
 │       │   ├── knowledge/
-│       │   ├── inference/
-│       │   ├── policy/
+│       │   ├── models/
+│       │   ├── policies/
 │       │   ├── tools/
-│       │   └── telemetry/
+│       │   ├── voice/
+│       │   └── workflows/
 │       └── tests/
 │
 ├── adapters/
 │   ├── anythingllm/
 │   ├── lmstudio/
+│   ├── browser-use/
+│   ├── playwright/
 │   ├── openai/
 │   ├── anthropic/
 │   ├── gemini/
@@ -418,267 +270,127 @@ nexuvo/
 │   ├── contracts/
 │   ├── shared-types/
 │   ├── prompt-templates/
+│   ├── policy-sdk/
 │   └── telemetry/
+│
+├── infrastructure/
+│   ├── docker/
+│   ├── terraform/
+│   ├── kubernetes/
+│   └── observability/
 │
 ├── docs/
 │   ├── architecture/
 │   ├── product/
+│   ├── agents/
+│   ├── browser/
 │   ├── security/
+│   ├── infrastructure/
 │   ├── development/
 │   └── decisions/
 │
 └── tests/
+    ├── architecture/
     ├── integration/
     ├── end-to-end/
-    ├── audio-fixtures/
-    ├── performance/
-    └── security/
+    ├── browser/
+    ├── security/
+    └── performance/
 ```
 
-Microservices should be extracted later only when independent scaling, failure isolation, deployment ownership, or security boundaries justify them.
+Start as a modular monolith. Extract services only when independent scaling, security boundaries, failure isolation, or deployment ownership justify the complexity.
 
 ---
 
-## Roadmap
+## Development Roadmap
 
-### Phase 1 — Foundation
+### Phase 0 — Foundation and Architecture
 
-Goal: runnable NEXUVO development environment.
+Define product scope, architecture, security boundaries, agent model, browser model, UX, data model, APIs, infrastructure, ADRs, acceptance criteria, and test strategy.
 
-- repository scaffold
-- Tauri desktop shell
-- Python core service
-- health/status API
-- AnythingLLM adapter
-- LM Studio adapter
-- provider discovery
-- secure configuration
-- structured logging
+### Phase 1 — Local Read-Only Vertical Slice
 
-### Phase 2 — Knowledge and AI Brain
+Deliver a runnable desktop + core environment that can:
 
-Goal: useful private chat and grounded knowledge before voice complexity.
+1. accept a natural-language task
+2. route to a local model through LM Studio
+3. retrieve approved knowledge through AnythingLLM
+4. open an approved test web application through Ophanim Browser
+5. read information without modifying the application
+6. capture evidence
+7. summarize findings
+8. display results and agent activity in the Ophanim Assistant UI
 
-- AnythingLLM workspace integration
-- document ingestion workflow
-- retrieval interface
-- local LM Studio inference
-- model router
-- citations/source metadata
-- conversation context
-- prompt and policy layer
+### Phase 2 — Voice and Animated Assistant
 
-### Phase 3 — Coworker Intelligence
-
-Goal: complete the differentiating voice vertical slice.
-
-- microphone capture
+- animated state-driven Ophanim avatar
+- push-to-talk
 - VAD
-- speech-to-text
-- voice enrollment
+- faster-whisper transcription
 - owner/other/unknown speaker verification
-- question detection
-- addressee detection
-- private response overlay
-- confidence handling
-- latency measurement
+- optional wake word
+- private TTS/headset mode
 
-### Phase 4 — Professional Memory
+### Phase 3 — Agent Mesh and Professional Memory
 
-- project knowledge
-- company policies
-- MOPs and runbooks
-- architecture documentation
-- user-approved notes
-- scoped long-term memory
-- permissions and retention
+- Agent Registry
+- capability definitions
+- task delegation
+- scoped memory
+- Obsidian/AnythingLLM project knowledge
+- evidence/citation model
 
-### Phase 5 — Enterprise Tools
+### Phase 4 — Enterprise Read-Only Integrations
 
-Initial integrations should remain read-only where possible.
+- GitHub/GitLab
+- Jira/Confluence
+- Microsoft 365 / Google Workspace
+- AWS / Azure
+- Kubernetes / Linux
+- approved logs and databases
 
-- GitHub / GitLab
-- Jira / Confluence
-- Gmail / Outlook
-- Google Calendar / Microsoft 365 Calendar
-- Teams / Slack
-- Google Drive
-- MCP tools
+### Phase 5 — Approval-Gated Actions
 
-### Phase 6 — Operations Coworker
+Introduce deterministic state-changing tools only after policy, approval, verification, rollback, and audit requirements are proven.
 
-NEXUVO can begin correlating operational evidence across tools.
+---
 
-Example:
+## MVP Reference Use Case
+
+**AI Transaction Investigation Agent**
 
 ```text
-"NEXUVO, investigate why this deployment failed."
-
-GitHub / GitLab
-       +
-CI/CD logs
-       +
-Kubernetes
-       +
-Cloud logs
-       +
-Runbooks
-       +
-Previous incidents
-       +
-AnythingLLM knowledge
-       |
-       v
-NEXUVO reasoning
-       |
-       v
-Investigation Summary
+Reference Number
+      |
+      v
+Ophanim Task
+      |
+      +--> Browser Agent -> Approved test portal
+      |
+      +--> Knowledge Agent -> Runbooks / policy / Obsidian / AnythingLLM
+      |
+      +--> Log Tool -> Approved logs
+      |
+      +--> DB Tool -> Approved read-only queries
+      |
+      v
+Evidence Correlation
+      |
+      v
+Issue Classification
+      |
+      v
+Findings + Recommended Next Step
 ```
 
-Supported domains may include:
-
-- AWS
-- Azure
-- Kubernetes
-- Linux
-- Terraform
-- Ansible
-
-The default lifecycle remains:
-
-```text
-READ -> ANALYZE -> RECOMMEND -> DRAFT -> APPROVE -> EXECUTE
-```
-
-### Phase 7 — Specialized AI Coworkers
-
-Once the platform and governance model are stable, introduce specialized agent profiles for areas such as:
-
-- engineering
-- CloudOps
-- DevOps
-- research
-- business operations
-- content creation
-- reporting
-- project coordination
-
-All agents should share the same approval, identity, audit, knowledge, and policy infrastructure.
-
----
-
-## Security Architecture
-
-Security is a product requirement, not a later hardening phase.
-
-Initial requirements:
-
-- least-privilege integration scopes
-- read-only by default
-- encrypted secrets
-- encrypted speaker embeddings
-- explicit cloud routing policy
-- structured audit trail
-- tool allowlists
-- command/action validation
-- human approval for sensitive mutations
-- prompt injection defenses around retrieved content
-- source provenance
-- configurable data retention
-- local-data deletion controls
-- signed release artifacts
-
-Before production enterprise integrations, create a formal threat model covering microphone capture, local IPC, AnythingLLM, model providers, MCP/tool execution, retrieved untrusted content, and credential boundaries.
-
----
-
-## Observability
-
-Initial observability:
-
-- structured JSON logs
-- correlation IDs
-- local log rotation
-- model/provider latency
-- transcription latency
-- retrieval latency
-- end-to-end suggestion latency
-- confidence telemetry without storing unnecessary sensitive content
-- OpenTelemetry-ready interfaces
-
-Developer mode may expose Prometheus-compatible metrics later.
-
----
-
-## MVP Success Criteria
-
-The first milestone is successful when NEXUVO can reliably perform this path:
-
-```text
-Other person speaks
-      |
-      v
-Voice activity detected
-      |
-      v
-Speaker = OTHER
-      |
-      v
-Speech transcribed
-      |
-      v
-Directed to OWNER
-      |
-      v
-Question detected
-      |
-      v
-Relevant approved knowledge retrieved
-      |
-      v
-Suggested response generated
-      |
-      v
-Private desktop overlay
-```
-
-The system must also prove that it can correctly stay silent when the conversation is not directed to the owner.
-
-Key evaluation areas:
-
-- speaker verification accuracy
-- addressee detection precision
-- false intervention rate
-- transcription quality
-- retrieval grounding
-- response usefulness
-- end-to-end latency
-- privacy behavior
-
----
-
-## What NEXUVO Is Not
-
-NEXUVO is not intended to be:
-
-- a renamed AnythingLLM fork
-- a generic ChatGPT clone
-- an always-recording surveillance application
-- an uncontrolled autonomous operations bot
-- a system that hides where data or prompts are sent
-
-AnythingLLM and LM Studio are acceleration layers. NEXUVO remains the product and owns the user experience, context engine, safety model, orchestration, memory policy, integrations, and professional coworker behavior.
+No remediation or write action occurs without explicit approval.
 
 ---
 
 ## Current Status
 
-**Status: architecture and foundation stage.**
+**Foundation in progress.**
 
-The immediate engineering objective is to build a runnable Phase 1 scaffold and prove AnythingLLM + LM Studio integration before implementing the full voice pipeline.
+Existing Phase 1 work already includes FastAPI scaffolding, LM Studio and AnythingLLM adapter boundaries, and an initial guarded Browser Use/Playwright browser-agent layer. The current foundation work rebrands and expands that architecture under Ophanim AI.
 
----
-
-## Naming Note
-
-NEXUVO is currently a working product brand selected after an initial collision screen. A formal trademark, domain, corporate-name, and jurisdiction-specific legal clearance should be completed before commercial launch.
+See the `docs/` directory for the authoritative product, architecture, security, UX, agent, browser, infrastructure, and roadmap documents.
