@@ -58,14 +58,19 @@ Create/approve the initial architecture decisions:
 
 - ADR-001 modular monolith first;
 - ADR-002 AI plans, deterministic tools execute;
-- ADR-003 provider and knowledge systems are replaceable adapters;
-- ADR-004 MCP is a first-class governed tool protocol;
-- ADR-005 integration resolution order;
-- ADR-006 agents never own credentials;
-- ADR-007 Assistant animation is event-driven;
-- ADR-008 native browser is Chromium/Playwright based;
-- ADR-009 read-only MVP and approval-gated mutations;
-- ADR-010 vendor source isolation.
+- ADR-003 AnythingLLM as replaceable knowledge subsystem;
+- ADR-004 LM Studio as initial local model runtime;
+- ADR-005 MCP as a first-class governed tool protocol;
+- ADR-006 integration preference order;
+- ADR-007 Chromium/Playwright native browser foundation;
+- ADR-008 agents do not own credentials;
+- ADR-009 consequential actions require human approval;
+- ADR-010 event-driven Ophanim Assistant and animation;
+- ADR-011 PostgreSQL as authoritative system of record;
+- ADR-012 Obsidian as human-readable knowledge source;
+- ADR-013 evidence and audit as first-class records;
+- ADR-014 read-only MVP first;
+- ADR-015 vendor source isolated from Ophanim product logic.
 
 ### S00-T04 — Product Requirements Baseline
 

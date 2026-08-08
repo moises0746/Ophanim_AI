@@ -12,7 +12,7 @@ Do not open a public issue containing credentials, private data, or a working ex
 - Store secrets in the operating-system credential store or an approved encrypted store.
 - Never expose credentials to model context unless the target protocol makes it unavoidable and policy explicitly allows it.
 - Use least-privilege scopes and read-only access by default.
-- Require explicit approval for consequential actions unless a narrow trusted automation policy exists.
+- Require explicit human approval for consequential, production, and state-changing actions.
 - Apply domain, application, command, path, and action allowlists at the execution boundary.
 - Treat retrieved documents, web pages, messages, and tool output as untrusted input that may contain prompt injection.
 - Maintain append-only audit records for approvals and consequential actions.

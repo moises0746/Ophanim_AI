@@ -236,16 +236,9 @@ See [`CODEX.md`](CODEX.md).
 
 ## Key ADRs
 
-- ADR-001: Modular monolith first.
-- ADR-002: AI plans; deterministic tools execute.
-- ADR-003: AI/knowledge providers are replaceable.
-- ADR-004: MCP is a first-class governed tool protocol.
-- ADR-005: Integration resolution order.
-- ADR-006: Agents never own credentials.
-- ADR-007: Assistant animation is event-driven.
-- ADR-008: Native browser uses Chromium/Playwright.
-- ADR-009: Read-only MVP and approval-gated writes.
-- ADR-010: Vendor source isolation.
+The accepted baseline contains ADR-001 through ADR-015, covering Core modularity, governed model/tool execution, replaceable knowledge and model runtimes, MCP, integration preference, browser foundation, credential custody, human approval, event-driven Assistant behavior, authoritative persistence, Obsidian knowledge, evidence/audit, read-only MVP scope, and vendor isolation.
+
+See the [`docs/adr/` index](docs/adr/README.md) for the authoritative titles and records.
 
 ## Current Status
 

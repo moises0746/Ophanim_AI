@@ -113,7 +113,7 @@ Older architecture, roadmap, phase ordering, and integration-order material from
 
 ## Legacy Browser Disposition
 
-The existing `BrowserUseAgent` and `/browser/tasks` endpoint are preserved as a legacy/experimental implementation that predates ADR-008 and `docs/browser/native-ai-browser.md`. Their presence does not establish the final Ophanim browser contract.
+The existing `BrowserUseAgent` and `/browser/tasks` endpoint are preserved as a legacy/experimental implementation that predates ADR-007 and `docs/browser/native-ai-browser.md`. Their presence does not establish the final Ophanim browser contract.
 
 Known reconciliation gaps include the absence of an approved-application registry, dedicated profile contract, persisted audit/evidence pipeline, complete approval service, deterministic verification, and emergency-stop integration. The implementation must not be expanded or treated as the architecture baseline during S00-T00. A later authorized task must decide how to adapt or replace it behind Ophanim-owned browser contracts without silently losing current behavior.
 
