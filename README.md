@@ -20,7 +20,7 @@ Before implementation, read these files in order:
 6. [`SECURITY.md`](SECURITY.md) — security expectations.
 7. [`docs/sprints/SPRINT-00-CLOSURE.md`](docs/sprints/SPRINT-00-CLOSURE.md) — accepted architecture-baseline closure.
 8. [`docs/sprints/SPRINT-01.md`](docs/sprints/SPRINT-01.md) — next recommended Sprint scope; not automatic implementation authorization.
-8. Relevant ADRs under [`docs/adr/`](docs/adr/).
+9. Relevant ADRs under [`docs/adr/`](docs/adr/).
 
 ## Product Vision
 
