@@ -6,7 +6,7 @@ Ophanim AI is the product and control plane. It accepts goals through voice or t
 
 The Assistant is the default product experience. AnythingLLM, LM Studio, Ollama, MCP servers, cloud models, browser engines, and enterprise systems are replaceable subsystems behind Ophanim-owned contracts.
 
-> Project status: **Sprint 00 — repository reconciliation and architecture baseline.** Feature implementation should not proceed outside explicitly authorized Sprint tasks.
+> Project status: **Sprint 00 is complete and merged. Sprint 01 is the next recommended Core Foundation / Task Vertical Slice, but remains unimplemented until explicitly authorized.**
 
 ## Start Here
 
@@ -18,7 +18,8 @@ Before implementation, read these files in order:
 4. [`CODEX.md`](CODEX.md) — Codex operating contract.
 5. [`AGENTS.md`](AGENTS.md) — coding-agent repository rules.
 6. [`SECURITY.md`](SECURITY.md) — security expectations.
-7. [`docs/sprints/SPRINT-00.md`](docs/sprints/SPRINT-00.md) — current Sprint backlog.
+7. [`docs/sprints/SPRINT-00-CLOSURE.md`](docs/sprints/SPRINT-00-CLOSURE.md) — accepted architecture-baseline closure.
+8. [`docs/sprints/SPRINT-01.md`](docs/sprints/SPRINT-01.md) — next recommended Sprint scope; not automatic implementation authorization.
 8. Relevant ADRs under [`docs/adr/`](docs/adr/).
 
 ## Product Vision
@@ -222,11 +223,11 @@ The MVP stores screenshots/evidence/tool calls/audit history and performs **no r
 
 See [`PROJECT_PLAN.md`](PROJECT_PLAN.md).
 
-## Current Sprint
+## Delivery Status
 
-Sprint 00 establishes a safe baseline before Codex feature implementation. It includes repository reconciliation, legacy naming cleanup, structure, ADRs, Assistant event contracts, MCP, browser specification, threat modeling, test/CI standards and Codex governance.
+Sprint 00 is complete and merged. Its accepted architecture baseline authorizes planning—not automatic implementation—of the narrow Sprint 01 Core Foundation / Task Vertical Slice.
 
-See [`docs/sprints/SPRINT-00.md`](docs/sprints/SPRINT-00.md).
+See [`docs/sprints/SPRINT-00-CLOSURE.md`](docs/sprints/SPRINT-00-CLOSURE.md) and [`docs/sprints/SPRINT-01.md`](docs/sprints/SPRINT-01.md).
 
 ## Development Rule
 
@@ -242,4 +243,4 @@ See the [`docs/adr/` index](docs/adr/README.md) for the authoritative titles and
 
 ## Current Status
 
-**Do not start broad feature implementation yet.** The current authorized work is Sprint 00 repository/architecture reconciliation. Once Sprint 00 is reviewed and merged, Phase 1 implementation can begin from a single authoritative baseline.
+**Do not start broad feature implementation.** The architecture baseline is complete. The next implementation must be one explicitly authorized Sprint 01 task, verified against its dependencies and acceptance criteria. MCP, Desktop Worker, Assistant UI, browser runtime, and transaction-investigation capabilities remain specified or planned unless a checkpoint proves otherwise.
