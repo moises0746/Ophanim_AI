@@ -28,17 +28,16 @@ This direction is informational and does not authorize implementation. The MVP r
 ophanim/
 |-- main.py
 |-- config.py
-|-- api/            # routers and transport models
-|-- tasks/          # domain models, service, repository protocol
-|-- persistence/    # PostgreSQL implementation and migrations
-|-- policy/         # risk and approval rules
-|-- tools/          # governed tool contracts and registry
-|-- audit/          # event creation and querying
+|-- domain/         # framework-independent entities and values
+|-- application/    # use-case orchestration
+|-- ports/          # narrow interfaces owned by Core
+|-- api/            # routers and transport DTOs
 |-- adapters/       # existing provider integrations
-`-- browser/        # target browser contracts; legacy adapter reconciled separately
+|-- infrastructure/ # persistence/queue/telemetry mechanics
+`-- browser/        # preserved legacy runtime until authorized migration
 ```
 
-This is the target package direction. The current runtime package is `services/ophanim-core/ophanim`; further structural changes require their own authorized task.
+This is the target package direction. S01-T01 creates only ownership scaffolds for `domain/`, `application/`, `ports/`, and `api/`; the current runtime package and adapter/browser paths remain unchanged. Further structural changes require their own authorized task.
 
 The target layering is Domain → Application → Ports/Interfaces → Adapters → Infrastructure. Existing experimental browser/provider modules remain preserved until an explicit migration or replacement task.
 
