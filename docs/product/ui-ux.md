@@ -9,15 +9,20 @@ Primary navigation:
 ```text
 Assistant          <- default route
 Tasks
-Agents
-Browser
+Projects
+AI Team
 Knowledge
-Workflows
-Integrations
+Automations
+Browser
+Content Studio
+Approvals
 Activity
-Dashboard
+Integrations
+System Health
 Settings
 ```
+
+Capability names such as Graph, Memory, MCP, LM Studio, Ollama, and AnythingLLM are not primary jobs-to-be-done. They belong under Knowledge, Integrations, Models/Runtimes, or System Health.
 
 ## Assistant Home
 
@@ -41,11 +46,31 @@ Settings
 
 The screen must answer:
 
-1. What is Ophanim doing?
-2. Which agents are active?
-3. What evidence has been collected?
-4. Does the user need to approve/act?
-5. What is the result?
+1. What should the user work on or delegate next?
+2. What is Ophanim and the AI team doing now?
+3. What has completed, failed, or become blocked?
+4. What evidence supports the reported result?
+5. Does the user need to approve or decide anything?
+
+The Home experience is a working-team control surface, not a system-architecture diagram. The central Ophanim visual remains the recognizable product identity, but it must be surrounded by operational information: goal composer, active work, AI-team assignments, attention queue, recent verified results, and evidence-linked activity.
+
+Recommended responsive information hierarchy:
+
+```text
++--------------------------------------------------------------------------------+
+| OPHANIM | Workspace | Search | Privacy/Model | Notifications | Profile          |
++--------------------+--------------------------------------+--------------------+
+| AI Team            | Ask Ophanim / Delegate a Goal        | Needs Attention    |
+| assignments/status | current plan and progress            | approvals/blocked  |
++--------------------+--------------------------------------+--------------------+
+| Projects / Tasks   | Active Work                          | Recent Results     |
+| scoped context     | steps, owners, progress, controls    | outputs + evidence |
++--------------------+--------------------------------------+--------------------+
+| Conversation | Timeline | Evidence | Output                                    |
++--------------------------------------------------------------------------------+
+```
+
+On smaller screens, preserve this priority: attention-required state, goal composer, active work, results/evidence, then AI-team detail. Architecture and runtime-health views remain secondary.
 
 ## Animated Ophanim
 
@@ -169,9 +194,13 @@ Browser presentation must reflect the authoritative [browser action](../browser/
 
 Read versus state-changing actions must be visually distinct.
 
-## Dashboard
+## Approvals and Attention Queue
 
-Dashboard is an operational/system page for:
+Approval requests, blockers, failed workflows, policy denials, and missing dependencies must be grouped into one actionable attention queue. Each item must show the requested action, requesting task/agent, environment, risk, evidence, expiry when applicable, and the consequence of approve or deny. Approval UI never converts a prohibited action into an allowed one.
+
+## System Health
+
+System Health is an operational page for:
 
 - active tasks/agents;
 - model/runtime health;
