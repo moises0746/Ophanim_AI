@@ -24,6 +24,18 @@ Result
 Sanitization + Evidence + Audit
 ```
 
+## Gateway Ownership
+
+MCP servers never connect directly to a model or agent runtime. Every invocation follows:
+
+```text
+Agent -> Capability Router -> Tool Gateway -> Policy
+      -> Approval when required -> MCP Adapter -> Isolated Runtime
+      -> Verification -> Evidence -> Audit
+```
+
+Ophanim owns authorization, credential brokering, approval, task state, evidence, audit, tenant/environment isolation, risk classification, and cancellation. Community MCP servers provide capabilities behind this boundary; they do not become Ophanim's control plane.
+
 ## Registry
 
 Each MCP server record should define:
@@ -45,7 +57,15 @@ secret_refs:
 allowed_tools:
   - get_repository
   - get_pull_request
+network_policy:
+  allowed_hosts:
+    - api.github.com
+timeouts:
+  invocation_seconds: 30
+audit_policy: full
 ```
+
+Normalized Ophanim `ToolDefinition` records should include provider, capability, risk level, allowed agents/projects/environments, input and output schemas, timeout/retry policy, approval policy, secret references, network/path policy, evidence requirements, and audit policy.
 
 ## Discovery
 
@@ -77,17 +97,26 @@ Discover -> Normalize -> Authorize -> Validate schema
 
 MCP is chosen when it provides a reliable standardized contract. Official APIs remain preferred for security-sensitive or high-volume deterministic integrations when an MCP layer adds no value. Browser automation remains the fallback for approved applications without practical structured integration.
 
+## Candidate Adoption Portfolio
+
+These are evaluation candidates, not bundled dependencies or implementation claims. License, provenance, current maintenance, commercial redistribution, security posture, and upgrade strategy must be verified at adoption time.
+
+| Priority | Capability | Recommended approach |
+|---|---|---|
+| P0 | Scoped filesystem/knowledge access | Evaluate an official/reference filesystem MCP behind path allowlists; prefer Ophanim-native indexing for durable knowledge. |
+| P0 | Browser automation | Evaluate Playwright MCP as an adapter while retaining Ophanim browser policy, profiles, evidence, and deterministic skills. |
+| P0 | GitHub | Evaluate GitHub MCP with read-only toolsets and least-privilege tokens first. |
+| P1 | Transaction database lookup | Build Ophanim-native, purpose-specific, parameterized read tools; never expose arbitrary SQL. |
+| P1 | Logs and metrics | Build provider adapters with approved query templates, source/time bounds, size limits, and redaction. |
+| P1 | Local Git/container/Kubernetes diagnostics | Prefer read-only or narrow command catalogs; separate write capabilities and approvals. |
+| P2 | Productivity/communications | Add provider adapters only when destination resolution, data classification, and approval policy are defined. |
+| Later | Desktop execution | Use community desktop-control servers as references or isolated adapters; follow the [Desktop Worker security contract](desktop-worker.md). |
+
 ## Initial MCP Scope
 
-Sprint/Phase 5 candidates:
+Phase 5 candidates remain GitHub read operations, scoped filesystem/knowledge resources, approved log searches, purpose-built read-only database lookups, and selected productivity tools.
 
-- GitHub read operations;
-- approved filesystem/knowledge resources with strict path allowlists;
-- approved logs search;
-- approved read-only database lookup tools;
-- selected productivity tools.
-
-No arbitrary shell, arbitrary SQL, or unrestricted filesystem MCP server is permitted.
+No arbitrary shell, arbitrary SQL, unrestricted filesystem, unrestricted Docker socket, unrestricted Kubernetes write, or unrestricted browser MCP server is permitted.
 
 ## Testing
 

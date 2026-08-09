@@ -8,7 +8,7 @@ Ophanim is not a renamed AnythingLLM fork. AnythingLLM, LM Studio, Ollama, MCP s
 
 ## Primary User Experience
 
-The default application route is the Ophanim Assistant, not a dashboard.
+The default application route is the Ophanim Assistant, not a dashboard. Assistant Home is a working-team control surface—not a system-architecture diagram—and prioritizes goal delegation, active work, AI-team assignments, items needing attention, recent verified results, and evidence-linked activity.
 
 ```text
 User
@@ -37,23 +37,22 @@ Evidence + Result + Approval when needed
 
 The animated Ophanim visual is driven by deterministic application events, never direct LLM animation commands.
 
-Assistant states:
+Canonical Assistant presentation states:
 
-- `IDLE`
-- `LISTENING`
-- `TRANSCRIBING`
-- `THINKING`
-- `DELEGATING`
-- `ORCHESTRATING`
-- `RETRIEVING`
-- `BROWSING`
-- `INVESTIGATING`
-- `WAITING_FOR_APPROVAL`
-- `SPEAKING`
-- `COMPLETE`
-- `WARNING`
-- `ERROR`
-- `PRIVATE_OFFLINE`
+- `idle`
+- `listening`
+- `understanding`
+- `planning`
+- `delegating`
+- `working`
+- `waiting_for_tool`
+- `waiting_for_approval`
+- `speaking`
+- `completed`
+- `blocked`
+- `error`
+
+Specialized activities such as transcription, retrieval, browsing, investigation, and orchestration are details projected within these states, not additional top-level states. Provider/privacy mode is event metadata rather than an Assistant state. The authoritative mapping is defined in [Assistant State Projection](docs/assistant/assistant-state-projection.md).
 
 The UI must show real agent activity, tool execution, evidence counts, approval needs, and task status.
 
