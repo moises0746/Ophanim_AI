@@ -6,7 +6,7 @@ Ophanim AI is the product and control plane. It accepts goals through voice or t
 
 The Assistant is the default product experience. AnythingLLM, LM Studio, Ollama, MCP servers, cloud models, browser engines, and enterprise systems are replaceable subsystems behind Ophanim-owned contracts.
 
-> Project status: **Sprint 00 is complete and merged. Sprint 01 is the next recommended Core Foundation / Task Vertical Slice, but remains unimplemented until explicitly authorized.**
+> Project status: **Sprint 00 is complete and merged. Sprint 01 tasks S01-T01 through S01-T03 are implemented; later Sprint 01 tasks remain unimplemented until explicitly authorized.**
 
 ## Start Here
 
@@ -225,7 +225,7 @@ See [`PROJECT_PLAN.md`](PROJECT_PLAN.md).
 
 ## Delivery Status
 
-Sprint 00 is complete and merged. Its accepted architecture baseline authorizes planning—not automatic implementation—of the narrow Sprint 01 Core Foundation / Task Vertical Slice.
+Sprint 00 is complete and merged. Sprint 01 tasks S01-T01 through S01-T03 implement Core ownership scaffolds, foundational Task domain types, and a bounded process-local create/read/cancel lifecycle service. Later Sprint 01 tasks remain planning recommendations, not automatic implementation authorization.
 
 See [`docs/sprints/SPRINT-00-CLOSURE.md`](docs/sprints/SPRINT-00-CLOSURE.md) and [`docs/sprints/SPRINT-01.md`](docs/sprints/SPRINT-01.md).
 

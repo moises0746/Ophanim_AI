@@ -19,8 +19,8 @@ Ophanim_AI/
 |-- services/                              # First-party
 |   `-- ophanim-core/                      # Implemented runtime
 |       |-- ophanim/                       # Current Python package layout
-|       |   |-- domain/                    # Ownership scaffold; no entities yet
-|       |   |-- application/               # Ownership scaffold; no services yet
+|       |   |-- domain/                    # Implemented foundational types/lifecycle rules
+|       |   |-- application/               # Implemented in-memory Task lifecycle service
 |       |   |-- ports/                     # Ownership scaffold; no concrete ports yet
 |       |   |-- api/                       # Ownership scaffold; no new routes yet
 |       |   |-- adapters/                  # Implemented provider adapters
