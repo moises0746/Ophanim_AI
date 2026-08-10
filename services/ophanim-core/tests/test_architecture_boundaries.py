@@ -7,11 +7,23 @@ from pathlib import Path
 
 CORE_ROOT = Path(__file__).resolve().parents[1] / "ophanim"
 FORBIDDEN_DOMAIN_ROOTS = {
-    "fastapi", "pydantic", "sqlalchemy", "redis", "celery", "playwright",
-    "browser_use", "mcp", "anythingllm", "lmstudio", "ollama",
+    "fastapi",
+    "pydantic",
+    "sqlalchemy",
+    "redis",
+    "celery",
+    "playwright",
+    "browser_use",
+    "mcp",
+    "anythingllm",
+    "lmstudio",
+    "ollama",
 }
 FORBIDDEN_DOMAIN_MODULES = {
-    "ophanim.application", "ophanim.adapters", "ophanim.infrastructure", "ophanim.api",
+    "ophanim.application",
+    "ophanim.adapters",
+    "ophanim.infrastructure",
+    "ophanim.api",
 }
 
 
@@ -31,9 +43,12 @@ def test_domain_package_has_no_forbidden_framework_or_runtime_imports() -> None:
     assert domain_files
     imports = {module.split(".", 1)[0] for path in domain_files for module in _imports(path)}
     assert not imports.intersection(FORBIDDEN_DOMAIN_ROOTS)
-    assert not any(module == forbidden or module.startswith(f"{forbidden}.")
-                   for path in domain_files for module in _imports(path)
-                   for forbidden in FORBIDDEN_DOMAIN_MODULES)
+    assert not any(
+        module == forbidden or module.startswith(f"{forbidden}.")
+        for path in domain_files
+        for module in _imports(path)
+        for forbidden in FORBIDDEN_DOMAIN_MODULES
+    )
 
 
 def test_layer_packages_import_without_runtime_wiring() -> None:
@@ -42,6 +57,12 @@ def test_layer_packages_import_without_runtime_wiring() -> None:
     import ophanim.domain
     import ophanim.ports
 
-    assert all(package is not None for package in (
-        ophanim.api, ophanim.application, ophanim.domain, ophanim.ports,
-    ))
+    assert all(
+        package is not None
+        for package in (
+            ophanim.api,
+            ophanim.application,
+            ophanim.domain,
+            ophanim.ports,
+        )
+    )

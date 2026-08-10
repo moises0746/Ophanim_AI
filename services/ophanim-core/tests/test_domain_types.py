@@ -17,10 +17,15 @@ from ophanim.domain.values import (
 
 def _task(**overrides: object) -> Task:
     values: dict[str, object] = {
-        "id": TaskId.new(), "owner_id": "owner-1", "title": "Investigate transaction",
-        "objective": "Read approved transaction sources", "environment": Environment.TEST,
-        "data_scope": DataScope("workspace-1"), "risk_level": RiskLevel.LOW,
-        "privacy_mode": PrivacyMode.PRIVATE, "correlation_id": CorrelationId.new(),
+        "id": TaskId.new(),
+        "owner_id": "owner-1",
+        "title": "Investigate transaction",
+        "objective": "Read approved transaction sources",
+        "environment": Environment.TEST,
+        "data_scope": DataScope("workspace-1"),
+        "risk_level": RiskLevel.LOW,
+        "privacy_mode": PrivacyMode.PRIVATE,
+        "correlation_id": CorrelationId.new(),
     }
     values.update(overrides)
     return Task(**values)
@@ -51,9 +56,18 @@ def test_task_step_must_belong_to_task_and_cannot_self_depend() -> None:
     step_id = TaskStepId.new()
     step = TaskStep(id=step_id, task_id=task.id, objective="Read source")
     assert step.status is TaskStepStatus.PENDING
-    owned = Task(id=task.id, owner_id=task.owner_id, title=task.title, objective=task.objective,
-                environment=task.environment, data_scope=task.data_scope, risk_level=task.risk_level,
-                privacy_mode=task.privacy_mode, correlation_id=task.correlation_id, steps=(step,))
+    owned = Task(
+        id=task.id,
+        owner_id=task.owner_id,
+        title=task.title,
+        objective=task.objective,
+        environment=task.environment,
+        data_scope=task.data_scope,
+        risk_level=task.risk_level,
+        privacy_mode=task.privacy_mode,
+        correlation_id=task.correlation_id,
+        steps=(step,),
+    )
     assert owned.steps == (step,)
     with pytest.raises(DomainValidationError):
         TaskStep(id=step_id, task_id=task.id, objective="bad", dependency_ids=(step_id,))
