@@ -19,6 +19,7 @@ All baseline ADRs below are **Accepted**. Their acceptance records architecture 
 | [ADR-013](ADR-013-evidence-audit-first-class-records.md) | Evidence and Audit as First-Class Records |
 | [ADR-014](ADR-014-read-only-mvp-first.md) | Read-Only MVP First |
 | [ADR-015](ADR-015-vendor-source-isolated.md) | Vendor Source Isolated from Ophanim Product Logic |
+| [ADR-016](ADR-016-autonomous-agent-orchestration.md) | Deterministic State-Driven Autonomous Agent Orchestration |
 
 ## Record Format
 

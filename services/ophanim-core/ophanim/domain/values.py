@@ -30,6 +30,27 @@ class TaskStepStatus(StrEnum):
     COMPLETED = "completed"
 
 
+class WorkflowState(StrEnum):
+    """Deterministic workflow states for the autonomous software-engineering lifecycle.
+
+    Only the Orchestrator may move a task between these states.
+    """
+
+    CREATED = "created"
+    PLANNING = "planning"
+    PLANNED = "planned"
+    IMPLEMENTING = "implementing"
+    BUILDING = "building"
+    TESTING = "testing"
+    QA_REVIEW = "qa_review"
+    FIX_REQUIRED = "fix_required"
+    CODE_REVIEW = "code_review"
+    READY_FOR_MERGE = "ready_for_merge"
+    FAILED = "failed"
+    ESCALATED = "escalated"
+    COMPLETED = "completed"
+
+
 class Environment(StrEnum):
     LOCAL = "local"
     TEST = "test"
@@ -68,8 +89,14 @@ class DataScope:
     classification: str = "internal"
 
     def __post_init__(self) -> None:
-        object.__setattr__(self, "workspace_id", _text(self.workspace_id, "workspace_id", max_length=256))
-        object.__setattr__(self, "source_ids", tuple(
-            _text(source, "source_id", max_length=256) for source in self.source_ids
-        ))
-        object.__setattr__(self, "classification", _text(self.classification, "classification", max_length=64))
+        object.__setattr__(
+            self, "workspace_id", _text(self.workspace_id, "workspace_id", max_length=256)
+        )
+        object.__setattr__(
+            self,
+            "source_ids",
+            tuple(_text(source, "source_id", max_length=256) for source in self.source_ids),
+        )
+        object.__setattr__(
+            self, "classification", _text(self.classification, "classification", max_length=64)
+        )

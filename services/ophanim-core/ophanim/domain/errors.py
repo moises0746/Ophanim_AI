@@ -7,3 +7,7 @@ class DomainValidationError(ValueError):
 
 class InvalidLifecycleStateError(DomainValidationError):
     """Raised when a lifecycle state is not valid for the owning record."""
+
+
+class InvalidWorkflowTransitionError(DomainValidationError):
+    """Raised when a workflow state transition is not permitted."""

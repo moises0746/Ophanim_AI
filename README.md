@@ -6,7 +6,7 @@ Ophanim AI is the product and control plane. It accepts goals through voice or t
 
 The Assistant is the default product experience. AnythingLLM, LM Studio, Ollama, MCP servers, cloud models, browser engines, and enterprise systems are replaceable subsystems behind Ophanim-owned contracts.
 
-> Project status: **Sprint 00 is complete and merged. Sprint 01 tasks S01-T01 through S01-T03 are implemented; later Sprint 01 tasks remain unimplemented until explicitly authorized.**
+> Project status: **Sprint 00 is complete and merged. Sprint 01 tasks S01-T01 through S01-T03 are implemented; later Sprint 01 tasks remain unimplemented until explicitly authorized. The autonomous agent orchestration foundation (AAO-001) is implemented; real provider, PostgreSQL, and Git adapters remain pending.**
 
 ## Start Here
 
@@ -225,9 +225,9 @@ See [`PROJECT_PLAN.md`](PROJECT_PLAN.md).
 
 ## Delivery Status
 
-Sprint 00 is complete and merged. Sprint 01 tasks S01-T01 through S01-T03 implement Core ownership scaffolds, foundational Task domain types, and a bounded process-local create/read/cancel lifecycle service. Later Sprint 01 tasks remain planning recommendations, not automatic implementation authorization.
+Sprint 00 is complete and merged. Sprint 01 tasks S01-T01 through S01-T03 implement Core ownership scaffolds, foundational Task domain types, and a bounded process-local create/read/cancel lifecycle service. AAO-001 adds the autonomous agent orchestration foundation: a deterministic workflow state machine, Planner/Developer/QA/Reviewer/Orchestrator roles behind a provider-agnostic agent port, bounded QA retries, configurable quality gates, isolated task branches, and append-only workflow audit events. Later Sprint 01 tasks remain planning recommendations, not automatic implementation authorization.
 
-See [`docs/sprints/SPRINT-00-CLOSURE.md`](docs/sprints/SPRINT-00-CLOSURE.md) and [`docs/sprints/SPRINT-01.md`](docs/sprints/SPRINT-01.md).
+See [`docs/sprints/SPRINT-00-CLOSURE.md`](docs/sprints/SPRINT-00-CLOSURE.md), [`docs/sprints/SPRINT-01.md`](docs/sprints/SPRINT-01.md), and [`docs/architecture/autonomous-agent-orchestration.md`](docs/architecture/autonomous-agent-orchestration.md).
 
 ## Development Rule
 
@@ -237,7 +237,7 @@ See [`CODEX.md`](CODEX.md).
 
 ## Key ADRs
 
-The accepted baseline contains ADR-001 through ADR-015, covering Core modularity, governed model/tool execution, replaceable knowledge and model runtimes, MCP, integration preference, browser foundation, credential custody, human approval, event-driven Assistant behavior, authoritative persistence, Obsidian knowledge, evidence/audit, read-only MVP scope, and vendor isolation.
+The accepted baseline contains ADR-001 through ADR-016, covering Core modularity, governed model/tool execution, replaceable knowledge and model runtimes, MCP, integration preference, browser foundation, credential custody, human approval, event-driven Assistant behavior, authoritative persistence, Obsidian knowledge, evidence/audit, read-only MVP scope, vendor isolation, and deterministic state-driven autonomous agent orchestration.
 
 See the [`docs/adr/` index](docs/adr/README.md) for the authoritative titles and records.
 

@@ -19,11 +19,12 @@ Ophanim_AI/
 |-- services/                              # First-party
 |   `-- ophanim-core/                      # Implemented runtime
 |       |-- ophanim/                       # Current Python package layout
-|       |   |-- domain/                    # Implemented foundational types/lifecycle rules
-|       |   |-- application/               # Implemented in-memory Task lifecycle service
-|       |   |-- ports/                     # Ownership scaffold; no concrete ports yet
+|       |   |-- domain/                    # Implemented types/lifecycle/workflow rules
+|       |   |-- application/               # Implemented Task lifecycle + workflow Orchestrator
+|       |   |-- ports/                     # Implemented workflow ports; provider ports scaffolded
+|       |   |-- persistence/               # In-memory workflow repository/event store
 |       |   |-- api/                       # Ownership scaffold; no new routes yet
-|       |   |-- adapters/                  # Implemented provider adapters
+|       |   |-- adapters/                  # Implemented provider adapters + gate runners
 |       |   `-- browser/                   # Preserved experimental browser runtime
 |       `-- tests/                         # Implemented service tests
 |-- packages/                              # First-party placeholders
@@ -79,11 +80,11 @@ The repository also contains root governance/configuration files, `.codex/` codi
 
 ## Implemented First-Party Areas
 
-- `services/ophanim-core/ophanim/` contains the current FastAPI runtime, configuration, provider adapters, preserved experimental browser implementation, and S01-T01 ownership scaffolds for `domain/`, `application/`, `ports/`, and `api/`.
+- `services/ophanim-core/ophanim/` contains the current FastAPI runtime, configuration, provider adapters, preserved experimental browser implementation, and S01-T01 ownership scaffolds for `domain/`, `application/`, `ports/`, and `api/`. AAO-001 adds the deterministic autonomous agent orchestration foundation: workflow state machine, Planner/Developer/QA/Reviewer/Orchestrator role model, provider-agnostic agent port, quality-gate abstractions, in-memory workflow repository/event store, gate runners, and the `WorkflowOrchestrator` application service.
 - `services/ophanim-core/tests/` contains its current tests.
 - `docs/` contains the architecture, product, security, development, Sprint, and checkpoint baseline. A directory containing documentation is implemented as documentation even when the product capability it specifies is not implemented.
 
-The S01-T01 scaffolds establish ownership only; they contain no domain entities, application services, ports, or new routes. Existing runtime code remains in place and future tasks must reconcile it deliberately with the modular-monolith rules below.
+The S01-T01 scaffolds establish ownership only; they contain no domain entities, application services, ports, or new routes. Existing runtime code remains in place and future tasks must reconcile it deliberately with the modular-monolith rules below. AAO-001 delivers first-party orchestration modules within those ownership areas while keeping the existing S01-T01..T03 Task lifecycle untouched.
 
 ## Placeholder Areas
 
