@@ -38,7 +38,7 @@
 * **Active Task**: `UI-R1-T01` (Ophanim Assistant Desktop Experience)
 * **Active Branch**: `agent/ui-r1-ophanim-assistant`
 * **Base Branch**: `main` with required R1-12, R1-06A, and R1-RUN-01 commits replayed
-* **Open PRs**: None.
+* **Open PRs**: PR #18 (`UI-R1-T01`, draft).
 * **Completed & Merged Tasks**:
   - `R1-01`: Repository and Documentation Reconciliation (PR #6 merged at `41a0552`, PR #7 merged at `7e80ff5`).
   - `R1-02`: Default-Deny Policy Interface & Core Policy Engine (PR #8 merged at `db37884`).

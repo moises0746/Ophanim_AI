@@ -5,6 +5,8 @@
 Complete. Recommended next task: R1-13 — Governed Browser Automation
 (informational only; not authorized).
 
+Draft review: PR #18.
+
 ## Completed at
 
 2026-08-15
