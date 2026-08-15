@@ -71,8 +71,8 @@ Ophanim_AI/
 |   |-- e2e/
 |   |-- browser/
 |   `-- security/
-|-- anything-llm-master/                   # Vendor; temporary path
-|-- ollama-main/                           # Vendor; temporary path
+|-- anything-llm/                          # Vendor; temporary path
+|-- ollama/                                # Vendor; temporary path
 `-- Obsidian_Vault/                        # Private; protected local data
 ```
 
@@ -84,7 +84,7 @@ The repository also contains root governance/configuration files, `.codex/` codi
 - `services/ophanim-core/tests/` contains its current tests.
 - `docs/` contains the architecture, product, security, development, Sprint, and checkpoint baseline. A directory containing documentation is implemented as documentation even when the product capability it specifies is not implemented.
 
-The S01-T01 scaffolds establish ownership only; they contain no domain entities, application services, ports, or new routes. Existing runtime code remains in place and future tasks must reconcile it deliberately with the modular-monolith rules below. AAO-001 delivers first-party orchestration modules within those ownership areas while keeping the existing S01-T01..T03 Task lifecycle untouched.
+S01-T01 established ownership scaffolds. S01-T02 added foundational domain entities and values. S01-T03 application/lifecycle artifacts are physically present but are not accepted as complete because authorization and completion evidence are unverified. AAO-001 adds first-party orchestration domain, application, port, adapter, and in-memory persistence modules within those ownership areas while keeping the existing S01-T01 through S01-T03 Task lifecycle untouched. API remains an ownership scaffold with no new routes. Existing runtime code remains in place and future authorized tasks must preserve the modular-monolith rules below.
 
 ## Placeholder Areas
 
@@ -118,7 +118,7 @@ These rules are documented and suitable for future architecture-test enforcement
 
 ## Vendor Boundary
 
-`anything-llm-master/` and `ollama-main/` are copied upstream source in temporary top-level locations. They are vendor code, not Ophanim modules. Do not add first-party logic there or import their internals from Ophanim domain/application code.
+`anything-llm/` and `ollama/` are copied upstream source in temporary top-level locations. They are vendor code, not Ophanim modules. Do not add first-party logic there or import their internals from Ophanim domain/application code. Commit `4c5ed3f` renamed the earlier `anything-llm-master/` and `ollama-main/` paths; that rename did not establish approved provenance, licensing, or update-process records.
 
 Their relocation under a possible future `vendor/` boundary is deferred until provenance, licensing, upstream version, local modifications, update process, and final Ollama disposition are verified. No `vendor/` placeholder is created because it could incorrectly imply that relocation is complete.
 
@@ -139,5 +139,5 @@ Their relocation under a possible future `vendor/` boundary is deferred until pr
 ## Ownership Summary
 
 - `apps/`, `services/`, `packages/`, `adapters/`, `integrations/`, `infrastructure/`, first-party `docs/`, and first-party `tests/` are Ophanim-owned.
-- `anything-llm-master/` and `ollama-main/` are upstream/vendor-owned source at protected temporary paths.
+- `anything-llm/` and `ollama/` are upstream/vendor-owned source at protected temporary paths.
 - `Obsidian_Vault/` is private user data.

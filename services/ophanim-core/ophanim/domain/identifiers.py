@@ -32,7 +32,7 @@ class TaskId:
 
     @classmethod
     def from_str(cls, value: str) -> TaskId:
-        return cls(value)
+        return cls(_uuid(value))
 
     def __str__(self) -> str:
         return str(self.value)
@@ -51,7 +51,7 @@ class TaskStepId:
 
     @classmethod
     def from_str(cls, value: str) -> TaskStepId:
-        return cls(value)
+        return cls(_uuid(value))
 
     def __str__(self) -> str:
         return str(self.value)
@@ -70,7 +70,7 @@ class CorrelationId:
 
     @classmethod
     def from_str(cls, value: str) -> CorrelationId:
-        return cls(value)
+        return cls(_uuid(value))
 
     def __str__(self) -> str:
         return str(self.value)

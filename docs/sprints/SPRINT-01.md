@@ -4,12 +4,14 @@
 
 Planning recommendation from S00-T10; not implementation authorization. Sprint 01 should remain a small read-only Core foundation sprint that converts accepted contracts into tested Python and a minimal task slice.
 
-## Current Status (2026-08-13)
+## Current Status (2026-08-15)
 
-- S01-T01, S01-T02, S01-T03: complete (see `docs/checkpoints/`).
-- AAO-001 autonomous agent orchestration foundation: complete, merged to `main` @ `502385d`.
-- Next authorized task: **S01-T04 — Default-Deny Policy Interface** (pending, NOT authorized to start).
-- See `docs/handoff/HANDOFF.md` for the authoritative done/pending/next status.
+- S01-T01: implemented and reconciled.
+- S01-T02: implemented and reconciled.
+- S01-T03: implementation artifacts are present on `main`, but explicit authorization and complete original checkpoint evidence were not found; not accepted as complete.
+- AAO-001 autonomous agent orchestration foundation: implemented on `main` at `502385d`; this does not change the acceptance status of the Sprint 01 tasks above.
+- S01-T04 through S01-T08: unimplemented. S01-T04 is the designated next task but is not authorized to start.
+- See `docs/handoff/HANDOFF.md` for the current handoff context; the evidence-based task status above remains authoritative for this reconciliation.
 
 ## Recommended Tasks
 

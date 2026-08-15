@@ -6,7 +6,7 @@ Ophanim AI is the product and control plane. It accepts goals through voice or t
 
 The Assistant is the default product experience. AnythingLLM, LM Studio, Ollama, MCP servers, cloud models, browser engines, and enterprise systems are replaceable subsystems behind Ophanim-owned contracts.
 
-> Project status: **Sprint 00 is complete and merged. Sprint 01 tasks S01-T01 through S01-T03 are implemented; later Sprint 01 tasks remain unimplemented until explicitly authorized. The autonomous agent orchestration foundation (AAO-001) is implemented; real provider, PostgreSQL, and Git adapters remain pending.**
+> Project status: **Sprint 00 is complete and merged. Sprint 01 tasks S01-T01 and S01-T02 are implemented and reconciled. S01-T03 implementation artifacts are present on `main`, but their authorization and completion evidence are not verified; later Sprint 01 tasks remain unimplemented until explicitly authorized. The autonomous agent orchestration foundation (AAO-001) is implemented; real provider, PostgreSQL, and Git adapters remain pending.**
 
 ## Start Here
 
@@ -157,9 +157,9 @@ Non-negotiable boundaries:
 
 ## Vendor Source
 
-The current repository contains copied upstream source such as `anything-llm-master/` and potentially `ollama-main/`. These are **vendored/upstream code**, not Ophanim product modules.
+The current repository contains copied upstream source at `anything-llm/` and `ollama/`. These are **vendored/upstream code**, not Ophanim product modules. Commit `4c5ed3f` renamed the previously documented `anything-llm-master/` and `ollama-main/` paths without recording an approved vendor migration or exact upstream commit provenance.
 
-Target boundary is documented in [`STRUCTURE.md`](STRUCTURE.md). Sprint 00 will decide/migrate final vendor paths deliberately. First-party code must use adapters/contracts rather than importing vendor internals.
+The target boundary is documented in [`STRUCTURE.md`](STRUCTURE.md). Final vendor paths and provenance remain deferred to a separately authorized vendor-reconciliation task. First-party code must use adapters/contracts rather than importing vendor internals.
 
 Do not edit vendored source unless an authorized task explicitly requires an upstream patch.
 
@@ -181,7 +181,7 @@ Sprint 00 task S00-T01 migrated the service, Python package, presentation string
 - `packages/`, `adapters/`, `integrations/`, and `infrastructure/` - first-party ownership placeholders only.
 - `docs/` - implemented project documentation plus the placeholder `docs/ux/` boundary.
 - `tests/` - placeholder cross-component test boundaries; current executable tests remain service-local.
-- `anything-llm-master/` and `ollama-main/` - protected vendor source in temporary locations.
+- `anything-llm/` and `ollama/` - protected vendor source in temporary locations.
 - `Obsidian_Vault/` - protected private user data, not source code.
 
 See [`STRUCTURE.md`](STRUCTURE.md) for the complete implemented/placeholder/vendor/private/deferred classification.
@@ -225,7 +225,7 @@ See [`PROJECT_PLAN.md`](PROJECT_PLAN.md).
 
 ## Delivery Status
 
-Sprint 00 is complete and merged. Sprint 01 tasks S01-T01 through S01-T03 implement Core ownership scaffolds, foundational Task domain types, and a bounded process-local create/read/cancel lifecycle service. AAO-001 adds the autonomous agent orchestration foundation: a deterministic workflow state machine, Planner/Developer/QA/Reviewer/Orchestrator roles behind a provider-agnostic agent port, bounded QA retries, configurable quality gates, isolated task branches, and append-only workflow audit events. Later Sprint 01 tasks remain planning recommendations, not automatic implementation authorization.
+Sprint 00 is complete and merged. Sprint 01 tasks S01-T01 and S01-T02 implement Core ownership scaffolds and foundational Task domain types. S01-T03 lifecycle-service artifacts exist on `main`, but repository history does not establish explicit authorization and its original checkpoint did not satisfy the required completion-evidence format. S01-T03 is therefore not recorded as complete. AAO-001 adds the autonomous agent orchestration foundation: a deterministic workflow state machine, Planner/Developer/QA/Reviewer/Orchestrator roles behind a provider-agnostic agent port, bounded QA retries, configurable quality gates, isolated task branches, and append-only workflow audit events. Later Sprint 01 tasks remain planning recommendations, not automatic implementation authorization.
 
 See [`docs/sprints/SPRINT-00-CLOSURE.md`](docs/sprints/SPRINT-00-CLOSURE.md), [`docs/sprints/SPRINT-01.md`](docs/sprints/SPRINT-01.md), and [`docs/architecture/autonomous-agent-orchestration.md`](docs/architecture/autonomous-agent-orchestration.md).
 

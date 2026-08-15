@@ -1,4 +1,4 @@
-"""Framework-independent Ophanim domain ownership package.
+"""Framework-independent Ophanim domain types and lifecycle rules.
 
-Domain entities and value objects are introduced by later authorized tasks.
+The package intentionally does not re-export sibling-module symbols.
 """
