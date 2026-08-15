@@ -22,10 +22,14 @@ class Clock:
 
 def _command(*, correlation_id: CorrelationId | None = None) -> CreateTask:
     return CreateTask(
-        owner_id="owner-1", title="Investigate transaction",
-        objective="Read approved transaction sources", environment=Environment.TEST,
-        data_scope=DataScope("workspace-1", ("portal-1",)), risk_level=RiskLevel.LOW,
-        privacy_mode=PrivacyMode.PRIVATE, correlation_id=correlation_id,
+        owner_id="owner-1",
+        title="Investigate transaction",
+        objective="Read approved transaction sources",
+        environment=Environment.TEST,
+        data_scope=DataScope("workspace-1", ("portal-1",)),
+        risk_level=RiskLevel.LOW,
+        privacy_mode=PrivacyMode.PRIVATE,
+        correlation_id=correlation_id,
     )
 
 
@@ -78,5 +82,6 @@ def test_transition_rejects_stale_time() -> None:
     service = InMemoryTaskService(clock=Clock())
     task = service.create(_command())
     with pytest.raises(InvalidLifecycleStateError, match="transition time"):
-        transition_task(task, TaskStatus.PLANNING,
-                        occurred_at=task.updated_at - timedelta(microseconds=1))
+        transition_task(
+            task, TaskStatus.PLANNING, occurred_at=task.updated_at - timedelta(microseconds=1)
+        )
