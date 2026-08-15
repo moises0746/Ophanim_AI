@@ -39,12 +39,18 @@ class InMemoryTaskService:
     def create(self, command: CreateTask) -> Task:
         now = self._clock()
         task = Task(
-            id=TaskId.new(), owner_id=command.owner_id, title=command.title,
-            objective=command.objective, environment=command.environment,
-            data_scope=command.data_scope, risk_level=command.risk_level,
+            id=TaskId.new(),
+            owner_id=command.owner_id,
+            title=command.title,
+            objective=command.objective,
+            environment=command.environment,
+            data_scope=command.data_scope,
+            risk_level=command.risk_level,
             privacy_mode=command.privacy_mode,
             correlation_id=command.correlation_id or CorrelationId.new(),
-            priority=command.priority, created_at=now, updated_at=now,
+            priority=command.priority,
+            created_at=now,
+            updated_at=now,
         )
         with self._lock:
             self._tasks[task.id] = task
@@ -68,6 +74,10 @@ class InMemoryTaskService:
 
     def _scoped_task(self, task_id: TaskId, *, owner_id: str, workspace_id: str) -> Task:
         task = self._tasks.get(task_id)
-        if task is None or task.owner_id != owner_id or task.data_scope.workspace_id != workspace_id:
+        if (
+            task is None
+            or task.owner_id != owner_id
+            or task.data_scope.workspace_id != workspace_id
+        ):
             raise TaskNotFoundError("task not found")
         return task

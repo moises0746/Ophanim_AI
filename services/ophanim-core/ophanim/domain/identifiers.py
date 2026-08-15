@@ -89,7 +89,7 @@ class ProjectId:
 
     @classmethod
     def from_str(cls, value: str) -> ProjectId:
-        return cls(value)
+        return cls(_uuid(value))
 
     def __str__(self) -> str:
         return str(self.value)
@@ -108,7 +108,7 @@ class AgentRunId:
 
     @classmethod
     def from_str(cls, value: str) -> AgentRunId:
-        return cls(value)
+        return cls(_uuid(value))
 
     def __str__(self) -> str:
         return str(self.value)
@@ -127,7 +127,7 @@ class QualityGateRunId:
 
     @classmethod
     def from_str(cls, value: str) -> QualityGateRunId:
-        return cls(value)
+        return cls(_uuid(value))
 
     def __str__(self) -> str:
         return str(self.value)
@@ -146,7 +146,7 @@ class ReviewResultId:
 
     @classmethod
     def from_str(cls, value: str) -> ReviewResultId:
-        return cls(value)
+        return cls(_uuid(value))
 
     def __str__(self) -> str:
         return str(self.value)
@@ -165,7 +165,102 @@ class WorkflowEventId:
 
     @classmethod
     def from_str(cls, value: str) -> WorkflowEventId:
-        return cls(value)
+        return cls(_uuid(value))
+
+    def __str__(self) -> str:
+        return str(self.value)
+
+
+@dataclass(frozen=True, slots=True)
+class EventId:
+    value: UUID
+
+    def __post_init__(self) -> None:
+        object.__setattr__(self, "value", _uuid(self.value))
+
+    @classmethod
+    def new(cls) -> EventId:
+        return cls(uuid4())
+
+    @classmethod
+    def from_str(cls, value: str) -> EventId:
+        return cls(_uuid(value))
+
+    def __str__(self) -> str:
+        return str(self.value)
+
+
+@dataclass(frozen=True, slots=True)
+class ApprovalId:
+    value: UUID
+
+    def __post_init__(self) -> None:
+        object.__setattr__(self, "value", _uuid(self.value))
+
+    @classmethod
+    def new(cls) -> ApprovalId:
+        return cls(uuid4())
+
+    @classmethod
+    def from_str(cls, value: str) -> ApprovalId:
+        return cls(_uuid(value))
+
+    def __str__(self) -> str:
+        return str(self.value)
+
+
+@dataclass(frozen=True, slots=True)
+class EvidenceId:
+    value: UUID
+
+    def __post_init__(self) -> None:
+        object.__setattr__(self, "value", _uuid(self.value))
+
+    @classmethod
+    def new(cls) -> EvidenceId:
+        return cls(uuid4())
+
+    @classmethod
+    def from_str(cls, value: str) -> EvidenceId:
+        return cls(_uuid(value))
+
+    def __str__(self) -> str:
+        return str(self.value)
+
+
+@dataclass(frozen=True, slots=True)
+class ToolCallId:
+    value: UUID
+
+    def __post_init__(self) -> None:
+        object.__setattr__(self, "value", _uuid(self.value))
+
+    @classmethod
+    def new(cls) -> ToolCallId:
+        return cls(uuid4())
+
+    @classmethod
+    def from_str(cls, value: str) -> ToolCallId:
+        return cls(_uuid(value))
+
+    def __str__(self) -> str:
+        return str(self.value)
+
+
+@dataclass(frozen=True, slots=True)
+class PolicyDecisionId:
+    value: UUID
+
+    def __post_init__(self) -> None:
+        object.__setattr__(self, "value", _uuid(self.value))
+
+    @classmethod
+    def new(cls) -> PolicyDecisionId:
+        return cls(uuid4())
+
+    @classmethod
+    def from_str(cls, value: str) -> PolicyDecisionId:
+        return cls(_uuid(value))
 
     def __str__(self) -> str:
         return str(self.value)
