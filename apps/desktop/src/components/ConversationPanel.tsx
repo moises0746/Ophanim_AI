@@ -1,4 +1,6 @@
-import React from 'react';
+import { CheckCircle, Copy, MoreHoriz } from 'iconoir-react';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 import { ChatMessage } from '../types/events';
 
 interface ConversationPanelProps {
@@ -7,51 +9,51 @@ interface ConversationPanelProps {
 
 export const ConversationPanel: React.FC<ConversationPanelProps> = ({ messages }) => (
   <section
-    className="glass-panel"
+    className="conversation-panel"
     aria-label="Assistant conversation"
     aria-live="polite"
-    style={{ padding: '16px', minHeight: '150px', maxHeight: '260px', overflowY: 'auto' }}
   >
-    <h2 style={{ fontSize: '0.9rem', marginBottom: '12px', color: 'var(--text-secondary)' }}>
-      Conversation
-    </h2>
     {messages.length === 0 ? (
-      <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>
-        Choose an available model and ask Ophanim a question.
-      </p>
+      <div className="conversation-empty">
+        <span className="empty-kicker"><CheckCircle width={16} height={16} aria-hidden /> Ready when you are</span>
+        <h2>What would you like to work on?</h2>
+        <p>Ask a question, delegate a bounded goal, or inspect the connected runtime. Ophanim will only show activity confirmed by Core.</p>
+      </div>
     ) : (
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+      <div className="message-list">
         {messages.map((message, index) => (
           <div
             key={`${message.role}-${index}`}
-            style={{
-              alignSelf: message.role === 'user' ? 'flex-end' : 'flex-start',
-              maxWidth: '85%',
-              padding: '9px 12px',
-              borderRadius: '10px',
-              background:
-                message.role === 'user'
-                  ? 'rgba(99, 102, 241, 0.22)'
-                  : 'rgba(6, 182, 212, 0.12)',
-              whiteSpace: 'pre-wrap',
-              overflowWrap: 'anywhere',
-              fontSize: '0.88rem',
-              lineHeight: 1.45,
-            }}
+            className={`message-row role-${message.role}`}
           >
-            <strong
-              style={{
-                display: 'block',
-                marginBottom: '3px',
-                color:
-                  message.role === 'user'
-                    ? 'var(--accent-indigo)'
-                    : 'var(--accent-cyan)',
-              }}
-            >
-              {message.role === 'user' ? 'You' : 'Ophanim'}
-            </strong>
-            {message.content}
+            <div className="message-avatar" aria-hidden>{message.role === 'user' ? 'M' : 'O'}</div>
+            <article className="message-card">
+              <header>
+                <strong>{message.role === 'user' ? 'You' : 'Ophanim'}</strong>
+                <span>Current session</span>
+                <button type="button" aria-label="Message options" title="Message actions are not available"><MoreHoriz width={18} height={18} aria-hidden /></button>
+              </header>
+              <div className="markdown-body">
+                <ReactMarkdown
+                  remarkPlugins={[remarkGfm]}
+                  skipHtml
+                  components={{
+                    a: ({ href, children }) => (
+                      <a href={href?.startsWith('https://') ? href : undefined} rel="noreferrer">
+                        {children}
+                      </a>
+                    ),
+                  }}
+                >
+                  {message.content}
+                </ReactMarkdown>
+              </div>
+              {message.role === 'assistant' && (
+                <footer>
+                  <button type="button" title="Copy is not connected yet"><Copy width={15} height={15} aria-hidden /> Copy</button>
+                </footer>
+              )}
+            </article>
           </div>
         ))}
       </div>

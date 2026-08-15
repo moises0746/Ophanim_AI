@@ -47,7 +47,7 @@ describe('AssistantEventStreamClient', () => {
 
     stream.handleSseFrame(`event: assistant.state.changed\ndata: ${JSON.stringify(envelope())}`);
 
-    expect(onStateChange).toHaveBeenCalledWith('THINKING', 'Assistant is planning');
+    expect(onStateChange).toHaveBeenCalledWith('planning', 'Assistant is planning');
     expect(onActivityEvent).toHaveBeenCalledWith(
       expect.objectContaining({ id: 'evt-123', type: 'assistant.state.changed' }),
     );
@@ -89,9 +89,9 @@ describe('AssistantEventStreamClient', () => {
     );
   });
 
-  it('maps all accepted Core states into the existing R1-11 presentation vocabulary', () => {
-    expect(projectSemanticState('idle')).toBe('DORMANT');
-    expect(projectSemanticState('waiting_for_approval')).toBe('AWAITING_APPROVAL');
-    expect(projectSemanticState('error')).toBe('ERROR');
+  it('preserves all canonical Core states without a competing presentation vocabulary', () => {
+    expect(projectSemanticState('idle')).toBe('idle');
+    expect(projectSemanticState('waiting_for_approval')).toBe('waiting_for_approval');
+    expect(projectSemanticState('error')).toBe('error');
   });
 });

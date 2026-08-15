@@ -1,246 +1,69 @@
-import React, { useEffect, useState } from 'react';
-import { ActivityFeed } from './components/ActivityFeed';
-import { ApprovalModal } from './components/ApprovalModal';
-import { CitationDrawer } from './components/CitationDrawer';
-import { ConversationPanel } from './components/ConversationPanel';
-import { OphanimVisualizer } from './components/OphanimVisualizer';
-import { PromptBar } from './components/PromptBar';
-import { StatusBar } from './components/StatusBar';
-import { AssistantEventStreamClient } from './services/eventStream';
-import { AssistantRuntimeClient } from './services/runtime';
 import {
-  ActivityEventItem,
-  ApprovalRequest,
-  AssistantModel,
-  AssistantSemanticState,
-  ChatMessage,
-  CitationItem,
-  PrivacyMode,
-} from './types/events';
+  Group,
+  Internet,
+  Puzzle,
+  Settings,
+  TaskList,
+  Folder,
+} from 'iconoir-react';
+import { HashRouter, Navigate, Route, Routes } from 'react-router-dom';
+import { AppShell } from './app/AppShell';
+import { ApprovalModal } from './components/ApprovalModal';
+import { ActivityPage } from './features/activity/ActivityPage';
+import { ApprovalsPage } from './features/activity/ApprovalsPage';
+import { AssistantPage } from './features/assistant/AssistantPage';
+import { AutomationsPage } from './features/automations/AutomationsPage';
+import { KnowledgePage } from './features/knowledge/KnowledgePage';
+import { ModelsPage } from './features/models/ModelsPage';
+import { UnavailablePage } from './features/shared/UnavailablePage';
+import { SystemHealthPage } from './features/system/SystemHealthPage';
+import { useAssistantWorkspace } from './hooks/useAssistantWorkspace';
+import type { AssistantEventStreamClient } from './services/eventStream';
+import type { AssistantRuntimeClient } from './services/runtime';
 
 interface AppProps {
   eventStreamClient?: AssistantEventStreamClient;
   runtimeClient?: AssistantRuntimeClient;
 }
 
-export const App: React.FC<AppProps> = ({ eventStreamClient, runtimeClient }) => {
-  const [state, setState] = useState<AssistantSemanticState>('OFFLINE');
-  const [subText, setSubText] = useState('No authorized Core event stream is configured.');
-  const [privacyMode, setPrivacyMode] = useState<PrivacyMode>('LOCAL_ONLY');
-  const [models, setModels] = useState<AssistantModel[]>([]);
-  const [selectedModelKey, setSelectedModelKey] = useState('');
-  const [nodeConnected, setNodeConnected] = useState(false);
-  const [pendingApproval, setPendingApproval] = useState<ApprovalRequest | null>(null);
-  const [events, setEvents] = useState<ActivityEventItem[]>([]);
-  const [citations] = useState<CitationItem[]>([]);
-  const [conversation, setConversation] = useState<ChatMessage[]>([]);
-  const [sending, setSending] = useState(false);
-
-  const selectedModel = models.find(
-    (candidate) => `${candidate.provider}:${candidate.model_id}` === selectedModelKey,
-  );
-  const model = selectedModel?.display_name ?? 'No model configured';
-
-  useEffect(() => {
-    if (!eventStreamClient) return;
-
-    setState('INITIALIZING');
-    setSubText('Connecting to the authorized Ophanim Core event stream...');
-    eventStreamClient.setHandlers({
-      onStateChange: (nextState, summary) => {
-        setState(nextState);
-        setSubText(summary);
-      },
-      onActivityEvent: (event) => {
-        setEvents((current) => {
-          if (current.some((item) => item.id === event.id)) return current;
-          return [event, ...current].slice(0, 200);
-        });
-      },
-      onApprovalRequest: setPendingApproval,
-      onConnectionChange: (connected) => {
-        setNodeConnected(connected);
-        if (connected) setSubText('Connected. Waiting for authoritative Core state.');
-      },
-      onError: (error) => {
-        setNodeConnected(false);
-        setState('OFFLINE');
-        setSubText(`Event delivery unavailable: ${error.message}`);
-      },
-    });
-    eventStreamClient.connect();
-    return () => eventStreamClient.disconnect();
-  }, [eventStreamClient]);
-
-  useEffect(() => {
-    if (!runtimeClient) return;
-    let disposed = false;
-    let disconnectEvents: (() => void) | undefined;
-    const handlers = {
-      onStateChange: (nextState: AssistantSemanticState, summary: string) => {
-        if (!disposed) {
-          setState(nextState);
-          setSubText(summary);
-        }
-      },
-      onActivityEvent: (event: ActivityEventItem) => {
-        if (!disposed) {
-          setEvents((current) => {
-            if (current.some((item) => item.id === event.id)) return current;
-            return [event, ...current].slice(0, 200);
-          });
-        }
-      },
-      onApprovalRequest: (request: ApprovalRequest) => {
-        if (!disposed) setPendingApproval(request);
-      },
-      onConnectionChange: (connected: boolean) => {
-        if (!disposed) setNodeConnected(connected);
-      },
-      onError: (error: Error) => {
-        if (!disposed) {
-          setNodeConnected(false);
-          setState('OFFLINE');
-          setSubText(`Runtime unavailable: ${error.message}`);
-        }
-      },
-    };
-
-    void (async () => {
-      try {
-        setState('INITIALIZING');
-        setSubText('Connecting through the secure Desktop runtime...');
-        const config = await runtimeClient.getConfig();
-        if (!config.configured) throw new Error('local runtime is not configured');
-        const configuredModels = await runtimeClient.listModels();
-        if (disposed) return;
-        setModels(configuredModels);
-        const initial = configuredModels.find((candidate) => candidate.is_local) ?? configuredModels[0];
-        if (initial) {
-          setSelectedModelKey(`${initial.provider}:${initial.model_id}`);
-          setPrivacyMode(initial.is_local ? 'LOCAL_ONLY' : 'CLOUD_ASSISTED');
-        }
-        disconnectEvents = await runtimeClient.connectEvents(config.workspaceId, handlers);
-        if (!disposed) {
-          setState('DORMANT');
-          setSubText(
-            initial
-              ? 'Connected. Ask Ophanim a question.'
-              : 'Connected, but no model is configured.',
-          );
-        }
-      } catch (error) {
-        handlers.onError(error as Error);
-      }
-    })();
-
-    return () => {
-      disposed = true;
-      disconnectEvents?.();
-    };
-  }, [runtimeClient]);
-
-  const handlePromptSend = async (text: string) => {
-    if (!runtimeClient || !selectedModel || sending) {
-      setSubText('No configured Desktop runtime and model are available.');
-      return;
-    }
-    const userMessage: ChatMessage = { role: 'user', content: text };
-    const history = [...conversation, userMessage].slice(-39);
-    setConversation(history);
-    setSending(true);
-    setState('THINKING');
-    setSubText('Submitting an authenticated chat request to Ophanim Core...');
-    try {
-      const response = await runtimeClient.sendChat({
-        messages: history,
-        privacyMode,
-        provider: selectedModel.provider,
-        modelId: selectedModel.model_id,
-        maxTokens: 2048,
-      });
-      const assistantMessage: ChatMessage = {
-        role: 'assistant',
-        content: response.content,
-      };
-      setConversation((current) => [...current, assistantMessage].slice(-40));
-      setSubText(`Response completed by ${response.model_id}.`);
-      setState('COMPLETED');
-    } catch (error) {
-      setState('ERROR');
-      setSubText(`Chat failed: ${(error as Error).message ?? String(error)}`);
-    } finally {
-      setSending(false);
-    }
-  };
-
-  const handleModelChange = (modelKey: string) => {
-    setSelectedModelKey(modelKey);
-    const nextModel = models.find(
-      (candidate) => `${candidate.provider}:${candidate.model_id}` === modelKey,
-    );
-    if (nextModel) setPrivacyMode(nextModel.is_local ? 'LOCAL_ONLY' : 'CLOUD_ASSISTED');
-  };
-
-  const handleApprovalAction = (_approvalId: string) => {
-    setPendingApproval(null);
-    setSubText('Approval execution is not part of R1-12; no action was performed.');
-  };
-
-  const handleEmergencyStop = () => {
-    setSubText('Core cancellation is not wired in R1-12; no stop confirmation is claimed.');
-  };
+export function App({ eventStreamClient, runtimeClient }: AppProps) {
+  const workspace = useAssistantWorkspace({ eventStreamClient, runtimeClient });
 
   return (
-    <div style={{ maxWidth: '1440px', margin: '0 auto', padding: '20px', minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
-      <StatusBar
-        state={state}
-        model={model}
-        privacyMode={privacyMode}
-        nodeConnected={nodeConnected}
-        onEmergencyStop={handleEmergencyStop}
-      />
-
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 340px', gap: '20px', flex: 1, minHeight: '600px' }}>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-          <div className="glass-panel" style={{ flex: '0 0 auto', padding: '16px' }}>
-            <OphanimVisualizer state={state} subText={subText} />
-          </div>
-
-          <ConversationPanel messages={conversation} />
-
-          <div style={{ flex: 1, minHeight: '260px' }}>
-            <ActivityFeed events={events} />
-          </div>
-
-          <PromptBar
-            onSend={(text) => void handlePromptSend(text)}
-            disabled={
-              state === 'AWAITING_APPROVAL' ||
-              sending ||
-              !runtimeClient ||
-              !selectedModel
-            }
-            models={models}
-            selectedModelKey={selectedModelKey}
-            privacyMode={privacyMode}
-            onModelChange={handleModelChange}
-            onPrivacyChange={setPrivacyMode}
-          />
-        </div>
-
-        <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-          <CitationDrawer citations={citations} />
-        </div>
-      </div>
+    <HashRouter>
+      <AppShell
+        connection={workspace.connection}
+        models={workspace.models}
+        selectedModelKey={workspace.selectedModelKey}
+        privacyMode={workspace.privacyMode}
+        onModelChange={workspace.changeModel}
+        onPrivacyChange={workspace.setPrivacyMode}
+      >
+        <Routes>
+          <Route path="/" element={<AssistantPage workspace={workspace} />} />
+          <Route path="/models" element={<ModelsPage models={workspace.models} selectedModelKey={workspace.selectedModelKey} connection={workspace.connection} onSelect={workspace.changeModel} />} />
+          <Route path="/knowledge" element={<KnowledgePage citations={workspace.citations} />} />
+          <Route path="/automations" element={<AutomationsPage />} />
+          <Route path="/system-health" element={<SystemHealthPage connection={workspace.connection} models={workspace.models} eventCount={workspace.events.length} />} />
+          <Route path="/activity" element={<ActivityPage events={workspace.events} />} />
+          <Route path="/approvals" element={<ApprovalsPage request={workspace.pendingApproval} onDismiss={workspace.dismissApproval} />} />
+          <Route path="/tasks" element={<UnavailablePage eyebrow="Work" title="Tasks" description="Authoritative task state and bounded execution history." detail="The current Desktop runtime does not expose a task-list contract. Assistant chat and Core events remain available without fabricating task records." icon={TaskList} />} />
+          <Route path="/projects" element={<UnavailablePage eyebrow="Work" title="Projects" description="Organized goals, tasks, outputs, and evidence." detail="Project persistence and membership contracts are not implemented in the connected runtime." icon={Folder} />} />
+          <Route path="/ai-team" element={<UnavailablePage eyebrow="Agents" title="AI Team" description="Bounded capability profiles and event-derived assignments." detail="The UI will show agents only after Core exposes authorized agent-profile and assignment projections." icon={Group} />} />
+          <Route path="/browser" element={<UnavailablePage eyebrow="Capabilities" title="Browser" description="Governed read-only browser investigation." detail="Browser automation is not part of this UI task. No browser control or synthetic session is exposed here." icon={Internet} />} />
+          <Route path="/integrations" element={<UnavailablePage eyebrow="Connections" title="Integrations" description="Typed, governed connections to external systems." detail="Integration registry and health contracts are not exposed to Desktop yet. Provider credentials remain outside React." icon={Puzzle} />} />
+          <Route path="/settings" element={<UnavailablePage eyebrow="Preferences" title="Settings" description="Workspace, accessibility, privacy, and runtime preferences." detail="Persistent settings are not implemented. System reduced-motion and high-contrast preferences are honored automatically." icon={Settings} />} />
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+      </AppShell>
 
       <ApprovalModal
-        request={pendingApproval}
-        onApprove={handleApprovalAction}
-        onReject={handleApprovalAction}
+        request={workspace.pendingApproval}
+        onApprove={workspace.dismissApproval}
+        onReject={workspace.dismissApproval}
       />
-    </div>
+    </HashRouter>
   );
-};
+}
 
 export default App;

@@ -86,7 +86,7 @@ describe('Tauri Assistant runtime bridge', () => {
         '"evidence_refs":[],"artifact_refs":[]}\n\n',
     });
 
-    expect(states).toEqual(['EXECUTING']);
+    expect(states).toEqual(['working']);
     disconnect();
     expect(listeners.size).toBe(0);
   });

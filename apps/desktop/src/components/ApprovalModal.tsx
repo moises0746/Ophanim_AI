@@ -11,7 +11,7 @@ export const ApprovalModal: React.FC<ApprovalModalProps> = ({ request, onApprove
   if (!request) return null;
 
   return (
-    <div style={{
+    <div role="presentation" style={{
       position: 'fixed',
       inset: 0,
       background: 'rgba(6, 8, 20, 0.85)',
@@ -22,7 +22,7 @@ export const ApprovalModal: React.FC<ApprovalModalProps> = ({ request, onApprove
       zIndex: 1000,
       padding: '20px',
     }}>
-      <div className="glass-panel" style={{
+      <div role="dialog" aria-modal="true" aria-labelledby="approval-title" className="glass-panel" style={{
         maxWidth: '520px',
         width: '100%',
         padding: '24px',
@@ -44,7 +44,7 @@ export const ApprovalModal: React.FC<ApprovalModalProps> = ({ request, onApprove
             !
           </div>
           <div>
-            <h3 style={{ fontSize: '1.1rem', fontWeight: 600, color: 'var(--text-primary)' }}>
+            <h3 id="approval-title" style={{ fontSize: '1.1rem', fontWeight: 600, color: 'var(--text-primary)' }}>
               Human Approval Required
             </h3>
             <span style={{ fontSize: '0.75rem', color: 'var(--accent-amber)', textTransform: 'uppercase', fontWeight: 600 }}>
@@ -55,6 +55,10 @@ export const ApprovalModal: React.FC<ApprovalModalProps> = ({ request, onApprove
 
         <p style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', marginBottom: '16px', lineHeight: 1.5 }}>
           {request.description}
+        </p>
+
+        <p style={{ fontSize: '0.8rem', color: 'var(--accent-amber)', marginBottom: '16px', lineHeight: 1.5 }}>
+          This Desktop release cannot execute approvals. These controls only dismiss the local presentation.
         </p>
 
         <div style={{
@@ -88,7 +92,7 @@ export const ApprovalModal: React.FC<ApprovalModalProps> = ({ request, onApprove
               fontSize: '0.85rem'
             }}
           >
-            Reject Action
+            Dismiss
           </button>
           <button
             onClick={() => onApprove(request.approvalId)}
@@ -104,7 +108,7 @@ export const ApprovalModal: React.FC<ApprovalModalProps> = ({ request, onApprove
               boxShadow: '0 0 16px rgba(245, 158, 11, 0.4)'
             }}
           >
-            Approve & Execute
+            Acknowledge only
           </button>
         </div>
       </div>

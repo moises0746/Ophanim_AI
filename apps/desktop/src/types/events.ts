@@ -1,17 +1,3 @@
-export type AssistantSemanticState =
-  | 'OFFLINE'
-  | 'INITIALIZING'
-  | 'DORMANT'
-  | 'LISTENING'
-  | 'THINKING'
-  | 'SPEAKING'
-  | 'EXECUTING'
-  | 'AWAITING_APPROVAL'
-  | 'BLOCKED'
-  | 'PAUSED'
-  | 'ERROR'
-  | 'COMPLETED';
-
 export type CoreAssistantSemanticState =
   | 'idle'
   | 'listening'
@@ -25,6 +11,10 @@ export type CoreAssistantSemanticState =
   | 'completed'
   | 'blocked'
   | 'error';
+
+export type AssistantSemanticState = CoreAssistantSemanticState;
+
+export type RuntimeConnectionState = 'connecting' | 'online' | 'offline' | 'error';
 
 export type AssistantEventType =
   | 'assistant.state.changed'

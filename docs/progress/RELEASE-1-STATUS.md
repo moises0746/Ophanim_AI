@@ -1,6 +1,6 @@
 # Ophanim AI — Release 1 Status and Progress Tracker
 
-**Document Version**: 1.12.0
+**Document Version**: 1.13.0
 **Current Release Objective**: Deliver Ophanim AI Release 1 — A secure, testable, local-first AI Coworker vertical slice with Python Hub/Core, Tauri/React Desktop Assistant, lightweight Rust Device Node, governed tool execution, knowledge citations, and AI Transaction Investigation.  
 **Last Updated**: 2026-08-15  
 
@@ -24,6 +24,7 @@
 | **R1-11** | Desktop Assistant Shell | Tauri + React + TypeScript desktop application shell, state renderer for 12 presentation states | R1-01 | **MERGED** | PR #17, `docs/checkpoints/R1-11.md` |
 | **R1-12** | Assistant Event Stream | Authenticated SSE delivery from Core to Desktop UI, real-time activity and approval presentation | R1-11, R1-03 | **IMPLEMENTED** | `task/r1-12-assistant-event-stream`, `docs/checkpoints/R1-12.md` |
 | **R1-RUN-01** | Runtime Composition | Complete Tauri/Core composition, authenticated chat use case, secure credential bridge, and one-command local launcher | R1-12, R1-06A | **IMPLEMENTED** | `task/r1-run-01-runtime-composition`, `docs/checkpoints/R1-RUN-01.md` |
+| **UI-R1-T01** | Desktop Experience | Responsive Assistant-first desktop workspace, canonical state visuals, operational routes, and truthful unavailable boundaries | R1-RUN-01 | **IMPLEMENTED** | `agent/ui-r1-ophanim-assistant`, `docs/checkpoints/UI-R1-T01.md` |
 | **R1-13** | Governed Browser Automation | Playwright-based browser driver, domain allowlist enforcement, read-only session capture | R1-02, R1-09 | PENDING | — |
 | **R1-14** | Diagnostic DB & Log Tools | Parameterized read-only DB query tool and structured log search tool with sanitization | R1-02, R1-09 | PENDING | — |
 | **R1-15** | Transaction Investigation | AI Transaction Investigation vertical slice end-to-end integration (Portal, DB, Logs, Knowledge) | R1-06..14 | PENDING | — |
@@ -34,9 +35,9 @@
 
 ## 2. Current Execution State
 
-* **Active Task**: `R1-RUN-01` (Local Runtime Composition & Desktop Chat Launcher)
-* **Active Branch**: `task/r1-run-01-runtime-composition`
-* **Base Branch**: `task/r1-06a-cloud-providers` @ `d6c031d`
+* **Active Task**: `UI-R1-T01` (Ophanim Assistant Desktop Experience)
+* **Active Branch**: `agent/ui-r1-ophanim-assistant`
+* **Base Branch**: `main` with required R1-12, R1-06A, and R1-RUN-01 commits replayed
 * **Open PRs**: None.
 * **Completed & Merged Tasks**:
   - `R1-01`: Repository and Documentation Reconciliation (PR #6 merged at `41a0552`, PR #7 merged at `7e80ff5`).
@@ -52,7 +53,8 @@
   - `R1-11`: Desktop Assistant shell and 12-state visualizer (PR #17 merged at `560ebf1`).
 * **Validation Results**:
   - `npm.cmd run build`: 0 errors in `apps/desktop`.
-  - `npm.cmd run test`: 12 passed in Vitest.
+  - `npm.cmd run test`: 13 passed in Vitest, including automated accessibility checks.
+  - `npm.cmd run test:e2e`: 8 passed across four responsive viewports.
   - Desktop Tauri `cargo test`: 2 passed.
   - `cargo test`: 4 passed in `services/ophanim-node`.
   - `pytest`: 147 passed across `services/ophanim-core`.

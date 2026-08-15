@@ -16,27 +16,25 @@ export interface EventStreamHandlers {
 
 export type AuthorizationProvider = () => Promise<string>;
 
-const CORE_TO_PRESENTATION_STATE: Record<CoreAssistantSemanticState, AssistantSemanticState> = {
-  idle: 'DORMANT',
-  listening: 'LISTENING',
-  understanding: 'THINKING',
-  planning: 'THINKING',
-  delegating: 'EXECUTING',
-  working: 'EXECUTING',
-  waiting_for_tool: 'EXECUTING',
-  waiting_for_approval: 'AWAITING_APPROVAL',
-  speaking: 'SPEAKING',
-  completed: 'COMPLETED',
-  blocked: 'BLOCKED',
-  error: 'ERROR',
-};
-
 const CORE_STATES = new Set<CoreAssistantSemanticState>(
-  Object.keys(CORE_TO_PRESENTATION_STATE) as CoreAssistantSemanticState[],
+  [
+    'idle',
+    'listening',
+    'understanding',
+    'planning',
+    'delegating',
+    'working',
+    'waiting_for_tool',
+    'waiting_for_approval',
+    'speaking',
+    'completed',
+    'blocked',
+    'error',
+  ],
 );
 
 export function projectSemanticState(state: CoreAssistantSemanticState): AssistantSemanticState {
-  return CORE_TO_PRESENTATION_STATE[state];
+  return state;
 }
 
 function activityStatus(envelope: EventEnvelope): ActivityEventItem['status'] {
