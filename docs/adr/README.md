@@ -20,6 +20,7 @@ All baseline ADRs below are **Accepted**. Their acceptance records architecture 
 | [ADR-014](ADR-014-read-only-mvp-first.md) | Read-Only MVP First |
 | [ADR-015](ADR-015-vendor-source-isolated.md) | Vendor Source Isolated from Ophanim Product Logic |
 | [ADR-016](ADR-016-autonomous-agent-orchestration.md) | Deterministic State-Driven Autonomous Agent Orchestration |
+| [ADR-017](ADR-017-polyglot-runtime-boundaries.md) | Polyglot Runtime Boundaries: Python Control Plane and Evidence-Gated Rust |
 
 ## Record Format
 
