@@ -10,7 +10,8 @@ Planning recommendation from S00-T10; not implementation authorization. Sprint 0
 - S01-T02: implemented and reconciled.
 - S01-T03: implementation artifacts are present on `main`, but explicit authorization and complete original checkpoint evidence were not found; not accepted as complete.
 - AAO-001 autonomous agent orchestration foundation: implemented on `main` at `502385d`; this does not change the acceptance status of the Sprint 01 tasks above.
-- S01-T04 through S01-T08: unimplemented. S01-T04 is the designated next task but is not authorized to start.
+- S01-T04: implemented and checkpointed (Default-Deny Policy Interface).
+- S01-T05 through S01-T08: unimplemented. S01-T05 is the designated next task.
 - See `docs/handoff/HANDOFF.md` for the current handoff context; the evidence-based task status above remains authoritative for this reconciliation.
 
 ## Recommended Tasks

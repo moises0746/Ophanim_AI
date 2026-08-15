@@ -28,9 +28,10 @@ by 1 commit — push is pending** (user has not yet authorized the push).
 | S01-T01 — Core package/layer scaffolding | `services/ophanim-core/ophanim/{domain,application,ports,api}/` | `docs/checkpoints/S01-T01.md` |
 | S01-T02 — Foundational domain types (Task/TaskStep) | `ophanim/domain/{task,identifiers,values,lifecycle_rules,errors}.py` | `docs/checkpoints/S01-T02.md` |
 | S01-T03 — Task lifecycle application service (in-memory create/read/cancel) | `ophanim/application/task_service.py` | `docs/checkpoints/S01-T03.md` |
+| S01-T04 — Default-deny policy interface | `ophanim/domain/{policy,errors}.py`, `ophanim/ports/policy_engine.py`, `ophanim/adapters/default_deny_policy.py`, `tests/test_policy_engine.py` | `docs/checkpoints/S01-T04.md` |
 | AAO-001 — Autonomous agent orchestration foundation (workflow state machine, roles, AgentProvider port, quality gates, bounded retry, in-memory persistence, audit events, `WorkflowOrchestrator`) | `ophanim/domain/{workflow,engineering_task,agents,quality,reviews,agent_run,events}.py`, `ophanim/ports/*`, `ophanim/persistence/in_memory.py`, `ophanim/adapters/{agent_providers,gate_runners}.py`, `ophanim/application/workflow_orchestrator.py`, `tests/test_workflow_*.py`, `tests/test_gate_runners.py` | `docs/checkpoints/AAO-001.md`, `docs/architecture/autonomous-agent-orchestration.md`, `docs/adr/ADR-016-autonomous-agent-orchestration.md` |
 
-Tests: **57 passed** (`18` pre-existing + `39` new). `ruff check .` clean.
+Tests: **70 passed** (`18` pre-existing + `39` AAO-001 + `13` S01-T04). `ruff check .` clean.
 `ruff format --check` clean on all changed files (5 pre-existing files remain
 unformatted and were intentionally left untouched: `lifecycle_rules.py`,
 `task_service.py`, `test_architecture_boundaries.py`, `test_domain_types.py`,
@@ -38,21 +39,16 @@ unformatted and were intentionally left untouched: `lifecycle_rules.py`,
 
 ## Pending (not authorized; do not start without explicit go-ahead)
 
-### Next Task: S01-T04 — Default-Deny Policy Interface
+### Next Task: S01-T05 — Event Contract Python Models
 
-- Scope (from `docs/sprints/SPRINT-01.md`): define a typed policy port and a
-  safe deny implementation for task/capability/tool scope.
-- Explicit exclusions: RBAC provider, secret vault, approval runtime, write
-  policy.
-- DoR notes: owning module is `ophanim/domain` + `ophanim/ports`; must stay
-  framework-free; add security/negative tests; checkpoint + handoff update
-  required.
+- Scope (from `docs/sprints/SPRINT-01.md`): implement validated envelope/material task events from S00-T06 without transport.
+- Explicit exclusions: SSE/WebSocket, desktop, animation, voice.
+- DoR notes: owning module is `ophanim/domain` (or `ophanim/domain/events.py`); must stay framework-free; add schema/serialization negative tests; checkpoint + handoff update required.
 
 ### Remaining Sprint 01 tasks (in order)
 
 | Task | Scope |
 |---|---|
-| S01-T05 | Event contract Python models (validated envelope/material task events from S00-T06, no transport) |
 | S01-T06 | Minimal Task API (versioned create/inspect/list/cancel read-only routes, thin handlers) |
 | S01-T07 | Tests and architecture enforcement (domain/application/API tests, negative cases, import-direction checks, CI-compatible commands) |
 | S01-T08 | Sprint 01 integration checkpoint (verify slice, update traceability/docs, record limitations, stop) |
