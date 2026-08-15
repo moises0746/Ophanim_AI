@@ -1,50 +1,65 @@
 # Ophanim AI — Current Handoff
 
-Read this after the required root source-of-truth documents. It records current execution state and does not authorize pending work.
+Read this after the required root source-of-truth documents. It records current
+execution state and does not authorize pending work.
 
 ## Project status (2026-08-15)
 
-- `main` and `origin/main` remain at `560ebf1`.
-- R1-12 is preserved in local commit `bab5949` on `task/r1-12-assistant-event-stream`; it is not pushed or merged.
-- Active branch: `task/r1-06a-cloud-providers`, based on the R1-12 commit.
-- R1-06A is implemented and checkpointed in `docs/checkpoints/R1-06A.md`; its changes are uncommitted and unpushed.
-- Full validation: 137 Core tests, 9 Desktop tests/build, 4 Rust Node tests, Ruff lint/format, and `git diff --check` pass.
-- The user deleted the unrelated `open-webui/` tree; no follow-up decision remains.
+- main and origin/main remain at 560ebf1.
+- R1-12 is preserved in local commit bab5949.
+- R1-06A is preserved in local commit d6c031d.
+- Active branch: task/r1-run-01-runtime-composition, based on R1-06A.
+- R1-RUN-01 is implemented and checkpointed; its changes are uncommitted and unpushed.
+- Full validation: 147 Core tests, 12 Desktop tests/build, 2 Tauri Rust tests,
+  4 Rust Node tests, Ruff lint/format, npm audit, and Git whitespace checks pass.
+- The user deleted the unrelated open-webui tree; it remains absent.
 
 ## Done — do not rebuild
 
 - Sprint 00 baseline and ADR-001 through ADR-017.
-- R1-01 through R1-11 merged; see `docs/progress/RELEASE-1-STATUS.md`.
-- R1-12 authenticated default-deny Assistant SSE delivery and truthful Desktop event projection, locally committed but not merged.
-- R1-06A governed OpenAI, Gemini, and Anthropic text-model adapters with runtime secret resolution, privacy enforcement, bounded retries, sanitized health, and contract tests.
+- R1-01 through R1-11 merged; see the Release 1 tracker.
+- R1-12 authenticated default-deny Assistant SSE delivery.
+- R1-06A governed OpenAI, Gemini, and Anthropic text-provider adapters.
+- R1-RUN-01 authenticated Core chat/model APIs, loopback LM Studio text adapter,
+  local runtime composition, Tauri-held ephemeral credential, Desktop chat/model
+  controls, sanitized Core event projection, and one-command local launcher.
+
+## Run locally
+
+Configure at least one explicit model ID and any matching credential in the
+current process, then run:
+
+~~~powershell
+cd apps/desktop
+npm.cmd run app:dev
+~~~
+
+See docs/development/local-setup.md for LM Studio, OpenAI, Gemini, and Anthropic
+examples.
 
 ## Pending — not authorized
 
-### Recommended next task: R1-RUN-01 — Local Runtime Composition & Desktop Chat Launcher
+1. R1-13 — Governed Browser Automation.
+2. R1-14 — Diagnostic DB & Log Tools.
+3. R1-15 — Transaction Investigation vertical slice.
+4. R1-16 — Observability & Packaging.
+5. R1-17 — Hardening & Release Gate.
 
-Complete the real Tauri runtime, compose Core identity/event/model services, add an authenticated Core chat use case, acquire credentials outside UI ownership, instantiate the Desktop event/chat client, and add one-command local startup plus smoke tests.
+## Runtime limitations
 
-### Remaining Release 1 roadmap
-
-1. R1-RUN-01 — Local Runtime Composition & Desktop Chat Launcher.
-2. R1-13 — Governed Browser Automation.
-3. R1-14 — Diagnostic DB & Log Tools.
-4. R1-15 — Transaction Investigation vertical slice.
-5. R1-16 — Observability & Packaging.
-6. R1-17 — Hardening & Release Gate.
-
-## R1-06A continuation notes
-
-- Providers are disabled until an explicit model ID is configured.
-- Local development keys are read from allowlisted Core process-environment variables at request time; no value belongs in the Desktop or repository.
-- OpenAI, Gemini, and Anthropic adapters support normalized text chat only; see `docs/integrations/cloud-model-providers.md`.
-- `LOCAL_ONLY` and `PRIVATE` are denied inside cloud adapters before credentials are resolved.
-- R1-RUN-01 is required before the Desktop can submit chat and receive cloud/local responses.
+- The environment-backed ephemeral Desktop identity is local-development only;
+  production identity and OS credential-store integration remain future work.
+- Chat history is process/UI memory only and is not durable.
+- Text chat is request/response; provider token streaming is not implemented.
+- Emergency stop and explicit chat cancellation are not wired yet.
+- Provider models/capabilities must be configured truthfully by the operator.
+- Live provider, quota, billing, and production credential tests are opt-in and
+  were not executed.
 
 ## Guardrails
 
 - Implement one explicitly authorized task at a time and stop after its checkpoint.
-- Do not modify vendor trees or `Obsidian_Vault/` without explicit scope.
-- Never commit `.env`, provider keys, auth state, private notes, or sensitive output.
+- Do not modify vendor trees or Obsidian_Vault without explicit scope.
+- Never commit environment files, provider keys, auth state, private notes, or sensitive output.
 - Models analyze and recommend; governed deterministic tools alone execute side effects.
-- Cloud routing requires explicit `STANDARD` privacy mode and truthful configured capabilities.
+- Cloud routing requires explicit STANDARD privacy mode.

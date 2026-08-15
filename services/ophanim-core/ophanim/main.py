@@ -6,15 +6,35 @@ from ophanim.adapters.anythingllm import AnythingLLMClient
 from ophanim.adapters.cloud_model_providers import build_configured_cloud_providers
 from ophanim.adapters.environment_secrets import EnvironmentSecretResolver
 from ophanim.adapters.lmstudio import LMStudioClient
-from ophanim.api.assistant_stream import router as assistant_stream_router
+from ophanim.api.assistant_chat import (
+    get_chat_identity,
+    get_chat_service,
+)
+from ophanim.api.assistant_chat import (
+    router as assistant_chat_router,
+)
+from ophanim.api.assistant_stream import (
+    get_event_broadcaster,
+    get_event_stream_authorizer,
+)
+from ophanim.api.assistant_stream import (
+    router as assistant_stream_router,
+)
 from ophanim.browser.agent import BrowserAgentUnavailable, BrowserUseAgent
 from ophanim.browser.models import BrowserTask, BrowserTaskResult
 from ophanim.browser.policy import BrowserPolicyError
 from ophanim.config import get_settings
 from ophanim.domain.errors import DomainValidationError
+from ophanim.runtime import build_runtime
 
 app = FastAPI(title="Ophanim Core", version="0.1.0")
 app.include_router(assistant_stream_router)
+app.include_router(assistant_chat_router)
+
+_runtime = build_runtime(get_settings(), get_event_broadcaster())
+app.dependency_overrides[get_chat_service] = lambda: _runtime.chat_service
+app.dependency_overrides[get_chat_identity] = lambda: _runtime.identity
+app.dependency_overrides[get_event_stream_authorizer] = lambda: _runtime.event_authorizer
 
 
 @app.get("/health")

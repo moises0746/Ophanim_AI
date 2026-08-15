@@ -17,7 +17,18 @@ class Settings(BaseSettings):
     anythingllm_api_key: str | None = Field(default=None)
     lmstudio_base_url: AnyHttpUrl = Field(default="http://localhost:1234/v1")
     lmstudio_api_key: str | None = Field(default=None)
+    lmstudio_api_key_ref: str = Field(default="OPHANIM_LMSTUDIO_API_KEY", min_length=1)
+    lmstudio_model: str = Field(default="")
+    lmstudio_context_window: int = Field(default=1, ge=1)
+    lmstudio_capabilities: str = Field(default="chat")
     request_timeout_seconds: float = Field(default=10.0, gt=0)
+
+    runtime_tenant_id: str = Field(default="")
+    runtime_workspace_id: str = Field(default="")
+    desktop_api_token_ref: str = Field(default="OPHANIM_DESKTOP_API_TOKEN", min_length=1)
+    assistant_chat_max_messages: int = Field(default=40, ge=1, le=200)
+    assistant_chat_max_input_chars: int = Field(default=100_000, ge=1, le=500_000)
+    assistant_chat_max_output_tokens: int = Field(default=2_048, ge=1, le=32_768)
 
     cloud_model_timeout_seconds: float = Field(default=30.0, gt=0, le=300.0)
     cloud_model_max_retries: int = Field(default=1, ge=0, le=3)

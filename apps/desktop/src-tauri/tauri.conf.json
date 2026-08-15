@@ -18,14 +18,14 @@
       "identifier": "ai.ophanim.desktop"
     },
     "security": {
-      "csp": null
+      "csp": "default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; connect-src 'self'"
     },
     "windows": [
       {
         "fullscreen": false,
         "height": 860,
         "resizable": true,
-        "title": "Ophanim AI — Control Center",
+        "title": "Ophanim AI - Assistant",
         "width": 1280
       }
     ]

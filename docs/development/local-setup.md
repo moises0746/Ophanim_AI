@@ -3,8 +3,55 @@
 ## Prerequisites
 
 - Python 3.12+
-- AnythingLLM running locally or reachable over HTTP
-- LM Studio with its local server enabled
+- Node.js 20.19+ or a supported newer release
+- Rust and the Windows WebView2 development prerequisites for Tauri
+- At least one configured model: LM Studio, OpenAI, Gemini, or Anthropic Claude
+
+## Run the Desktop Assistant
+
+Install first-party dependencies once:
+
+~~~powershell
+cd services/ophanim-core
+pip install -e ".[dev]"
+cd ../../apps/desktop
+npm.cmd install
+~~~
+
+Configure at least one model in the current PowerShell process. For LM Studio:
+
+~~~powershell
+$env:OPHANIM_LMSTUDIO_MODEL="<model-id-loaded-in-lm-studio>"
+~~~
+
+For a cloud provider, set both the explicit model ID and credential value in the
+process environment:
+
+~~~powershell
+$env:OPHANIM_OPENAI_MODEL="<openai-model-id>"
+$env:OPHANIM_OPENAI_API_KEY="<secret>"
+
+# Or:
+$env:OPHANIM_GEMINI_MODEL="<gemini-model-id>"
+$env:OPHANIM_GEMINI_API_KEY="<secret>"
+
+# Or:
+$env:OPHANIM_ANTHROPIC_MODEL="<claude-model-id>"
+$env:OPHANIM_ANTHROPIC_API_KEY="<secret>"
+~~~
+
+Then launch Core and the Tauri Desktop together:
+
+~~~powershell
+cd apps/desktop
+npm.cmd run app:dev
+~~~
+
+The launcher binds Core to 127.0.0.1:8080, generates an ephemeral tenant,
+workspace, and bearer credential in process memory, waits for Core health, starts
+Tauri, and stops only the Core process it created when Tauri exits. The credential
+is held by the Rust bridge and never returned to React. Existing runtime tenant,
+workspace, or Desktop-token process values are honored when deliberately set.
 
 ## Run Ophanim Core
 

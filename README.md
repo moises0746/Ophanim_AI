@@ -6,7 +6,7 @@ Ophanim AI is the product and control plane. It accepts goals through voice or t
 
 The Assistant is the default product experience. AnythingLLM, LM Studio, Ollama, MCP servers, cloud models, browser engines, and enterprise systems are replaceable subsystems behind Ophanim-owned contracts.
 
-> Project status: **Sprint 00 and Release 1 tasks R1-01 through R1-11 are merged. R1-12 is locally committed and checkpointed but not merged. R1-06A adds checkpointed governed OpenAI, Gemini, and Anthropic text adapters on the active task branch. R1-RUN-01 is the recommended next task to compose an authenticated Desktop/Core chat runtime; it is not automatically authorized.**
+> Project status: **Sprint 00 and Release 1 tasks R1-01 through R1-11 are merged. R1-12 and R1-06A are locally committed and checkpointed but not merged. R1-RUN-01 adds an authenticated runnable Tauri/Core chat path for configured LM Studio, OpenAI, Gemini, and Anthropic models on the active task branch.**
 
 ## Start Here
 
@@ -176,8 +176,8 @@ Sprint 00 task S00-T01 migrated the service, Python package, presentation string
 
 ## Repository Map
 
-- `apps/desktop/` - implemented Tauri/React Desktop Assistant shell with authoritative Core-event presentation through the R1-12 typed SSE client boundary.
-- `services/ophanim-core/` - implemented first-party runtime and service-local tests.
+- `apps/desktop/` - runnable Tauri/React Desktop Assistant with a credential-isolating Rust bridge, model/privacy selection, authenticated chat, and authoritative Core-event presentation.
+- `services/ophanim-core/` - implemented first-party runtime with authenticated Assistant chat/model APIs, local/cloud provider routing, and service-local tests.
 - `packages/`, `adapters/`, `integrations/`, and `infrastructure/` - first-party ownership placeholders only.
 - `docs/` - implemented project documentation plus the placeholder `docs/ux/` boundary.
 - `tests/` - placeholder cross-component test boundaries; executable tests currently live under Core, Desktop, and Node components.
@@ -225,7 +225,7 @@ See [`PROJECT_PLAN.md`](PROJECT_PLAN.md).
 
 ## Delivery Status
 
-Sprint 00 is complete and merged. Release 1 tasks R1-01 through R1-11 are merged. R1-12 implements authenticated default-deny Assistant SSE delivery and is preserved in local commit `bab5949`, not merged. R1-06A implements governed OpenAI Responses, Gemini `generateContent`, and Anthropic Messages text adapters with runtime secret resolution, fixed official origins, bounded retries, capability validation, and adapter-level privacy denial. Desktop chat/runtime composition remains deferred to R1-RUN-01. The original S01-T03 acceptance caveat and unimplemented S01-T06 through S01-T08 records remain explicit rather than being retroactively rewritten.
+Sprint 00 is complete and merged. Release 1 tasks R1-01 through R1-11 are merged. R1-12 is preserved in local commit `bab5949`, and R1-06A is preserved in local commit `d6c031d`; neither is merged. R1-RUN-01 composes authenticated Assistant chat and model listing in Core, loopback LM Studio plus configured cloud routing, a real Tauri credential/event/chat bridge, Desktop conversation controls, and a one-command local launcher. The original S01-T03 acceptance caveat and unimplemented S01-T06 through S01-T08 records remain explicit rather than being retroactively rewritten.
 
 See [`docs/sprints/SPRINT-00-CLOSURE.md`](docs/sprints/SPRINT-00-CLOSURE.md), [`docs/sprints/SPRINT-01.md`](docs/sprints/SPRINT-01.md), and [`docs/architecture/autonomous-agent-orchestration.md`](docs/architecture/autonomous-agent-orchestration.md).
 
@@ -243,4 +243,4 @@ See the [`docs/adr/` index](docs/adr/README.md) for the authoritative titles and
 
 ## Current Status
 
-**Do not start broad feature implementation.** R1-06A is the completed active task. R1-RUN-01 is recommended next so the Desktop can submit authenticated chat through local or configured cloud models, but it is not authorized automatically. Browser automation, diagnostic DB/log tools, the transaction-investigation vertical slice, packaging, and Release 1 hardening remain pending. See the Release 1 tracker and current handoff for evidence-backed status.
+**Do not start broad feature implementation.** R1-RUN-01 is the completed active task. Run the local app with `cd apps/desktop` followed by `npm.cmd run app:dev` after configuring at least one model as described in [local setup](docs/development/local-setup.md). Governed browser automation remains the recommended next task but is not automatically authorized.

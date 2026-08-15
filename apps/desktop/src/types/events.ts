@@ -68,6 +68,43 @@ export type AssistantEventType =
 
 export type PrivacyMode = 'LOCAL_ONLY' | 'PRIVATE' | 'CLOUD_ASSISTED';
 
+export type ModelProvider =
+  | 'lm_studio'
+  | 'ollama'
+  | 'openai'
+  | 'gemini'
+  | 'anthropic'
+  | 'cloud'
+  | 'mock';
+
+export interface AssistantModel {
+  provider: ModelProvider;
+  model_id: string;
+  display_name: string;
+  context_window: number;
+  capabilities: string[];
+  is_local: boolean;
+}
+
+export interface ChatMessage {
+  role: 'user' | 'assistant';
+  content: string;
+}
+
+export interface ChatCompletion {
+  correlation_id: string;
+  content: string;
+  provider: ModelProvider;
+  model_id: string;
+  finish_reason: string;
+  usage: {
+    prompt_tokens: number;
+    completion_tokens: number;
+    total_tokens: number;
+  };
+  latency_ms: number;
+}
+
 export interface ApprovalRequest {
   approvalId: string;
   taskId: string;

@@ -27,3 +27,11 @@ class WorkflowConflictError(WorkflowApplicationError):
 
 class AgentExecutionError(WorkflowApplicationError):
     """Raised when an agent provider fails to produce a usable result."""
+
+
+class AssistantAuthorizationError(Exception):
+    """Raised when a principal cannot access an Assistant use case."""
+
+
+class AssistantDependencyError(Exception):
+    """Sanitized failure from the configured model runtime."""

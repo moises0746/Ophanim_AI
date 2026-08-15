@@ -1,11 +1,25 @@
 import React, { useState } from 'react';
+import { AssistantModel, PrivacyMode } from '../types/events';
 
 interface PromptBarProps {
   onSend: (text: string) => void;
   disabled?: boolean;
+  models?: AssistantModel[];
+  selectedModelKey?: string;
+  privacyMode?: PrivacyMode;
+  onModelChange?: (modelKey: string) => void;
+  onPrivacyChange?: (mode: PrivacyMode) => void;
 }
 
-export const PromptBar: React.FC<PromptBarProps> = ({ onSend, disabled }) => {
+export const PromptBar: React.FC<PromptBarProps> = ({
+  onSend,
+  disabled,
+  models = [],
+  selectedModelKey = '',
+  privacyMode = 'LOCAL_ONLY',
+  onModelChange,
+  onPrivacyChange,
+}) => {
   const [input, setInput] = useState('');
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -22,6 +36,39 @@ export const PromptBar: React.FC<PromptBarProps> = ({ onSend, disabled }) => {
 
   return (
     <div style={{ marginTop: 'auto', paddingTop: '16px' }}>
+      <div
+        aria-label="Model routing controls"
+        style={{ display: 'flex', gap: '8px', marginBottom: '10px', flexWrap: 'wrap' }}
+      >
+        <select
+          aria-label="Model"
+          value={selectedModelKey}
+          onChange={(event) => onModelChange?.(event.target.value)}
+          disabled={disabled || models.length === 0}
+          style={{ background: '#11162a', color: 'var(--text-primary)', padding: '6px 8px' }}
+        >
+          {models.length === 0 && <option value="">No model configured</option>}
+          {models.map((model) => (
+            <option
+              key={`${model.provider}:${model.model_id}`}
+              value={`${model.provider}:${model.model_id}`}
+            >
+              {model.display_name} ({model.provider})
+            </option>
+          ))}
+        </select>
+        <select
+          aria-label="Privacy mode"
+          value={privacyMode}
+          onChange={(event) => onPrivacyChange?.(event.target.value as PrivacyMode)}
+          disabled={disabled}
+          style={{ background: '#11162a', color: 'var(--text-primary)', padding: '6px 8px' }}
+        >
+          <option value="LOCAL_ONLY">Local only</option>
+          <option value="PRIVATE">Private (local)</option>
+          <option value="CLOUD_ASSISTED">Cloud assisted</option>
+        </select>
+      </div>
       <div style={{ display: 'flex', gap: '8px', marginBottom: '10px', flexWrap: 'wrap' }}>
         <button
           type="button"
