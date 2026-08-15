@@ -2,12 +2,14 @@ from fastapi import FastAPI, HTTPException
 
 from ophanim.adapters.anythingllm import AnythingLLMClient
 from ophanim.adapters.lmstudio import LMStudioClient
+from ophanim.api.assistant_stream import router as assistant_stream_router
 from ophanim.browser.agent import BrowserAgentUnavailable, BrowserUseAgent
 from ophanim.browser.models import BrowserTask, BrowserTaskResult
 from ophanim.browser.policy import BrowserPolicyError
 from ophanim.config import get_settings
 
 app = FastAPI(title="Ophanim Core", version="0.1.0")
+app.include_router(assistant_stream_router)
 
 
 @app.get("/health")

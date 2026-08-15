@@ -1,6 +1,6 @@
 # Ophanim AI — Release 1 Status and Progress Tracker
 
-**Document Version**: 1.9.0  
+**Document Version**: 1.10.0
 **Current Release Objective**: Deliver Ophanim AI Release 1 — A secure, testable, local-first AI Coworker vertical slice with Python Hub/Core, Tauri/React Desktop Assistant, lightweight Rust Device Node, governed tool execution, knowledge citations, and AI Transaction Investigation.  
 **Last Updated**: 2026-08-15  
 
@@ -20,8 +20,8 @@
 | **R1-08** | Hub/Node Protocol | Versioned JSON/WSS protocol schemas, message contracts, security invariants, anti-replay | R1-05 | **MERGED** | PR #14, `docs/checkpoints/R1-08.md` |
 | **R1-09** | Rust Device Node Core | Lightweight Rust Node daemon, device enrollment, heartbeat, diagnostic slice | R1-08 | **MERGED** | PR #15, `docs/checkpoints/R1-09.md` |
 | **R1-10** | Scheduling & Task Leases | Hub capability-aware device scheduling, task leases, cancellation, offline recovery | R1-08, R1-09 | **MERGED** | PR #16, `docs/checkpoints/R1-10.md` |
-| **R1-11** | Desktop Assistant Shell | Tauri + React + TypeScript desktop application shell, state renderer for 12 canonical states | R1-01 | **ACTIVE** | `task/r1-11-desktop-assistant-shell`, `docs/checkpoints/R1-11.md` |
-| **R1-12** | Assistant Event Stream | WebSocket/SSE event delivery from Core to Desktop UI, real-time activity and approval surfaces | R1-11, R1-03 | PENDING | — |
+| **R1-11** | Desktop Assistant Shell | Tauri + React + TypeScript desktop application shell, state renderer for 12 presentation states | R1-01 | **MERGED** | PR #17, `docs/checkpoints/R1-11.md` |
+| **R1-12** | Assistant Event Stream | Authenticated SSE delivery from Core to Desktop UI, real-time activity and approval presentation | R1-11, R1-03 | **IMPLEMENTED** | `task/r1-12-assistant-event-stream`, `docs/checkpoints/R1-12.md` |
 | **R1-13** | Governed Browser Automation | Playwright-based browser driver, domain allowlist enforcement, read-only session capture | R1-02, R1-09 | PENDING | — |
 | **R1-14** | Diagnostic DB & Log Tools | Parameterized read-only DB query tool and structured log search tool with sanitization | R1-02, R1-09 | PENDING | — |
 | **R1-15** | Transaction Investigation | AI Transaction Investigation vertical slice end-to-end integration (Portal, DB, Logs, Knowledge) | R1-06..14 | PENDING | — |
@@ -32,9 +32,9 @@
 
 ## 2. Current Execution State
 
-* **Active Task**: `R1-11` (Desktop Assistant Shell & 12 Semantic State Visualizer)
-* **Active Branch**: `task/r1-11-desktop-assistant-shell`
-* **Base Branch**: `main` @ `fcaf471`
+* **Active Task**: `R1-12` (Assistant Event Stream & Live UI Presentation)
+* **Active Branch**: `task/r1-12-assistant-event-stream`
+* **Base Branch**: `main` @ `560ebf1`
 * **Open PRs**: None.
 * **Completed & Merged Tasks**:
   - `R1-01`: Repository and Documentation Reconciliation (PR #6 merged at `41a0552`, PR #7 merged at `7e80ff5`).
@@ -47,11 +47,12 @@
   - `R1-08`: Hub/Node versioned protocol schemas and anti-replay (PR #14 merged at `ffd12c8`).
   - `R1-09`: Rust Device Node core daemon and governed executor (PR #15 merged at `f64bd46`).
   - `R1-10`: Capability scheduling, task leases, and offline recovery (PR #16 merged at `fcaf471`).
+  - `R1-11`: Desktop Assistant shell and 12-state visualizer (PR #17 merged at `560ebf1`).
 * **Validation Results**:
   - `npm.cmd run build`: 0 errors in `apps/desktop`.
-  - `npm.cmd run test`: 5 passed in Vitest.
+  - `npm.cmd run test`: 9 passed in Vitest.
   - `cargo test`: 4 passed in `services/ophanim-node`.
-  - `pytest`: 115 passed across `services/ophanim-core`.
+  - `pytest`: 120 passed across `services/ophanim-core`.
   - `ruff check` & `ruff format --check`: passed across all Python files.
   - `git diff --check main...HEAD`: passed.
 * **Blockers**: None.
@@ -70,8 +71,8 @@
 
 ## 4. Next Task & Continuation
 
-* **Next Eligible Task**: `R1-12` (Assistant event stream & live UI presentation).
+* **Next Eligible Task**: `R1-13` (governed read-only browser automation).
 * **Continuation Command**:
   ```powershell
-  git checkout -b task/r1-12-assistant-event-stream main
+  git checkout -b task/r1-13-governed-browser-automation main
   ```

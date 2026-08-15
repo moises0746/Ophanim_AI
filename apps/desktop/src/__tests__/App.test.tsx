@@ -53,7 +53,7 @@ describe('Desktop Assistant Components', () => {
           {
             id: 'evt-1',
             timestampUtc: '2026-08-15T12:00:00Z',
-            type: 'assistant.tool_completed',
+            type: 'tool.completed',
             title: 'Diagnostic DB Query',
             evidenceHash: 'abc123sha256hash',
             status: 'completed',
