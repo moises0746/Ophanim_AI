@@ -6,7 +6,7 @@ Ophanim AI is the product and control plane. It accepts goals through voice or t
 
 The Assistant is the default product experience. AnythingLLM, LM Studio, Ollama, MCP servers, cloud models, browser engines, and enterprise systems are replaceable subsystems behind Ophanim-owned contracts.
 
-> Project status: **Sprint 00 and Release 1 tasks R1-01 through R1-11 are merged. R1-12 is implemented and checkpointed on its task branch with authenticated default-deny SSE delivery and truthful Desktop event projection; it is not yet committed or merged. R1-13 is next eligible but is not automatically authorized. The original S01-T03 acceptance caveat and unimplemented S01-T06 through S01-T08 records remain explicit.**
+> Project status: **Sprint 00 and Release 1 tasks R1-01 through R1-11 are merged. R1-12 is locally committed and checkpointed but not merged. R1-06A adds checkpointed governed OpenAI, Gemini, and Anthropic text adapters on the active task branch. R1-RUN-01 is the recommended next task to compose an authenticated Desktop/Core chat runtime; it is not automatically authorized.**
 
 ## Start Here
 
@@ -225,7 +225,7 @@ See [`PROJECT_PLAN.md`](PROJECT_PLAN.md).
 
 ## Delivery Status
 
-Sprint 00 is complete and merged. Release 1 tasks R1-01 through R1-11 are merged. R1-12 implements an authenticated default-deny Assistant SSE delivery boundary, typed Desktop event client, canonical-to-presentation state projection, ordering/deduplication safety, and truthful event-derived Activity Feed and approval presentation. Its changes are checkpointed on `task/r1-12-assistant-event-stream` and are not yet merged. The original S01-T03 acceptance caveat and unimplemented S01-T06 through S01-T08 records remain explicit rather than being retroactively rewritten.
+Sprint 00 is complete and merged. Release 1 tasks R1-01 through R1-11 are merged. R1-12 implements authenticated default-deny Assistant SSE delivery and is preserved in local commit `bab5949`, not merged. R1-06A implements governed OpenAI Responses, Gemini `generateContent`, and Anthropic Messages text adapters with runtime secret resolution, fixed official origins, bounded retries, capability validation, and adapter-level privacy denial. Desktop chat/runtime composition remains deferred to R1-RUN-01. The original S01-T03 acceptance caveat and unimplemented S01-T06 through S01-T08 records remain explicit rather than being retroactively rewritten.
 
 See [`docs/sprints/SPRINT-00-CLOSURE.md`](docs/sprints/SPRINT-00-CLOSURE.md), [`docs/sprints/SPRINT-01.md`](docs/sprints/SPRINT-01.md), and [`docs/architecture/autonomous-agent-orchestration.md`](docs/architecture/autonomous-agent-orchestration.md).
 
@@ -243,4 +243,4 @@ See the [`docs/adr/` index](docs/adr/README.md) for the authoritative titles and
 
 ## Current Status
 
-**Do not start broad feature implementation.** R1-12 is the completed active task and R1-13 is the next eligible task, but it is not authorized automatically. Browser automation, diagnostic DB/log tools, the transaction-investigation vertical slice, packaging, and Release 1 hardening remain pending. See the Release 1 tracker and current handoff for evidence-backed status.
+**Do not start broad feature implementation.** R1-06A is the completed active task. R1-RUN-01 is recommended next so the Desktop can submit authenticated chat through local or configured cloud models, but it is not authorized automatically. Browser automation, diagnostic DB/log tools, the transaction-investigation vertical slice, packaging, and Release 1 hardening remain pending. See the Release 1 tracker and current handoff for evidence-backed status.

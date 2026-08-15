@@ -12,7 +12,7 @@ Planning recommendation from S00-T10; not implementation authorization. Sprint 0
 - AAO-001 autonomous agent orchestration foundation: implemented on `main` at `502385d`; this does not change the acceptance status of the Sprint 01 tasks above.
 - S01-T04: implemented and checkpointed (Default-Deny Policy Interface).
 - S01-T05: implemented and checkpointed (Event Contract Python Models).
-- S01-T06 through S01-T08 remain unimplemented under their original Sprint 01 IDs. The active execution order has moved to the evidence-backed Release 1 tracker; R1-13 is now the next eligible task after R1-12. This status change does not retroactively complete the original Sprint tasks.
+- S01-T06 through S01-T08 remain unimplemented under their original Sprint 01 IDs. The active execution order has moved to the evidence-backed Release 1 tracker; after R1-12 and R1-06A, R1-RUN-01 is the recommended next task for runtime/Desktop chat composition. This status change does not retroactively complete the original Sprint tasks.
 - See `docs/handoff/HANDOFF.md` for the current handoff context; the evidence-based task status above remains authoritative for this reconciliation.
 
 ## Recommended Tasks

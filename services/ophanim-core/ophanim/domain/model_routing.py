@@ -12,6 +12,9 @@ from ophanim.domain.values import PrivacyMode, _text
 class ModelProviderType(StrEnum):
     LM_STUDIO = "lm_studio"
     OLLAMA = "ollama"
+    OPENAI = "openai"
+    GEMINI = "gemini"
+    ANTHROPIC = "anthropic"
     CLOUD = "cloud"
     MOCK = "mock"
 

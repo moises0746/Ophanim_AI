@@ -4,50 +4,47 @@ Read this after the required root source-of-truth documents. It records current 
 
 ## Project status (2026-08-15)
 
-- `main` and `origin/main` are at `560ebf1`, where R1-11 was merged through PR #17.
-- Active branch: `task/r1-12-assistant-event-stream`.
-- R1-12 is implemented and checkpointed in `docs/checkpoints/R1-12.md`; changes are not committed or pushed.
-- Full validation: 120 Core tests, 9 Desktop tests/build, 4 Rust Node tests, Ruff lint/format, and `git diff --check` pass.
-- `open-webui/` is an unrelated untracked tree and is not part of R1-12.
+- `main` and `origin/main` remain at `560ebf1`.
+- R1-12 is preserved in local commit `bab5949` on `task/r1-12-assistant-event-stream`; it is not pushed or merged.
+- Active branch: `task/r1-06a-cloud-providers`, based on the R1-12 commit.
+- R1-06A is implemented and checkpointed in `docs/checkpoints/R1-06A.md`; its changes are uncommitted and unpushed.
+- Full validation: 137 Core tests, 9 Desktop tests/build, 4 Rust Node tests, Ruff lint/format, and `git diff --check` pass.
+- The user deleted the unrelated `open-webui/` tree; no follow-up decision remains.
 
 ## Done — do not rebuild
 
-- Sprint 00 baseline and ADR-001 through ADR-015.
-- S01-T01 through S01-T05 implementation artifacts and checkpoints, with S01-T03 acceptance caveat retained in Sprint records.
-- AAO-001 and ADR-016 deterministic agent orchestration foundation.
+- Sprint 00 baseline and ADR-001 through ADR-017.
 - R1-01 through R1-11 merged; see `docs/progress/RELEASE-1-STATUS.md`.
-- R1-12 authenticated default-deny SSE delivery, typed Desktop client/projection, truthful live activity/approval presentation, and focused tests.
+- R1-12 authenticated default-deny Assistant SSE delivery and truthful Desktop event projection, locally committed but not merged.
+- R1-06A governed OpenAI, Gemini, and Anthropic text-model adapters with runtime secret resolution, privacy enforcement, bounded retries, sanitized health, and contract tests.
 
 ## Pending — not authorized
 
-### Next eligible task: R1-13 — Governed Browser Automation
+### Recommended next task: R1-RUN-01 — Local Runtime Composition & Desktop Chat Launcher
 
-Playwright-based read-only browser driver, exact domain allowlist enforcement, and session/evidence capture. Do not start without explicit authorization.
+Complete the real Tauri runtime, compose Core identity/event/model services, add an authenticated Core chat use case, acquire credentials outside UI ownership, instantiate the Desktop event/chat client, and add one-command local startup plus smoke tests.
 
-### Remaining Release 1 order
+### Remaining Release 1 roadmap
 
-1. R1-13 — Governed Browser Automation.
-2. R1-14 — Diagnostic DB & Log Tools.
-3. R1-15 — Transaction Investigation vertical slice.
-4. R1-16 — Observability & Packaging.
-5. R1-17 — Hardening & Release Gate.
+1. R1-RUN-01 — Local Runtime Composition & Desktop Chat Launcher.
+2. R1-13 — Governed Browser Automation.
+3. R1-14 — Diagnostic DB & Log Tools.
+4. R1-15 — Transaction Investigation vertical slice.
+5. R1-16 — Observability & Packaging.
+6. R1-17 — Hardening & Release Gate.
 
-## R1-12 continuation notes
+## R1-06A continuation notes
 
-- The API's runtime authorizer is intentionally default-deny. Production activation requires an injected R1-05 identity service and a Desktop credential provider outside UI ownership.
-- Event fan-out is in-memory and non-replayable; replay/resume and distributed delivery remain deferred.
-- No application producer is wired to the broadcaster yet. Future authorized producers inject the port; no public `/emit` route exists.
-- The accepted lowercase Core semantic states are explicitly projected to R1-11's uppercase presentation states in the Desktop client.
-- Prompt submission, approval decisions, and cancellation are not wired and never claim success locally.
+- Providers are disabled until an explicit model ID is configured.
+- Local development keys are read from allowlisted Core process-environment variables at request time; no value belongs in the Desktop or repository.
+- OpenAI, Gemini, and Anthropic adapters support normalized text chat only; see `docs/integrations/cloud-model-providers.md`.
+- `LOCAL_ONLY` and `PRIVATE` are denied inside cloud adapters before credentials are resolved.
+- R1-RUN-01 is required before the Desktop can submit chat and receive cloud/local responses.
 
 ## Guardrails
 
 - Implement one explicitly authorized task at a time and stop after its checkpoint.
-- Do not modify `anything-llm/`, `ollama/`, `open-webui/`, or `Obsidian_Vault/` without explicit scope.
-- Domain code remains framework/provider independent; all external capabilities use typed ports/adapters.
-- No secrets, auth state, private notes, unrestricted SQL/shell/filesystem/browser access, or client-authored authoritative events.
-- Consequential actions require policy, approval, deterministic verification, evidence, and audit.
-
-## Open user decision
-
-Decide separately whether the untracked `open-webui/` tree should be governed as vendor source, ignored, or removed. R1-12 does not touch it.
+- Do not modify vendor trees or `Obsidian_Vault/` without explicit scope.
+- Never commit `.env`, provider keys, auth state, private notes, or sensitive output.
+- Models analyze and recommend; governed deterministic tools alone execute side effects.
+- Cloud routing requires explicit `STANDARD` privacy mode and truthful configured capabilities.
