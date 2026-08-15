@@ -1,6 +1,6 @@
 # Ophanim AI — Release 1 Status and Progress Tracker
 
-**Document Version**: 1.4.0  
+**Document Version**: 1.5.0  
 **Current Release Objective**: Deliver Ophanim AI Release 1 — A secure, testable, local-first AI Coworker vertical slice with Python Hub/Core, Tauri/React Desktop Assistant, lightweight Rust Device Node, governed tool execution, knowledge citations, and AI Transaction Investigation.  
 **Last Updated**: 2026-08-15  
 
@@ -15,8 +15,8 @@
 | **R1-03** | Core Events & Audit | Python event envelope and domain event contracts (S01-T05), audit/evidence domain records | R1-02 | **MERGED** | PR #9, `docs/checkpoints/S01-T05.md` |
 | **R1-04** | Core Persistence | PostgreSQL & SQLite database models, session management, and SQL repository adapters | R1-02, R1-03 | **MERGED** | PR #10, `docs/checkpoints/R1-04.md` |
 | **R1-05** | Identity & Multi-Tenancy | Tenant, workspace, user, and device identity with scoped RBAC & API key / token validation | R1-04 | **MERGED** | PR #11, `docs/checkpoints/R1-05.md` |
-| **R1-06** | Model Router | Capability-based Model Router (LM Studio, Ollama, Cloud) with privacy tier routing | R1-02 | **ACTIVE** | `task/r1-06-model-router`, `docs/checkpoints/R1-06.md` |
-| **R1-07** | Knowledge & Citations | Knowledge ingestion/retrieval adapters with source citations, provenance, Obsidian/Markdown support | R1-06 | PENDING | — |
+| **R1-06** | Model Router | Capability-based Model Router (LM Studio, Ollama, Cloud) with privacy tier routing | R1-02 | **MERGED** | PR #12, `docs/checkpoints/R1-06.md` |
+| **R1-07** | Knowledge & Citations | Knowledge ingestion/retrieval adapters with source citations, provenance, Obsidian/Markdown support | R1-06 | **ACTIVE** | `task/r1-07-knowledge-citations`, `docs/checkpoints/R1-07.md` |
 | **R1-08** | Hub/Node Protocol | Versioned JSON/WSS protocol schemas, message contracts, security invariants, anti-replay | R1-05 | PENDING | — |
 | **R1-09** | Rust Device Node Core | Lightweight Rust Node daemon, device enrollment, heartbeat, diagnostic slice | R1-08 | PENDING | — |
 | **R1-10** | Scheduling & Task Leases | Hub capability-aware device scheduling, task leases, cancellation, offline recovery | R1-08, R1-09 | PENDING | — |
@@ -32,9 +32,9 @@
 
 ## 2. Current Execution State
 
-* **Active Task**: `R1-06` (Capability-based Model Router & Privacy Isolation)
-* **Active Branch**: `task/r1-06-model-router`
-* **Base Branch**: `main` @ `2b83eab`
+* **Active Task**: `R1-07` (Knowledge Ingestion, Chunking & Verifiable Citations)
+* **Active Branch**: `task/r1-07-knowledge-citations`
+* **Base Branch**: `main` @ `a1e58dd`
 * **Open PRs**: None.
 * **Completed & Merged Tasks**:
   - `R1-01`: Repository and Documentation Reconciliation (PR #6 merged at `41a0552`, PR #7 merged at `7e80ff5`).
@@ -42,10 +42,11 @@
   - `R1-03`: Core Assistant and Activity Event contracts (PR #9 merged at `3bf4ca2`).
   - `R1-04`: Core Persistence, SQLAlchemy Models & SQL Repositories (PR #10 merged at `0160db3`).
   - `R1-05`: Multi-tenant identity, RBAC, and device auth (PR #11 merged at `2b83eab`).
+  - `R1-06`: Capability-based Model Router with privacy isolation (PR #12 merged at `a1e58dd`).
 * **Validation Results**:
-  - `pytest`: 101 passed, 1 upstream Starlette deprecation warning.
-  - `ruff check`: passed across codebase (64 files).
-  - `ruff format --check`: passed across codebase (64 files).
+  - `pytest`: 105 passed, 1 upstream Starlette deprecation warning.
+  - `ruff check`: passed across codebase (68 files).
+  - `ruff format --check`: passed across codebase (68 files).
   - `git diff --check main...HEAD`: passed.
   - Architecture boundary tests: passed.
 * **Blockers**: None.
@@ -57,15 +58,15 @@
 * **ADR-001 through ADR-015**: Accepted foundational baseline.
 * **ADR-016**: Deterministic State-Driven Autonomous Agent Orchestration (AAO-001).
 * **ADR-017**: Polyglot Runtime Boundaries — Python 3.12+/FastAPI control plane (Hub/Core), Rust lightweight endpoint daemon (Node), Tauri + React/TypeScript (Desktop Assistant), evidence-gated server Rust extraction.
-* **PrivacyMode Boundary Invariant**: `PrivacyMode.LOCAL_ONLY` and `PrivacyMode.PRIVATE` strictly prohibit egress to non-local providers, failing deterministically with explicit validation errors if required capabilities cannot be served locally.
+* **Verifiable Citation Guarantee**: Knowledge retrieval produces verifiable `Citation` objects containing document title, uri_ref, exact excerpt, and provenance tracking, preventing hallucinated citations.
 * **Vendor Governance**: `anything-llm/` and `ollama/` are protected vendor source. Modifications are strictly isolated behind domain adapters.
 
 ---
 
 ## 4. Next Task & Continuation
 
-* **Next Eligible Task**: `R1-07` (Knowledge ingestion/retrieval adapters with source citations, provenance, Obsidian/Markdown support).
+* **Next Eligible Task**: `R1-08` (Hub/Node versioned protocol schemas, message contracts, security invariants, anti-replay).
 * **Continuation Command**:
   ```powershell
-  git checkout -b task/r1-07-knowledge-citations main
+  git checkout -b task/r1-08-hub-node-protocol main
   ```
