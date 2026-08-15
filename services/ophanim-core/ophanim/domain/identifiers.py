@@ -359,3 +359,60 @@ class ApiKeyId:
 
     def __str__(self) -> str:
         return str(self.value)
+
+
+@dataclass(frozen=True, slots=True)
+class DocumentId:
+    value: UUID
+
+    def __post_init__(self) -> None:
+        object.__setattr__(self, "value", _uuid(self.value))
+
+    @classmethod
+    def new(cls) -> DocumentId:
+        return cls(uuid4())
+
+    @classmethod
+    def from_str(cls, value: str) -> DocumentId:
+        return cls(_uuid(value))
+
+    def __str__(self) -> str:
+        return str(self.value)
+
+
+@dataclass(frozen=True, slots=True)
+class ChunkId:
+    value: UUID
+
+    def __post_init__(self) -> None:
+        object.__setattr__(self, "value", _uuid(self.value))
+
+    @classmethod
+    def new(cls) -> ChunkId:
+        return cls(uuid4())
+
+    @classmethod
+    def from_str(cls, value: str) -> ChunkId:
+        return cls(_uuid(value))
+
+    def __str__(self) -> str:
+        return str(self.value)
+
+
+@dataclass(frozen=True, slots=True)
+class CitationId:
+    value: UUID
+
+    def __post_init__(self) -> None:
+        object.__setattr__(self, "value", _uuid(self.value))
+
+    @classmethod
+    def new(cls) -> CitationId:
+        return cls(uuid4())
+
+    @classmethod
+    def from_str(cls, value: str) -> CitationId:
+        return cls(_uuid(value))
+
+    def __str__(self) -> str:
+        return str(self.value)
