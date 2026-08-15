@@ -1,6 +1,6 @@
 # Ophanim AI — Release 1 Status and Progress Tracker
 
-**Document Version**: 1.6.0  
+**Document Version**: 1.7.0  
 **Current Release Objective**: Deliver Ophanim AI Release 1 — A secure, testable, local-first AI Coworker vertical slice with Python Hub/Core, Tauri/React Desktop Assistant, lightweight Rust Device Node, governed tool execution, knowledge citations, and AI Transaction Investigation.  
 **Last Updated**: 2026-08-15  
 
@@ -17,8 +17,8 @@
 | **R1-05** | Identity & Multi-Tenancy | Tenant, workspace, user, and device identity with scoped RBAC & API key / token validation | R1-04 | **MERGED** | PR #11, `docs/checkpoints/R1-05.md` |
 | **R1-06** | Model Router | Capability-based Model Router (LM Studio, Ollama, Cloud) with privacy tier routing | R1-02 | **MERGED** | PR #12, `docs/checkpoints/R1-06.md` |
 | **R1-07** | Knowledge & Citations | Knowledge ingestion/retrieval adapters with source citations, provenance, Obsidian/Markdown support | R1-06 | **MERGED** | PR #13, `docs/checkpoints/R1-07.md` |
-| **R1-08** | Hub/Node Protocol | Versioned JSON/WSS protocol schemas, message contracts, security invariants, anti-replay | R1-05 | **ACTIVE** | `task/r1-08-hub-node-protocol`, `docs/checkpoints/R1-08.md` |
-| **R1-09** | Rust Device Node Core | Lightweight Rust Node daemon, device enrollment, heartbeat, diagnostic slice | R1-08 | PENDING | — |
+| **R1-08** | Hub/Node Protocol | Versioned JSON/WSS protocol schemas, message contracts, security invariants, anti-replay | R1-05 | **MERGED** | PR #14, `docs/checkpoints/R1-08.md` |
+| **R1-09** | Rust Device Node Core | Lightweight Rust Node daemon, device enrollment, heartbeat, diagnostic slice | R1-08 | **ACTIVE** | `task/r1-09-rust-device-node`, `docs/checkpoints/R1-09.md` |
 | **R1-10** | Scheduling & Task Leases | Hub capability-aware device scheduling, task leases, cancellation, offline recovery | R1-08, R1-09 | PENDING | — |
 | **R1-11** | Desktop Assistant Shell | Tauri + React + TypeScript desktop application shell, state renderer for 12 canonical states | R1-01 | PENDING | — |
 | **R1-12** | Assistant Event Stream | WebSocket/SSE event delivery from Core to Desktop UI, real-time activity and approval surfaces | R1-11, R1-03 | PENDING | — |
@@ -32,9 +32,9 @@
 
 ## 2. Current Execution State
 
-* **Active Task**: `R1-08` (Hub/Node Versioned Protocol Schemas & Anti-Replay)
-* **Active Branch**: `task/r1-08-hub-node-protocol`
-* **Base Branch**: `main` @ `6c797c0`
+* **Active Task**: `R1-09` (Rust Device Node Core Daemon)
+* **Active Branch**: `task/r1-09-rust-device-node`
+* **Base Branch**: `main` @ `ffd12c8`
 * **Open PRs**: None.
 * **Completed & Merged Tasks**:
   - `R1-01`: Repository and Documentation Reconciliation (PR #6 merged at `41a0552`, PR #7 merged at `7e80ff5`).
@@ -44,12 +44,13 @@
   - `R1-05`: Multi-tenant identity, RBAC, and device auth (PR #11 merged at `2b83eab`).
   - `R1-06`: Capability-based Model Router with privacy isolation (PR #12 merged at `a1e58dd`).
   - `R1-07`: Knowledge ingestion, chunking, and verifiable citations (PR #13 merged at `6c797c0`).
+  - `R1-08`: Hub/Node versioned protocol schemas and anti-replay (PR #14 merged at `ffd12c8`).
 * **Validation Results**:
-  - `pytest`: 110 passed, 1 upstream Starlette deprecation warning.
+  - `cargo test`: 4 passed (0 failed, 0 warnings) in `services/ophanim-node`.
+  - `pytest`: 110 passed across `services/ophanim-core`.
   - `ruff check`: passed across codebase (72 files).
   - `ruff format --check`: passed across codebase (72 files).
   - `git diff --check main...HEAD`: passed.
-  - Architecture boundary tests: passed.
 * **Blockers**: None.
 
 ---
@@ -59,15 +60,15 @@
 * **ADR-001 through ADR-015**: Accepted foundational baseline.
 * **ADR-016**: Deterministic State-Driven Autonomous Agent Orchestration (AAO-001).
 * **ADR-017**: Polyglot Runtime Boundaries — Python 3.12+/FastAPI control plane (Hub/Core), Rust lightweight endpoint daemon (Node), Tauri + React/TypeScript (Desktop Assistant), evidence-gated server Rust extraction.
-* **Protocol Security Invariant**: Hub/Node messages use strict version matching (`1.0.0`), anti-replay timestamp freshness validation, and monotonic sequence validation per enrolled device.
+* **Governed Endpoint Invariant**: Device Node executes strictly allowlisted tools, computes SHA-256 evidence receipts, and fails closed on all unauthorized or arbitrary shell execution requests.
 * **Vendor Governance**: `anything-llm/` and `ollama/` are protected vendor source. Modifications are strictly isolated behind domain adapters.
 
 ---
 
 ## 4. Next Task & Continuation
 
-* **Next Eligible Task**: `R1-09` (Lightweight Rust Node daemon, device enrollment, heartbeat, diagnostic slice).
+* **Next Eligible Task**: `R1-10` (Capability scheduling, task leases, cancellation, offline recovery).
 * **Continuation Command**:
   ```powershell
-  git checkout -b task/r1-09-rust-device-node main
+  git checkout -b task/r1-10-scheduling-leases main
   ```
