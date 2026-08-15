@@ -24,7 +24,7 @@ For implementation work, the authoritative engineering rules are `docs/developme
 
 - Put first-party product logic under the Ophanim-owned modules described by `STRUCTURE.md`.
 - The first-party runtime lives under `services/ophanim-core` with Python package `ophanim`; do not reintroduce legacy product naming.
-- Treat `anything-llm-master`, `ollama-main`, and future `vendor/` contents as upstream/vendored source. Do not modify them unless the task explicitly authorizes an upstream patch.
+- Treat `anything-llm/`, `ollama/`, and future `vendor/` contents as upstream/vendored source. Do not modify them unless the task explicitly authorizes an upstream patch.
 - Treat `Obsidian_Vault` as potentially private user data. Do not publish, rewrite, index into test fixtures, or expose its contents without explicit task authorization.
 - Never commit `.env`, tokens, passwords, cookies, browser profiles, auth-state files, model credentials, private transcripts, or sensitive screenshots.
 
