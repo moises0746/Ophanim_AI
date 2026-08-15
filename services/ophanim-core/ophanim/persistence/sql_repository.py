@@ -13,14 +13,27 @@ from ophanim.domain.assistant_events import (
     EventEnvelope,
 )
 from ophanim.domain.identifiers import (
+    ApiKeyId,
     ApprovalId,
     CorrelationId,
+    DeviceId,
     EventId,
     EvidenceId,
     PolicyDecisionId,
     TaskId,
     TaskStepId,
+    TenantId,
     ToolCallId,
+    UserId,
+    WorkspaceId,
+)
+from ophanim.domain.identity import (
+    ApiKey,
+    Device,
+    Tenant,
+    User,
+    UserRole,
+    Workspace,
 )
 from ophanim.domain.policy import PolicyDecision
 from ophanim.domain.task import Task, TaskStep
@@ -29,10 +42,15 @@ from ophanim.domain.values import (
 )
 
 from .sql_models import (
+    ApiKeyRecord,
+    DeviceRecord,
     EventRecord,
     PolicyDecisionRecord,
     TaskRecord,
     TaskStepRecord,
+    TenantRecord,
+    UserRecord,
+    WorkspaceRecord,
 )
 
 
@@ -286,4 +304,209 @@ class SQLPolicyRepository:
                 reason=record.reason,
                 obligations=tuple(record.obligations),
                 evaluated_at=_ensure_utc(record.evaluated_at),
+            )
+
+
+class SQLIdentityRepository:
+    """SQLAlchemy-backed repository for multi-tenant identity and authentication."""
+
+    def __init__(self, session_factory: sessionmaker[Session]) -> None:
+        self._session_factory = session_factory
+
+    def save_tenant(self, tenant: Tenant) -> None:
+        with self._session_factory() as session:
+            record = session.get(TenantRecord, str(tenant.id.value))
+            if record is None:
+                record = TenantRecord(
+                    id=str(tenant.id.value),
+                    name=tenant.name,
+                    created_at=tenant.created_at,
+                )
+                session.add(record)
+            else:
+                record.name = tenant.name
+            session.commit()
+
+    def get_tenant(self, tenant_id: TenantId) -> Tenant | None:
+        with self._session_factory() as session:
+            record = session.get(TenantRecord, str(tenant_id.value))
+            if record is None:
+                return None
+            return Tenant(
+                id=TenantId.from_str(record.id),
+                name=record.name,
+                created_at=_ensure_utc(record.created_at),
+            )
+
+    def save_workspace(self, workspace: Workspace) -> None:
+        with self._session_factory() as session:
+            record = session.get(WorkspaceRecord, str(workspace.id.value))
+            if record is None:
+                record = WorkspaceRecord(
+                    id=str(workspace.id.value),
+                    tenant_id=str(workspace.tenant_id.value),
+                    name=workspace.name,
+                    created_at=workspace.created_at,
+                )
+                session.add(record)
+            else:
+                record.name = workspace.name
+            session.commit()
+
+    def get_workspace(self, workspace_id: WorkspaceId) -> Workspace | None:
+        with self._session_factory() as session:
+            record = session.get(WorkspaceRecord, str(workspace_id.value))
+            if record is None:
+                return None
+            return Workspace(
+                id=WorkspaceId.from_str(record.id),
+                tenant_id=TenantId.from_str(record.tenant_id),
+                name=record.name,
+                created_at=_ensure_utc(record.created_at),
+            )
+
+    def list_workspaces(self, tenant_id: TenantId) -> Sequence[Workspace]:
+        with self._session_factory() as session:
+            stmt = select(WorkspaceRecord).where(WorkspaceRecord.tenant_id == str(tenant_id.value))
+            records = session.scalars(stmt).all()
+            return [
+                Workspace(
+                    id=WorkspaceId.from_str(r.id),
+                    tenant_id=TenantId.from_str(r.tenant_id),
+                    name=r.name,
+                    created_at=_ensure_utc(r.created_at),
+                )
+                for r in records
+            ]
+
+    def save_user(self, user: User) -> None:
+        with self._session_factory() as session:
+            record = session.get(UserRecord, str(user.id.value))
+            if record is None:
+                record = UserRecord(
+                    id=str(user.id.value),
+                    tenant_id=str(user.tenant_id.value),
+                    username=user.username,
+                    display_name=user.display_name,
+                    roles=[r.value for r in user.roles],
+                    created_at=user.created_at,
+                )
+                session.add(record)
+            else:
+                record.display_name = user.display_name
+                record.roles = [r.value for r in user.roles]
+            session.commit()
+
+    def get_user(self, user_id: UserId) -> User | None:
+        with self._session_factory() as session:
+            record = session.get(UserRecord, str(user_id.value))
+            if record is None:
+                return None
+            return User(
+                id=UserId.from_str(record.id),
+                tenant_id=TenantId.from_str(record.tenant_id),
+                username=record.username,
+                display_name=record.display_name,
+                roles=frozenset(UserRole(r) for r in record.roles),
+                created_at=_ensure_utc(record.created_at),
+            )
+
+    def save_device(self, device: Device) -> None:
+        with self._session_factory() as session:
+            record = session.get(DeviceRecord, str(device.id.value))
+            if record is None:
+                record = DeviceRecord(
+                    id=str(device.id.value),
+                    tenant_id=str(device.tenant_id.value),
+                    workspace_id=str(device.workspace_id.value),
+                    name=device.name,
+                    device_type=device.device_type,
+                    public_key_fingerprint=device.public_key_fingerprint,
+                    status=device.status,
+                    enrolled_at=device.enrolled_at,
+                    last_seen_at=device.last_seen_at,
+                )
+                session.add(record)
+            else:
+                record.name = device.name
+                record.status = device.status
+                record.last_seen_at = device.last_seen_at
+            session.commit()
+
+    def get_device(self, device_id: DeviceId) -> Device | None:
+        with self._session_factory() as session:
+            record = session.get(DeviceRecord, str(device_id.value))
+            if record is None:
+                return None
+            return Device(
+                id=DeviceId.from_str(record.id),
+                tenant_id=TenantId.from_str(record.tenant_id),
+                workspace_id=WorkspaceId.from_str(record.workspace_id),
+                name=record.name,
+                device_type=record.device_type,
+                public_key_fingerprint=record.public_key_fingerprint,
+                status=record.status,
+                enrolled_at=_ensure_utc(record.enrolled_at),
+                last_seen_at=_ensure_utc(record.last_seen_at) if record.last_seen_at else None,
+            )
+
+    def list_devices(self, workspace_id: WorkspaceId) -> Sequence[Device]:
+        with self._session_factory() as session:
+            stmt = select(DeviceRecord).where(DeviceRecord.workspace_id == str(workspace_id.value))
+            records = session.scalars(stmt).all()
+            return [
+                Device(
+                    id=DeviceId.from_str(r.id),
+                    tenant_id=TenantId.from_str(r.tenant_id),
+                    workspace_id=WorkspaceId.from_str(r.workspace_id),
+                    name=r.name,
+                    device_type=r.device_type,
+                    public_key_fingerprint=r.public_key_fingerprint,
+                    status=r.status,
+                    enrolled_at=_ensure_utc(r.enrolled_at),
+                    last_seen_at=_ensure_utc(r.last_seen_at) if r.last_seen_at else None,
+                )
+                for r in records
+            ]
+
+    def save_api_key(self, api_key: ApiKey) -> None:
+        with self._session_factory() as session:
+            record = session.get(ApiKeyRecord, str(api_key.id.value))
+            if record is None:
+                record = ApiKeyRecord(
+                    id=str(api_key.id.value),
+                    tenant_id=str(api_key.tenant_id.value),
+                    workspace_id=str(api_key.workspace_id.value),
+                    user_id=str(api_key.user_id.value) if api_key.user_id else None,
+                    device_id=str(api_key.device_id.value) if api_key.device_id else None,
+                    key_prefix=api_key.key_prefix,
+                    hashed_secret=api_key.hashed_secret,
+                    scopes=list(api_key.scopes),
+                    expires_at=api_key.expires_at,
+                    revoked_at=api_key.revoked_at,
+                    created_at=api_key.created_at,
+                )
+                session.add(record)
+            else:
+                record.revoked_at = api_key.revoked_at
+            session.commit()
+
+    def get_api_key_by_hashed_secret(self, hashed_secret: str) -> ApiKey | None:
+        with self._session_factory() as session:
+            stmt = select(ApiKeyRecord).where(ApiKeyRecord.hashed_secret == hashed_secret)
+            record = session.scalars(stmt).first()
+            if record is None:
+                return None
+            return ApiKey(
+                id=ApiKeyId.from_str(record.id),
+                tenant_id=TenantId.from_str(record.tenant_id),
+                workspace_id=WorkspaceId.from_str(record.workspace_id),
+                user_id=UserId.from_str(record.user_id) if record.user_id else None,
+                device_id=DeviceId.from_str(record.device_id) if record.device_id else None,
+                key_prefix=record.key_prefix,
+                hashed_secret=record.hashed_secret,
+                scopes=frozenset(record.scopes),
+                expires_at=_ensure_utc(record.expires_at) if record.expires_at else None,
+                revoked_at=_ensure_utc(record.revoked_at) if record.revoked_at else None,
+                created_at=_ensure_utc(record.created_at),
             )

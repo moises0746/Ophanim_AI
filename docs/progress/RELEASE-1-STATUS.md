@@ -1,6 +1,6 @@
 # Ophanim AI — Release 1 Status and Progress Tracker
 
-**Document Version**: 1.2.0  
+**Document Version**: 1.3.0  
 **Current Release Objective**: Deliver Ophanim AI Release 1 — A secure, testable, local-first AI Coworker vertical slice with Python Hub/Core, Tauri/React Desktop Assistant, lightweight Rust Device Node, governed tool execution, knowledge citations, and AI Transaction Investigation.  
 **Last Updated**: 2026-08-15  
 
@@ -13,8 +13,8 @@
 | **R1-01** | Governance & Reconcile | Merge PR #6 & PR #7, reconcile ADRs (ADR-016 AAO-001, ADR-017 Polyglot), verify vendor governance | None | **MERGED** | PR #6, PR #7, `docs/adr/ADR-017-polyglot-runtime-boundaries.md` |
 | **R1-02** | Core Domain & Policy | Default-Deny Policy interface and engine (S01-T04), Task capability contracts, boundary validation | R1-01 | **MERGED** | PR #8, `docs/checkpoints/S01-T04.md` |
 | **R1-03** | Core Events & Audit | Python event envelope and domain event contracts (S01-T05), audit/evidence domain records | R1-02 | **MERGED** | PR #9, `docs/checkpoints/S01-T05.md` |
-| **R1-04** | Core Persistence | PostgreSQL & SQLite database models, session management, and SQL repository adapters | R1-02, R1-03 | **ACTIVE** | `task/r1-04-core-persistence`, `docs/checkpoints/R1-04.md` |
-| **R1-05** | Identity & Multi-Tenancy | Tenant, workspace, user, and device identity with scoped RBAC & API key / token validation | R1-04 | PENDING | — |
+| **R1-04** | Core Persistence | PostgreSQL & SQLite database models, session management, and SQL repository adapters | R1-02, R1-03 | **MERGED** | PR #10, `docs/checkpoints/R1-04.md` |
+| **R1-05** | Identity & Multi-Tenancy | Tenant, workspace, user, and device identity with scoped RBAC & API key / token validation | R1-04 | **ACTIVE** | `task/r1-05-identity-multitenancy`, `docs/checkpoints/R1-05.md` |
 | **R1-06** | Model Router | Capability-based Model Router (LM Studio, Ollama, Cloud) with privacy tier routing | R1-02 | PENDING | — |
 | **R1-07** | Knowledge & Citations | Knowledge ingestion/retrieval adapters with source citations, provenance, Obsidian/Markdown support | R1-06 | PENDING | — |
 | **R1-08** | Hub/Node Protocol | Versioned JSON/WSS protocol schemas, message contracts, security invariants, anti-replay | R1-05 | PENDING | — |
@@ -32,18 +32,19 @@
 
 ## 2. Current Execution State
 
-* **Active Task**: `R1-04` (Core Persistence, SQLAlchemy Models & SQL Repositories)
-* **Active Branch**: `task/r1-04-core-persistence`
-* **Base Branch**: `main` @ `3bf4ca2`
+* **Active Task**: `R1-05` (Identity, Multi-Tenancy & Device Authentication)
+* **Active Branch**: `task/r1-05-identity-multitenancy`
+* **Base Branch**: `main` @ `0160db3`
 * **Open PRs**: None.
 * **Completed & Merged Tasks**:
   - `R1-01`: Repository and Documentation Reconciliation (PR #6 merged at `41a0552`, PR #7 merged at `7e80ff5`).
   - `R1-02`: Default-Deny Policy Interface & Core Policy Engine (PR #8 merged at `db37884`).
   - `R1-03`: Core Assistant and Activity Event contracts (PR #9 merged at `3bf4ca2`).
+  - `R1-04`: Core Persistence, SQLAlchemy Models & SQL Repositories (PR #10 merged at `0160db3`).
 * **Validation Results**:
-  - `pytest`: 88 passed, 1 upstream Starlette deprecation warning.
-  - `ruff check`: passed across codebase (57 files).
-  - `ruff format --check`: passed across codebase (57 files).
+  - `pytest`: 96 passed, 1 upstream Starlette deprecation warning.
+  - `ruff check`: passed across codebase (60 files).
+  - `ruff format --check`: passed across codebase (60 files).
   - `git diff --check main...HEAD`: passed.
   - Architecture boundary tests: passed.
 * **Blockers**: None.
@@ -55,15 +56,15 @@
 * **ADR-001 through ADR-015**: Accepted foundational baseline.
 * **ADR-016**: Deterministic State-Driven Autonomous Agent Orchestration (AAO-001).
 * **ADR-017**: Polyglot Runtime Boundaries — Python 3.12+/FastAPI control plane (Hub/Core), Rust lightweight endpoint daemon (Node), Tauri + React/TypeScript (Desktop Assistant), evidence-gated server Rust extraction.
-* **Persistence Guarantee**: Task lifecycle, task steps, activity events, and policy evaluation decisions are durably modeled via SQLAlchemy 2.0 ORM with parameterized execution and deterministic UTC datetime normalization.
+* **Cryptographic Token Integrity**: Tokens follow `oph_<prefix>_<secret>` standard format with constant-time SHA-256 verification and cascade revocation upon device status invalidation.
 * **Vendor Governance**: `anything-llm/` and `ollama/` are protected vendor source. Modifications are strictly isolated behind domain adapters.
 
 ---
 
 ## 4. Next Task & Continuation
 
-* **Next Eligible Task**: `R1-05` (Identity & Multi-Tenancy: Tenant, workspace, user, and device identity with scoped RBAC & API key / token validation).
+* **Next Eligible Task**: `R1-06` (Capability-based Model Router supporting LM Studio, Ollama, and Cloud providers with strict PrivacyMode routing).
 * **Continuation Command**:
   ```powershell
-  git checkout -b task/r1-05-identity-multitenancy main
+  git checkout -b task/r1-06-model-router main
   ```

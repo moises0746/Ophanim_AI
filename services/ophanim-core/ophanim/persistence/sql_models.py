@@ -19,6 +19,7 @@ from sqlalchemy import (
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from ophanim.domain.assistant_events import EventVisibility
+from ophanim.domain.identity import DeviceStatus, DeviceType
 from ophanim.domain.policy import PolicyEffect
 from ophanim.domain.values import (
     Environment,
@@ -29,6 +30,105 @@ from ophanim.domain.values import (
 )
 
 from .database import Base
+
+
+class TenantRecord(Base):
+    __tablename__ = "tenants"
+
+    id: Mapped[str] = mapped_column(String(36), primary_key=True)
+    name: Mapped[str] = mapped_column(String(128), nullable=False)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), nullable=False, default=lambda: datetime.now(UTC)
+    )
+
+    workspaces: Mapped[list[WorkspaceRecord]] = relationship(
+        "WorkspaceRecord", back_populates="tenant", cascade="all, delete-orphan"
+    )
+    users: Mapped[list[UserRecord]] = relationship(
+        "UserRecord", back_populates="tenant", cascade="all, delete-orphan"
+    )
+
+
+class WorkspaceRecord(Base):
+    __tablename__ = "workspaces"
+
+    id: Mapped[str] = mapped_column(String(36), primary_key=True)
+    tenant_id: Mapped[str] = mapped_column(
+        String(36), ForeignKey("tenants.id", ondelete="CASCADE"), nullable=False, index=True
+    )
+    name: Mapped[str] = mapped_column(String(128), nullable=False)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), nullable=False, default=lambda: datetime.now(UTC)
+    )
+
+    tenant: Mapped[TenantRecord] = relationship("TenantRecord", back_populates="workspaces")
+    devices: Mapped[list[DeviceRecord]] = relationship(
+        "DeviceRecord", back_populates="workspace", cascade="all, delete-orphan"
+    )
+
+
+class UserRecord(Base):
+    __tablename__ = "users"
+
+    id: Mapped[str] = mapped_column(String(36), primary_key=True)
+    tenant_id: Mapped[str] = mapped_column(
+        String(36), ForeignKey("tenants.id", ondelete="CASCADE"), nullable=False, index=True
+    )
+    username: Mapped[str] = mapped_column(String(128), nullable=False, index=True)
+    display_name: Mapped[str] = mapped_column(String(128), nullable=False)
+    roles: Mapped[list[str]] = mapped_column(JSON, nullable=False, default=list)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), nullable=False, default=lambda: datetime.now(UTC)
+    )
+
+    tenant: Mapped[TenantRecord] = relationship("TenantRecord", back_populates="users")
+
+    __table_args__ = (Index("ix_users_tenant_username", "tenant_id", "username", unique=True),)
+
+
+class DeviceRecord(Base):
+    __tablename__ = "devices"
+
+    id: Mapped[str] = mapped_column(String(36), primary_key=True)
+    tenant_id: Mapped[str] = mapped_column(String(36), nullable=False, index=True)
+    workspace_id: Mapped[str] = mapped_column(
+        String(36), ForeignKey("workspaces.id", ondelete="CASCADE"), nullable=False, index=True
+    )
+    name: Mapped[str] = mapped_column(String(128), nullable=False)
+    device_type: Mapped[DeviceType] = mapped_column(
+        SQLEnum(DeviceType, name="device_type_enum", native_enum=False),
+        nullable=False,
+    )
+    public_key_fingerprint: Mapped[str] = mapped_column(String(128), nullable=False)
+    status: Mapped[DeviceStatus] = mapped_column(
+        SQLEnum(DeviceStatus, name="device_status_enum", native_enum=False),
+        nullable=False,
+        default=DeviceStatus.ENROLLED,
+    )
+    enrolled_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), nullable=False, default=lambda: datetime.now(UTC)
+    )
+    last_seen_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+
+    workspace: Mapped[WorkspaceRecord] = relationship("WorkspaceRecord", back_populates="devices")
+
+
+class ApiKeyRecord(Base):
+    __tablename__ = "api_keys"
+
+    id: Mapped[str] = mapped_column(String(36), primary_key=True)
+    tenant_id: Mapped[str] = mapped_column(String(36), nullable=False, index=True)
+    workspace_id: Mapped[str] = mapped_column(String(36), nullable=False, index=True)
+    user_id: Mapped[str | None] = mapped_column(String(36), nullable=True, index=True)
+    device_id: Mapped[str | None] = mapped_column(String(36), nullable=True, index=True)
+    key_prefix: Mapped[str] = mapped_column(String(32), nullable=False, index=True)
+    hashed_secret: Mapped[str] = mapped_column(String(128), nullable=False, unique=True, index=True)
+    scopes: Mapped[list[str]] = mapped_column(JSON, nullable=False, default=list)
+    expires_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    revoked_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), nullable=False, default=lambda: datetime.now(UTC)
+    )
 
 
 class TaskRecord(Base):

@@ -264,3 +264,98 @@ class PolicyDecisionId:
 
     def __str__(self) -> str:
         return str(self.value)
+
+
+@dataclass(frozen=True, slots=True)
+class TenantId:
+    value: UUID
+
+    def __post_init__(self) -> None:
+        object.__setattr__(self, "value", _uuid(self.value))
+
+    @classmethod
+    def new(cls) -> TenantId:
+        return cls(uuid4())
+
+    @classmethod
+    def from_str(cls, value: str) -> TenantId:
+        return cls(_uuid(value))
+
+    def __str__(self) -> str:
+        return str(self.value)
+
+
+@dataclass(frozen=True, slots=True)
+class WorkspaceId:
+    value: UUID
+
+    def __post_init__(self) -> None:
+        object.__setattr__(self, "value", _uuid(self.value))
+
+    @classmethod
+    def new(cls) -> WorkspaceId:
+        return cls(uuid4())
+
+    @classmethod
+    def from_str(cls, value: str) -> WorkspaceId:
+        return cls(_uuid(value))
+
+    def __str__(self) -> str:
+        return str(self.value)
+
+
+@dataclass(frozen=True, slots=True)
+class UserId:
+    value: UUID
+
+    def __post_init__(self) -> None:
+        object.__setattr__(self, "value", _uuid(self.value))
+
+    @classmethod
+    def new(cls) -> UserId:
+        return cls(uuid4())
+
+    @classmethod
+    def from_str(cls, value: str) -> UserId:
+        return cls(_uuid(value))
+
+    def __str__(self) -> str:
+        return str(self.value)
+
+
+@dataclass(frozen=True, slots=True)
+class DeviceId:
+    value: UUID
+
+    def __post_init__(self) -> None:
+        object.__setattr__(self, "value", _uuid(self.value))
+
+    @classmethod
+    def new(cls) -> DeviceId:
+        return cls(uuid4())
+
+    @classmethod
+    def from_str(cls, value: str) -> DeviceId:
+        return cls(_uuid(value))
+
+    def __str__(self) -> str:
+        return str(self.value)
+
+
+@dataclass(frozen=True, slots=True)
+class ApiKeyId:
+    value: UUID
+
+    def __post_init__(self) -> None:
+        object.__setattr__(self, "value", _uuid(self.value))
+
+    @classmethod
+    def new(cls) -> ApiKeyId:
+        return cls(uuid4())
+
+    @classmethod
+    def from_str(cls, value: str) -> ApiKeyId:
+        return cls(_uuid(value))
+
+    def __str__(self) -> str:
+        return str(self.value)
