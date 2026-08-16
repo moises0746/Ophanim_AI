@@ -12,6 +12,9 @@ from ophanim.domain.values import PrivacyMode, _text
 class ModelProviderType(StrEnum):
     LM_STUDIO = "lm_studio"
     OLLAMA = "ollama"
+    OPENAI = "openai"
+    GEMINI = "gemini"
+    ANTHROPIC = "anthropic"
     CLOUD = "cloud"
     MOCK = "mock"
 
@@ -82,6 +85,8 @@ class ModelCompletionRequest:
     temperature: float = 0.0
     stop_sequences: tuple[str, ...] = field(default_factory=tuple)
     response_format_json: bool = False
+    preferred_provider: ModelProviderType | None = None
+    preferred_model_id: str | None = None
 
     def __post_init__(self) -> None:
         if not self.messages:
@@ -100,6 +105,16 @@ class ModelCompletionRequest:
                 "all required_capabilities must be valid ModelCapability instances"
             )
         object.__setattr__(self, "required_capabilities", caps)
+        if self.preferred_provider is not None and not isinstance(
+            self.preferred_provider, ModelProviderType
+        ):
+            raise DomainValidationError("preferred_provider must be a valid ModelProviderType")
+        if self.preferred_model_id is not None:
+            object.__setattr__(
+                self,
+                "preferred_model_id",
+                _text(self.preferred_model_id, "preferred_model_id", max_length=128),
+            )
 
 
 @dataclass(frozen=True, slots=True)

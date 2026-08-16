@@ -6,7 +6,7 @@ Ophanim AI is the product and control plane. It accepts goals through voice or t
 
 The Assistant is the default product experience. AnythingLLM, LM Studio, Ollama, MCP servers, cloud models, browser engines, and enterprise systems are replaceable subsystems behind Ophanim-owned contracts.
 
-> Project status: **Sprint 00 is complete and merged. Sprint 01 tasks S01-T01 and S01-T02 are implemented and reconciled. S01-T03 implementation artifacts are present on `main`, but their authorization and completion evidence are not verified; later Sprint 01 tasks remain unimplemented until explicitly authorized. The autonomous agent orchestration foundation (AAO-001) is implemented; real provider, PostgreSQL, and Git adapters remain pending.**
+> Project status: **Sprint 00 and Release 1 tasks R1-01 through R1-11 are merged. R1-12, R1-06A, and R1-RUN-01 are committed and checkpointed on the current stack but not merged. UI-R1-T01 adds the responsive, Assistant-first Ophanim desktop experience and preserves truthful Core-backed state.**
 
 ## Start Here
 
@@ -176,11 +176,11 @@ Sprint 00 task S00-T01 migrated the service, Python package, presentation string
 
 ## Repository Map
 
-- `apps/desktop/` - placeholder for the future desktop product surface; no Tauri/React scaffold exists.
-- `services/ophanim-core/` - implemented first-party runtime and service-local tests.
+- `apps/desktop/` - responsive Tauri/React Desktop Assistant with a credential-isolating Rust bridge, route shell, model/privacy selection, authenticated chat, and authoritative Core-event presentation. See the [desktop experience contract](docs/product/desktop-experience.md).
+- `services/ophanim-core/` - implemented first-party runtime with authenticated Assistant chat/model APIs, local/cloud provider routing, and service-local tests.
 - `packages/`, `adapters/`, `integrations/`, and `infrastructure/` - first-party ownership placeholders only.
 - `docs/` - implemented project documentation plus the placeholder `docs/ux/` boundary.
-- `tests/` - placeholder cross-component test boundaries; current executable tests remain service-local.
+- `tests/` - placeholder cross-component test boundaries; executable tests currently live under Core, Desktop, and Node components.
 - `anything-llm/` and `ollama/` - protected vendor source in temporary locations.
 - `Obsidian_Vault/` - protected private user data, not source code.
 
@@ -225,7 +225,7 @@ See [`PROJECT_PLAN.md`](PROJECT_PLAN.md).
 
 ## Delivery Status
 
-Sprint 00 is complete and merged. Sprint 01 tasks S01-T01 and S01-T02 implement Core ownership scaffolds and foundational Task domain types. S01-T03 lifecycle-service artifacts exist on `main`, but repository history does not establish explicit authorization and its original checkpoint did not satisfy the required completion-evidence format. S01-T03 is therefore not recorded as complete. AAO-001 adds the autonomous agent orchestration foundation: a deterministic workflow state machine, Planner/Developer/QA/Reviewer/Orchestrator roles behind a provider-agnostic agent port, bounded QA retries, configurable quality gates, isolated task branches, and append-only workflow audit events. Later Sprint 01 tasks remain planning recommendations, not automatic implementation authorization.
+Sprint 00 is complete and merged. Release 1 tasks R1-01 through R1-11 are merged. R1-12 is preserved in commit `bab5949`, R1-06A in `d6c031d`, and R1-RUN-01 in `515223f`; they are not yet merged to `main`. UI-R1-T01 rebuilds the runtime on that stack as an Assistant-first responsive desktop workspace with canonical Core state, truthful operational routes, and explicit unavailable boundaries. The original S01-T03 acceptance caveat and unimplemented S01-T06 through S01-T08 records remain explicit rather than being retroactively rewritten.
 
 See [`docs/sprints/SPRINT-00-CLOSURE.md`](docs/sprints/SPRINT-00-CLOSURE.md), [`docs/sprints/SPRINT-01.md`](docs/sprints/SPRINT-01.md), and [`docs/architecture/autonomous-agent-orchestration.md`](docs/architecture/autonomous-agent-orchestration.md).
 
@@ -237,10 +237,29 @@ See [`CODEX.md`](CODEX.md).
 
 ## Key ADRs
 
-The accepted baseline contains ADR-001 through ADR-016, covering Core modularity, governed model/tool execution, replaceable knowledge and model runtimes, MCP, integration preference, browser foundation, credential custody, human approval, event-driven Assistant behavior, authoritative persistence, Obsidian knowledge, evidence/audit, read-only MVP scope, vendor isolation, and deterministic state-driven autonomous agent orchestration.
+The accepted baseline contains ADR-001 through ADR-017, covering Core modularity, governed model/tool execution, replaceable knowledge and model runtimes, MCP, integration preference, browser foundation, credential custody, human approval, event-driven Assistant behavior, authoritative persistence, Obsidian knowledge, evidence/audit, read-only MVP scope, vendor isolation, deterministic state-driven autonomous agent orchestration, and polyglot runtime boundaries.
 
 See the [`docs/adr/` index](docs/adr/README.md) for the authoritative titles and records.
 
+## Running the Application & Troubleshooting
+
+To run Ophanim AI locally (which starts both the FastAPI backend and the Tauri desktop app), run:
+```powershell
+cd apps/desktop
+npm run app:dev
+```
+
+### Troubleshooting
+- **"Port 8080 or 1420 already in use" or Background Task Conflicts**  
+  If the application fails to start with port binding errors or PowerShell script failures, ensure that no other instance (or coding agent background task) is already running. You can kill orphaned processes using your task manager.
+- **Running Web UI Only (No Native GUI)**  
+  If you only want to access the web frontend via your browser without launching the native Tauri window:
+  1. Start the backend: `cd services/ophanim-core` then `python -m uvicorn ophanim.main:app --port 8080`
+  2. Start the frontend: `cd apps/desktop` then `npm run dev`
+  3. Open `http://localhost:1420` in your web browser.
+- **"EBUSY" or File Watcher Errors (Windows)**  
+  Vite's file watcher may attempt to lock the compiled Rust binaries, causing an `EBUSY` crash. This is mitigated by the `ignored: ['**/src-tauri/**']` directive in `vite.config.ts`. If it recurs, ensure your `target/` directory is properly excluded.
+
 ## Current Status
 
-**Do not start broad feature implementation.** The architecture baseline is complete. The next implementation must be one explicitly authorized Sprint 01 task, verified against its dependencies and acceptance criteria. MCP, Desktop Worker, Assistant UI, browser runtime, and transaction-investigation capabilities remain specified or planned unless a checkpoint proves otherwise.
+**Do not start broad feature implementation.** UI-R1-T01 is the completed active task. Run the local app with `cd apps/desktop` followed by `npm.cmd run app:dev` after configuring at least one model as described in [local setup](docs/development/local-setup.md). The route and state behavior is documented in the [desktop experience contract](docs/product/desktop-experience.md). Governed browser automation remains the recommended next task but is not automatically authorized.

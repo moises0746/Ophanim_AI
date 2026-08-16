@@ -77,6 +77,9 @@ class ModelRouter(ModelRouterPort):
     def __init__(self, providers: Sequence[ModelProviderPort]) -> None:
         self._providers = list(providers)
 
+    def list_models(self) -> Sequence[ModelDescriptor]:
+        return tuple(model for provider in self._providers for model in provider.list_models())
+
     def resolve_model(
         self, request: ModelCompletionRequest
     ) -> tuple[ModelProviderPort, ModelDescriptor]:
@@ -85,6 +88,16 @@ class ModelRouter(ModelRouterPort):
 
         for provider in self._providers:
             for model in provider.list_models():
+                if (
+                    request.preferred_provider is not None
+                    and model.provider_type != request.preferred_provider
+                ):
+                    continue
+                if (
+                    request.preferred_model_id is not None
+                    and model.model_id != request.preferred_model_id
+                ):
+                    continue
                 # Privacy Mode enforcement
                 if request.privacy_mode == PrivacyMode.LOCAL_ONLY and not model.is_local:
                     continue
@@ -138,6 +151,16 @@ class ModelRouter(ModelRouterPort):
         candidates: list[tuple[ModelProviderPort, ModelDescriptor]] = []
         for provider in self._providers:
             for model in provider.list_models():
+                if (
+                    request.preferred_provider is not None
+                    and model.provider_type != request.preferred_provider
+                ):
+                    continue
+                if (
+                    request.preferred_model_id is not None
+                    and model.model_id != request.preferred_model_id
+                ):
+                    continue
                 if request.privacy_mode == PrivacyMode.LOCAL_ONLY and not model.is_local:
                     continue
                 if request.privacy_mode == PrivacyMode.PRIVATE and not model.is_local:

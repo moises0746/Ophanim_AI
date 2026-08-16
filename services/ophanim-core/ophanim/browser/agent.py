@@ -1,26 +1,37 @@
-from typing import Any
+import logging
+from datetime import UTC, datetime
 
-from ophanim.browser.models import BrowserTask, BrowserTaskResult
+from ophanim.browser.driver import BrowserDriverError, PlaywrightDriver
+from ophanim.browser.models import (
+    BrowserActionType,
+    BrowserEvidence,
+    BrowserTask,
+    BrowserTaskResult,
+)
 from ophanim.browser.policy import enforce_browser_policy
+from ophanim.browser.registry import ApprovedApplicationRegistry
 from ophanim.config import Settings
+
+logger = logging.getLogger(__name__)
 
 
 class BrowserAgentUnavailable(RuntimeError):
     pass
 
 
-class BrowserUseAgent:
-    """Local browser-agent adapter backed by Browser Use.
+class GovernedBrowserAgent:
+    """Governed local browser-agent backed by Playwright.
 
-    The dependency is optional so Ophanim Core can run without browser automation.
-    Sensitive/write-like tasks are stopped before execution when approval is required.
+    Replaces the legacy unrestricted agent. Enforces policy, domain boundaries,
+    and returns verifiable evidence for MVP read-only actions.
     """
 
-    def __init__(self, settings: Settings) -> None:
+    def __init__(self, settings: Settings, registry: ApprovedApplicationRegistry | None = None) -> None:
         self._settings = settings
+        self._registry = registry
 
     async def run(self, task: BrowserTask, approved: bool = False) -> BrowserTaskResult:
-        task = enforce_browser_policy(task, self._settings)
+        task = enforce_browser_policy(task, self._settings, self._registry)
 
         if task.require_approval and not approved:
             return BrowserTaskResult(
@@ -29,43 +40,50 @@ class BrowserUseAgent:
                 approval_reason=f"Browser action '{task.action_type}' requires explicit approval",
             )
 
-        try:
-            from browser_use import Agent, Browser, ChatOpenAI
-        except ImportError as exc:
-            raise BrowserAgentUnavailable(
-                "Browser agent dependencies are not installed. Install ophanim-core[browser]."
-            ) from exc
-
-        if not self._settings.browser_model:
-            raise BrowserAgentUnavailable(
-                "OPHANIM_BROWSER_MODEL must name a model currently loaded in LM Studio"
-            )
-
-        browser = Browser(
-            headless=self._settings.browser_headless,
-            allowed_domains=task.allowed_domains or None,
-        )
-
-        llm = ChatOpenAI(
-            model=self._settings.browser_model,
-            base_url=str(self._settings.lmstudio_base_url).rstrip("/"),
-            api_key=self._settings.lmstudio_api_key or "lm-studio",
-        )
-
-        objective = task.objective
-        if task.start_url:
-            objective = f"Start at {task.start_url}. {objective}"
-
-        agent = Agent(task=objective, llm=llm, browser=browser)
+        driver = PlaywrightDriver(allowed_domains=task.allowed_domains, headless=self._settings.browser_headless)
+        evidence = []
 
         try:
-            history: Any = await agent.run(max_steps=task.max_steps)
-            final_result = history.final_result() if hasattr(history, "final_result") else None
+            await driver.start()
+
+            # Start at URL
+            final_url = task.start_url
+            if task.start_url:
+                final_url = await driver.navigate(task.start_url)
+                evidence.append(
+                    BrowserEvidence(
+                        timestamp=datetime.now(UTC).isoformat(),
+                        url=final_url,
+                        action_type=BrowserActionType.NAVIGATE.value,
+                    )
+                )
+
+            # Perform action
+            if task.action_type == BrowserActionType.READ:
+                text = await driver.read_text("body")
+                evidence.append(
+                    BrowserEvidence(
+                        timestamp=datetime.now(UTC).isoformat(),
+                        url=final_url or "",
+                        action_type=BrowserActionType.READ.value,
+                        extracted_data={"text": text[:2000]} # bounding read payload
+                    )
+                )
+
             return BrowserTaskResult(
                 status="completed",
-                summary=str(final_result) if final_result is not None else "Browser task completed",
-                steps=len(history.history) if hasattr(history, "history") else 0,
+                summary="Browser task completed successfully",
+                final_url=final_url,
+                steps=len(evidence),
+                evidence=evidence
+            )
+
+        except BrowserDriverError as e:
+            logger.error(f"Browser execution failed: {e}")
+            return BrowserTaskResult(
+                status="failed",
+                summary=f"Browser driver error: {e}",
+                evidence=evidence
             )
         finally:
-            if hasattr(browser, "stop"):
-                await browser.stop()
+            await driver.stop()

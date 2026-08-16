@@ -1,98 +1,56 @@
+import { Attachment, Microphone, SendDiagonal } from 'iconoir-react';
 import React, { useState } from 'react';
 
 interface PromptBarProps {
   onSend: (text: string) => void;
   disabled?: boolean;
+  busy?: boolean;
+  disabledReason?: string;
 }
 
-export const PromptBar: React.FC<PromptBarProps> = ({ onSend, disabled }) => {
+export const PromptBar: React.FC<PromptBarProps> = ({
+  onSend,
+  disabled,
+  busy = false,
+  disabledReason,
+}) => {
   const [input, setInput] = useState('');
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = (event: React.FormEvent) => {
+    event.preventDefault();
     if (!input.trim() || disabled) return;
     onSend(input.trim());
     setInput('');
   };
 
-  const handleQuickAction = (action: string) => {
-    if (disabled) return;
-    onSend(action);
-  };
-
   return (
-    <div style={{ marginTop: 'auto', paddingTop: '16px' }}>
-      <div style={{ display: 'flex', gap: '8px', marginBottom: '10px', flexWrap: 'wrap' }}>
-        <button
-          type="button"
-          onClick={() => handleQuickAction('Investigate failed transaction order #TXN-90214')}
-          disabled={disabled}
-          style={{
-            background: 'rgba(99, 102, 241, 0.1)',
-            border: '1px solid rgba(99, 102, 241, 0.25)',
-            color: 'var(--accent-cyan)',
-            padding: '4px 10px',
-            borderRadius: '6px',
-            fontSize: '0.75rem',
-            cursor: disabled ? 'not-allowed' : 'pointer',
-          }}
-        >
-          🔍 Investigate TXN-90214
-        </button>
-        <button
-          type="button"
-          onClick={() => handleQuickAction('Run device node diagnostic health check')}
-          disabled={disabled}
-          style={{
-            background: 'rgba(6, 182, 212, 0.1)',
-            border: '1px solid rgba(6, 182, 212, 0.25)',
-            color: '#38bdf8',
-            padding: '4px 10px',
-            borderRadius: '6px',
-            fontSize: '0.75rem',
-            cursor: disabled ? 'not-allowed' : 'pointer',
-          }}
-        >
-          ⚡ Node Health Check
-        </button>
-      </div>
-
-      <form onSubmit={handleSubmit} className="glass-panel" style={{ display: 'flex', padding: '6px 8px', borderRadius: '12px' }}>
-        <input
-          type="text"
+    <div className="prompt-region">
+      <form onSubmit={handleSubmit} className="prompt-composer">
+        <textarea
           value={input}
-          onChange={(e) => setInput(e.target.value)}
+          onChange={(event) => setInput(event.target.value)}
+          onKeyDown={(event) => {
+            if (event.key === 'Enter' && !event.shiftKey) {
+              event.preventDefault();
+              event.currentTarget.form?.requestSubmit();
+            }
+          }}
           disabled={disabled}
-          placeholder="Ask Ophanim AI or request an automated investigation..."
-          style={{
-            flex: 1,
-            background: 'transparent',
-            border: 'none',
-            outline: 'none',
-            padding: '8px 12px',
-            color: 'var(--text-primary)',
-            fontSize: '0.9rem',
-            fontFamily: 'var(--font-sans)',
-          }}
+          rows={2}
+          aria-label="Message Ophanim"
+          placeholder={disabledReason ?? 'Ask Ophanim or delegate a bounded goal…'}
         />
-        <button
-          type="submit"
-          disabled={disabled || !input.trim()}
-          style={{
-            background: 'linear-gradient(135deg, var(--accent-indigo) 0%, var(--accent-cyan) 100%)',
-            border: 'none',
-            borderRadius: '8px',
-            color: '#ffffff',
-            padding: '8px 16px',
-            fontWeight: 600,
-            fontSize: '0.85rem',
-            cursor: disabled || !input.trim() ? 'not-allowed' : 'pointer',
-            opacity: disabled || !input.trim() ? 0.5 : 1,
-            transition: 'all 0.2s ease',
-          }}
-        >
-          Send
-        </button>
+        <div className="composer-actions">
+          <div>
+            <button type="button" className="icon-button" disabled title="Attachments are not implemented" aria-label="Attachments unavailable"><Attachment width={18} height={18} aria-hidden /></button>
+            <button type="button" className="icon-button" disabled title="Voice capture is not implemented" aria-label="Voice capture unavailable"><Microphone width={18} height={18} aria-hidden /></button>
+            <span className="composer-hint">Enter to send · Shift + Enter for a new line</span>
+          </div>
+          <button className="send-button" type="submit" disabled={disabled || !input.trim()}>
+            <span>{busy ? 'Sending' : 'Send'}</span>
+            <SendDiagonal width={17} height={17} aria-hidden />
+          </button>
+        </div>
       </form>
     </div>
   );

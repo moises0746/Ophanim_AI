@@ -1,208 +1,69 @@
-import React, { useState } from 'react';
-import { OphanimVisualizer } from './components/OphanimVisualizer';
-import { StatusBar } from './components/StatusBar';
-import { ActivityFeed } from './components/ActivityFeed';
-import { CitationDrawer } from './components/CitationDrawer';
-import { ApprovalModal } from './components/ApprovalModal';
-import { PromptBar } from './components/PromptBar';
 import {
-  ActivityEventItem,
-  ApprovalRequest,
-  AssistantSemanticState,
-  CitationItem,
-  PrivacyMode,
-} from './types/events';
+  Group,
+  Internet,
+  Puzzle,
+  Settings,
+  TaskList,
+  Folder,
+} from 'iconoir-react';
+import { HashRouter, Navigate, Route, Routes } from 'react-router-dom';
+import { AppShell } from './app/AppShell';
+import { ApprovalModal } from './components/ApprovalModal';
+import { ActivityPage } from './features/activity/ActivityPage';
+import { ApprovalsPage } from './features/activity/ApprovalsPage';
+import { AssistantPage } from './features/assistant/AssistantPage';
+import { AutomationsPage } from './features/automations/AutomationsPage';
+import { KnowledgePage } from './features/knowledge/KnowledgePage';
+import { ModelsPage } from './features/models/ModelsPage';
+import { UnavailablePage } from './features/shared/UnavailablePage';
+import { SystemHealthPage } from './features/system/SystemHealthPage';
+import { useAssistantWorkspace } from './hooks/useAssistantWorkspace';
+import type { AssistantEventStreamClient } from './services/eventStream';
+import type { AssistantRuntimeClient } from './services/runtime';
 
-export const App: React.FC = () => {
-  const [state, setState] = useState<AssistantSemanticState>('DORMANT');
-  const [subText, setSubText] = useState<string>('Ophanim AI ready. Awaiting instruction.');
-  const [privacyMode] = useState<PrivacyMode>('LOCAL_ONLY');
-  const [model] = useState<string>('Llama-3-8B-Instruct (Local)');
-  const [nodeConnected] = useState<boolean>(true);
+interface AppProps {
+  eventStreamClient?: AssistantEventStreamClient;
+  runtimeClient?: AssistantRuntimeClient;
+}
 
-  const [pendingApproval, setPendingApproval] = useState<ApprovalRequest | null>(null);
-
-  const [events, setEvents] = useState<ActivityEventItem[]>([
-    {
-      id: 'evt-init-01',
-      timestampUtc: new Date().toISOString(),
-      type: 'assistant.state_changed',
-      title: 'Control plane initialized in LOCAL_ONLY mode',
-      status: 'completed',
-    },
-  ]);
-
-  const [citations, setCitations] = useState<CitationItem[]>([]);
-
-  const handlePromptSend = (text: string) => {
-    // 1. Enter listening -> thinking -> executing
-    setState('THINKING');
-    setSubText(`Analyzing request: "${text}"`);
-
-    const newEvt: ActivityEventItem = {
-      id: `evt-${Date.now()}`,
-      timestampUtc: new Date().toISOString(),
-      type: 'assistant.thinking_update',
-      title: `Processing: ${text}`,
-      status: 'running',
-    };
-    setEvents((prev) => [newEvt, ...prev]);
-
-    if (text.includes('TXN-90214') || text.includes('Investigation')) {
-      setTimeout(() => {
-        setState('EXECUTING');
-        setSubText('Querying Diagnostic DB & Portal Runbooks...');
-
-        setCitations([
-          {
-            citationId: 'cit-01',
-            documentTitle: 'Payment Portal Runbook',
-            uriRef: 'obsidian://vault/runbooks/payment_portal.md#ERR_TXN_TIMEOUT',
-            excerpt: 'When transactions encounter a gateway timeout, verify the external gateway latency in diagnostic logs.',
-            score: 0.94,
-            headerPath: '### ERR_TXN_TIMEOUT',
-          },
-        ]);
-
-        // Trigger human-in-the-loop approval simulation
-        setTimeout(() => {
-          setState('AWAITING_APPROVAL');
-          setSubText('Sensitive database diagnostic query requires approval.');
-          setPendingApproval({
-            approvalId: 'appr-txn-1',
-            taskId: 'task-investigation-01',
-            toolName: 'db.query_diagnostic',
-            parameters: {
-              table: 'transactions',
-              filter: 'order_id = "TXN-90214"',
-              columns: ['id', 'status', 'error_code', 'created_at'],
-            },
-            riskLevel: 'medium',
-            description: 'Execute parameterized read-only diagnostic query on transaction database to inspect failure reason.',
-          });
-        }, 1200);
-      }, 800);
-    } else if (text.includes('health') || text.includes('Node')) {
-      setTimeout(() => {
-        setState('EXECUTING');
-        setSubText('Executing node diagnostic probe...');
-        setTimeout(() => {
-          setState('COMPLETED');
-          setSubText('Device Node status: Operational. 0 errors.');
-          setEvents((prev) => [
-            {
-              id: `evt-node-${Date.now()}`,
-              timestampUtc: new Date().toISOString(),
-              type: 'assistant.tool_completed',
-              title: 'diagnostics.health_check executed on Device Node',
-              evidenceHash: 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855',
-              status: 'completed',
-              durationMs: 42.5,
-            },
-            ...prev,
-          ]);
-        }, 1000);
-      }, 600);
-    } else {
-      setTimeout(() => {
-        setState('SPEAKING');
-        setSubText('Ready to assist with transactions, code, and node tasks.');
-        setTimeout(() => {
-          setState('DORMANT');
-          setSubText('Awaiting next instruction.');
-        }, 1800);
-      }, 1000);
-    }
-  };
-
-  const handleApprove = (approvalId: string) => {
-    setPendingApproval(null);
-    setState('EXECUTING');
-    setSubText(`Executing approved action ${approvalId}...`);
-
-    setTimeout(() => {
-      setState('COMPLETED');
-      setSubText('Investigation complete: Gateway Timeout identified in upstream provider.');
-      setEvents((prev) => [
-        {
-          id: `evt-exec-${Date.now()}`,
-          timestampUtc: new Date().toISOString(),
-          type: 'assistant.tool_completed',
-          title: 'db.query_diagnostic completed',
-          evidenceHash: '7f83b1657ff1fc53b92dc18148a1d65dfc2d4b1fa3d677284addd200126d9069',
-          status: 'completed',
-          durationMs: 115.0,
-        },
-        ...prev,
-      ]);
-    }, 1200);
-  };
-
-  const handleReject = (_approvalId: string) => {
-    setPendingApproval(null);
-    setState('BLOCKED');
-    setSubText('Action rejected by operator. Investigation halted.');
-  };
-
-  const handleEmergencyStop = () => {
-    setPendingApproval(null);
-    setState('PAUSED');
-    setSubText('EMERGENCY STOP ACTIVATED: All tasks halted immediately.');
-    setEvents((prev) => [
-      {
-        id: `evt-stop-${Date.now()}`,
-        timestampUtc: new Date().toISOString(),
-        type: 'assistant.interrupted',
-        title: 'Emergency stop invoked by user',
-        status: 'failed',
-      },
-      ...prev,
-    ]);
-  };
+export function App({ eventStreamClient, runtimeClient }: AppProps) {
+  const workspace = useAssistantWorkspace({ eventStreamClient, runtimeClient });
 
   return (
-    <div style={{ maxWidth: '1440px', margin: '0 auto', padding: '20px', minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
-      <StatusBar
-        state={state}
-        model={model}
-        privacyMode={privacyMode}
-        nodeConnected={nodeConnected}
-        onEmergencyStop={handleEmergencyStop}
-      />
-
-      <div style={{
-        display: 'grid',
-        gridTemplateColumns: '1fr 340px',
-        gap: '20px',
-        flex: 1,
-        minHeight: '600px'
-      }}>
-        {/* Main Orchestration & Presence Area */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-          <div className="glass-panel" style={{ flex: '0 0 auto', padding: '16px' }}>
-            <OphanimVisualizer state={state} subText={subText} />
-          </div>
-
-          <div style={{ flex: 1, minHeight: '260px' }}>
-            <ActivityFeed events={events} />
-          </div>
-
-          <PromptBar onSend={handlePromptSend} disabled={state === 'AWAITING_APPROVAL'} />
-        </div>
-
-        {/* Knowledge & Citations Sidebar */}
-        <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-          <CitationDrawer citations={citations} />
-        </div>
-      </div>
+    <HashRouter>
+      <AppShell
+        connection={workspace.connection}
+        models={workspace.models}
+        selectedModelKey={workspace.selectedModelKey}
+        privacyMode={workspace.privacyMode}
+        onModelChange={workspace.changeModel}
+        onPrivacyChange={workspace.setPrivacyMode}
+      >
+        <Routes>
+          <Route path="/" element={<AssistantPage workspace={workspace} />} />
+          <Route path="/models" element={<ModelsPage models={workspace.models} selectedModelKey={workspace.selectedModelKey} connection={workspace.connection} onSelect={workspace.changeModel} />} />
+          <Route path="/knowledge" element={<KnowledgePage citations={workspace.citations} />} />
+          <Route path="/automations" element={<AutomationsPage />} />
+          <Route path="/system-health" element={<SystemHealthPage connection={workspace.connection} models={workspace.models} eventCount={workspace.events.length} />} />
+          <Route path="/activity" element={<ActivityPage events={workspace.events} />} />
+          <Route path="/approvals" element={<ApprovalsPage request={workspace.pendingApproval} onDismiss={workspace.dismissApproval} />} />
+          <Route path="/tasks" element={<UnavailablePage eyebrow="Work" title="Tasks" description="Authoritative task state and bounded execution history." detail="The current Desktop runtime does not expose a task-list contract. Assistant chat and Core events remain available without fabricating task records." icon={TaskList} />} />
+          <Route path="/projects" element={<UnavailablePage eyebrow="Work" title="Projects" description="Organized goals, tasks, outputs, and evidence." detail="Project persistence and membership contracts are not implemented in the connected runtime." icon={Folder} />} />
+          <Route path="/ai-team" element={<UnavailablePage eyebrow="Agents" title="AI Team" description="Bounded capability profiles and event-derived assignments." detail="The UI will show agents only after Core exposes authorized agent-profile and assignment projections." icon={Group} />} />
+          <Route path="/browser" element={<UnavailablePage eyebrow="Capabilities" title="Browser" description="Governed read-only browser investigation." detail="Browser automation is not part of this UI task. No browser control or synthetic session is exposed here." icon={Internet} />} />
+          <Route path="/integrations" element={<UnavailablePage eyebrow="Connections" title="Integrations" description="Typed, governed connections to external systems." detail="Integration registry and health contracts are not exposed to Desktop yet. Provider credentials remain outside React." icon={Puzzle} />} />
+          <Route path="/settings" element={<UnavailablePage eyebrow="Preferences" title="Settings" description="Workspace, accessibility, privacy, and runtime preferences." detail="Persistent settings are not implemented. System reduced-motion and high-contrast preferences are honored automatically." icon={Settings} />} />
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+      </AppShell>
 
       <ApprovalModal
-        request={pendingApproval}
-        onApprove={handleApprove}
-        onReject={handleReject}
+        request={workspace.pendingApproval}
+        onApprove={workspace.dismissApproval}
+        onReject={workspace.dismissApproval}
       />
-    </div>
+    </HashRouter>
   );
-};
+}
 
 export default App;

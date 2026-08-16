@@ -37,6 +37,10 @@ class ModelRouterPort(Protocol):
         """Route and execute completion based on capabilities and PrivacyMode."""
         ...
 
+    def list_models(self) -> Sequence[ModelDescriptor]:
+        """List every model registered with the router."""
+        ...
+
     def resolve_model(
         self, request: ModelCompletionRequest
     ) -> tuple[ModelProviderPort, ModelDescriptor]:
