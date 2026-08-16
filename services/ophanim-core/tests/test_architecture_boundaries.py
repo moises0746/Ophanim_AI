@@ -24,6 +24,7 @@ FORBIDDEN_DOMAIN_MODULES = {
     "ophanim.adapters",
     "ophanim.infrastructure",
     "ophanim.api",
+    "ophanim.observability",
 }
 
 
@@ -55,6 +56,7 @@ def test_layer_packages_import_without_runtime_wiring() -> None:
     import ophanim.api
     import ophanim.application
     import ophanim.domain
+    import ophanim.observability
     import ophanim.ports
 
     assert all(
@@ -63,6 +65,7 @@ def test_layer_packages_import_without_runtime_wiring() -> None:
             ophanim.api,
             ophanim.application,
             ophanim.domain,
+            ophanim.observability,
             ophanim.ports,
         )
     )

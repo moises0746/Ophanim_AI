@@ -8,7 +8,8 @@ import type {
   AssistantSemanticState,
   ChatMessage,
   CitationItem,
-  PrivacyMode,
+  RoutingMode,
+  ProviderStatus,
   RuntimeConnectionState,
 } from '../types/events';
 
@@ -19,13 +20,14 @@ export interface AssistantWorkspaceState {
   models: AssistantModel[];
   selectedModelKey: string;
   selectedModel?: AssistantModel;
-  privacyMode: PrivacyMode;
+  routingMode: RoutingMode;
   events: ActivityEventItem[];
   citations: CitationItem[];
   conversation: ChatMessage[];
+  providerStatus: ProviderStatus | null;
   pendingApproval: ApprovalRequest | null;
   sending: boolean;
-  setPrivacyMode: (mode: PrivacyMode) => void;
+  setRoutingMode: (mode: RoutingMode) => void;
   changeModel: (modelKey: string) => void;
   sendPrompt: (text: string) => Promise<void>;
   dismissApproval: (approvalId: string) => void;
@@ -50,13 +52,14 @@ export function useAssistantWorkspace({
   const [connection, setConnection] = useState<RuntimeConnectionState>(
     runtimeClient || eventStreamClient ? 'connecting' : 'offline',
   );
-  const [privacyMode, setPrivacyMode] = useState<PrivacyMode>('LOCAL_ONLY');
+  const [routingMode, setRoutingMode] = useState<RoutingMode>('LOCAL_ONLY');
   const [models, setModels] = useState<AssistantModel[]>([]);
   const [selectedModelKey, setSelectedModelKey] = useState('');
   const [pendingApproval, setPendingApproval] = useState<ApprovalRequest | null>(null);
   const [events, setEvents] = useState<ActivityEventItem[]>([]);
   const [citations] = useState<CitationItem[]>([]);
   const [conversation, setConversation] = useState<ChatMessage[]>([]);
+  const [providerStatus, setProviderStatus] = useState<ProviderStatus | null>(null);
   const [sending, setSending] = useState(false);
 
   const selectedModel = useMemo(
@@ -105,12 +108,14 @@ export function useAssistantWorkspace({
         const config = await runtimeClient.getConfig();
         if (!config.configured) throw new Error('local runtime is not configured');
         const configuredModels = await runtimeClient.listModels();
+        const initialStatus = await runtimeClient.getProviderStatus().catch(() => null);
         if (disposed) return;
         setModels(configuredModels);
+        setProviderStatus(initialStatus);
         const initial = configuredModels.find((candidate) => candidate.is_local) ?? configuredModels[0];
         if (initial) {
           setSelectedModelKey(`${initial.provider}:${initial.model_id}`);
-          setPrivacyMode(initial.is_local ? 'LOCAL_ONLY' : 'CLOUD_ASSISTED');
+          setRoutingMode(initial.is_local ? 'LOCAL_ONLY' : 'HYBRID_ROUTED');
         }
         disconnectEvents = await runtimeClient.connectEvents(config.workspaceId, handlers);
         if (!disposed) {
@@ -133,7 +138,7 @@ export function useAssistantWorkspace({
     const nextModel = models.find(
       (candidate) => `${candidate.provider}:${candidate.model_id}` === modelKey,
     );
-    if (nextModel) setPrivacyMode(nextModel.is_local ? 'LOCAL_ONLY' : 'CLOUD_ASSISTED');
+    if (nextModel) setRoutingMode(nextModel.is_local ? 'LOCAL_ONLY' : 'HYBRID_ROUTED');
   };
 
   const sendPrompt = async (text: string) => {
@@ -149,14 +154,20 @@ export function useAssistantWorkspace({
     try {
       const response = await runtimeClient.sendChat({
         messages: history,
-        privacyMode,
+        routingMode,
         provider: selectedModel.provider,
         modelId: selectedModel.model_id,
         maxTokens: 2048,
       });
       setConversation((current) => [
         ...current,
-        { role: 'assistant' as const, content: response.content },
+        {
+          role: 'assistant' as const,
+          content: response.content,
+          provider: response.provider,
+          modelId: response.model_id,
+          citations: response.citations,
+        },
       ].slice(-40));
       setStatusText(`Response received from ${response.model_id}. Awaiting authoritative Core state.`);
     } catch (error) {
@@ -182,13 +193,14 @@ export function useAssistantWorkspace({
     models,
     selectedModelKey,
     selectedModel,
-    privacyMode,
+    routingMode,
     events,
     citations,
     conversation,
+    providerStatus,
     pendingApproval,
     sending,
-    setPrivacyMode,
+    setRoutingMode,
     changeModel,
     sendPrompt,
     dismissApproval,

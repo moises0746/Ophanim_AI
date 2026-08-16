@@ -22,7 +22,7 @@ from ophanim.domain.model_routing import (
     ModelProviderType,
     ModelRole,
 )
-from ophanim.domain.values import PrivacyMode
+from ophanim.domain.values import RoutingMode
 from ophanim.ports.identity import IdentityAuthenticationPort
 
 router = APIRouter(prefix="/api/v1/assistant", tags=["assistant-chat"])
@@ -40,7 +40,7 @@ class AssistantChatRequest(BaseModel):
 
     workspace_id: str
     messages: list[ChatMessageRequest] = Field(min_length=1, max_length=200)
-    privacy_mode: PrivacyMode = PrivacyMode.LOCAL_ONLY
+    routing_mode: RoutingMode = RoutingMode.LOCAL_ONLY
     provider: ModelProviderType | None = None
     model_id: str | None = Field(default=None, min_length=1, max_length=128)
     max_tokens: int | None = Field(default=None, ge=1, le=32_768)
@@ -53,6 +53,16 @@ class TokenUsageResponse(BaseModel):
     total_tokens: int
 
 
+class CitationResponse(BaseModel):
+    citation_id: str
+    document_id: str
+    document_title: str
+    uri_ref: str
+    excerpt: str
+    score: float
+    header_path: str
+
+
 class AssistantChatResponse(BaseModel):
     correlation_id: str
     content: str
@@ -61,6 +71,7 @@ class AssistantChatResponse(BaseModel):
     finish_reason: str
     usage: TokenUsageResponse
     latency_ms: float
+    citations: list[CitationResponse] = Field(default_factory=list)
 
 
 class AssistantModelResponse(BaseModel):
@@ -143,7 +154,7 @@ async def assistant_chat(
                 ModelMessage(role=ModelRole(message.role), content=message.content)
                 for message in body.messages
             ),
-            privacy_mode=body.privacy_mode,
+            routing_mode=body.routing_mode,
             required_capabilities=frozenset({ModelCapability.CHAT}),
             max_tokens=body.max_tokens,
             temperature=body.temperature,
@@ -177,4 +188,16 @@ async def assistant_chat(
             total_tokens=completion.usage.total_tokens,
         ),
         latency_ms=completion.latency_ms,
+        citations=[
+            CitationResponse(
+                citation_id=str(c.id),
+                document_id=str(c.document_id),
+                document_title=c.document_title,
+                uri_ref=c.uri_ref,
+                excerpt=c.excerpt,
+                score=c.score,
+                header_path=c.header_path,
+            )
+            for c in result.citations
+        ],
     )

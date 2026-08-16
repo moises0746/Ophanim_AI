@@ -7,7 +7,7 @@ from ophanim.application.task_service import CreateTask, InMemoryTaskService
 from ophanim.domain.errors import InvalidLifecycleStateError
 from ophanim.domain.identifiers import CorrelationId, TaskId
 from ophanim.domain.lifecycle_rules import transition_task
-from ophanim.domain.values import DataScope, Environment, PrivacyMode, RiskLevel, TaskStatus
+from ophanim.domain.values import DataScope, Environment, RiskLevel, RoutingMode, TaskStatus
 
 
 class Clock:
@@ -28,7 +28,7 @@ def _command(*, correlation_id: CorrelationId | None = None) -> CreateTask:
         environment=Environment.TEST,
         data_scope=DataScope("workspace-1", ("portal-1",)),
         risk_level=RiskLevel.LOW,
-        privacy_mode=PrivacyMode.PRIVATE,
+        routing_mode=RoutingMode.HYBRID_ROUTED,
         correlation_id=correlation_id,
     )
 

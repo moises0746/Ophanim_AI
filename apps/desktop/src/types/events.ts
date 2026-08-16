@@ -56,7 +56,7 @@ export type AssistantEventType =
   | 'voice.speech_interrupted'
   | 'voice.microphone_muted';
 
-export type PrivacyMode = 'LOCAL_ONLY' | 'PRIVATE' | 'CLOUD_ASSISTED';
+export type RoutingMode = 'LOCAL_ONLY' | 'CLOUD_ONLY' | 'HYBRID_ROUTED';
 
 export type ModelProvider =
   | 'lm_studio'
@@ -79,6 +79,9 @@ export interface AssistantModel {
 export interface ChatMessage {
   role: 'user' | 'assistant';
   content: string;
+  provider?: string;
+  modelId?: string;
+  citations?: CitationItem[];
 }
 
 export interface ChatCompletion {
@@ -93,6 +96,7 @@ export interface ChatCompletion {
     total_tokens: number;
   };
   latency_ms: number;
+  citations?: CitationItem[];
 }
 
 export interface ApprovalRequest {
@@ -148,4 +152,27 @@ export interface EventEnvelope {
   sequence?: number | null;
   evidence_refs: string[];
   artifact_refs: string[];
+}
+
+export interface CloudModelStatus {
+  provider: string;
+  status: 'available' | 'unavailable' | 'configuration_error';
+  models: string[];
+}
+
+export interface ProviderHealth {
+  status: 'available' | 'unavailable' | 'error';
+  [key: string]: unknown;
+}
+
+export interface ProviderStatus {
+  anythingllm: ProviderHealth;
+  lmstudio: ProviderHealth;
+  cloud_models: CloudModelStatus[];
+  browser: {
+    enabled: boolean;
+    model: string | null;
+    allowed_domains: string[];
+    write_approval_required: boolean;
+  };
 }

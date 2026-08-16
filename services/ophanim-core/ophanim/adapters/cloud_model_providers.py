@@ -21,7 +21,7 @@ from ophanim.domain.model_routing import (
     ModelRole,
     TokenUsage,
 )
-from ophanim.domain.values import PrivacyMode
+from ophanim.domain.values import RoutingMode
 from ophanim.ports.model_router import ModelProviderPort
 from ophanim.ports.secret_resolver import SecretResolverPort
 
@@ -117,9 +117,9 @@ class CloudModelProviderBase(ModelProviderPort):
     def _validate_request(self, request: ModelCompletionRequest, model: ModelDescriptor) -> None:
         if model not in self._models:
             raise DomainValidationError(f"model is not registered with {self.provider_name}")
-        if request.privacy_mode != PrivacyMode.STANDARD:
+        if request.routing_mode == RoutingMode.LOCAL_ONLY:
             raise DomainValidationError(
-                f"{self.provider_name} is prohibited by privacy mode {request.privacy_mode.value}"
+                f"{self.provider_name} is prohibited by routing mode {request.routing_mode.value}"
             )
         if not request.required_capabilities.issubset(model.capabilities):
             raise DomainValidationError(
@@ -489,6 +489,81 @@ class AnthropicModelProvider(CloudModelProviderBase):
         )
 
 
+class OpenCodeZenModelProvider(CloudModelProviderBase):
+    """OpenCode Zen API adapter using OpenAI-compatible payload format."""
+
+    provider_name = "opencode_zen"
+    provider_type = ModelProviderType.OPENCODE_ZEN
+    base_url = "https://opencode.ai/zen/v1"
+    supported_capabilities = frozenset(
+        {
+            ModelCapability.CHAT,
+            ModelCapability.FAST_INFERENCE,
+            ModelCapability.REASONING,
+            ModelCapability.CODE_GENERATION,
+            ModelCapability.STRUCTURED_OUTPUT,
+        }
+    )
+
+    def _headers(self, credential: str) -> dict[str, str]:
+        return {
+            "Authorization": f"Bearer {credential}",
+            "Content-Type": "application/json",
+            "Accept": "application/json",
+        }
+
+    async def complete(
+        self, request: ModelCompletionRequest, model: ModelDescriptor
+    ) -> ModelCompletionResponse:
+        self._validate_request(request, model)
+        if any(message.role == ModelRole.TOOL for message in request.messages):
+            raise DomainValidationError(
+                "OpenCode Zen tool-role messages are not supported by this adapter"
+            )
+
+        payload: dict[str, object] = {
+            "model": model.model_id,
+            "messages": [
+                {"role": message.role.value, "content": message.content}
+                for message in request.messages
+            ],
+        }
+        payload["max_tokens"] = request.max_tokens or self._max_output_tokens
+        if request.temperature != 0.0:
+            payload["temperature"] = request.temperature
+        if request.stop_sequences:
+            payload["stop"] = list(request.stop_sequences)
+        if request.response_format_json:
+            payload["response_format"] = {"type": "json_object"}
+
+        started = time.perf_counter()
+        body = await self._request_json("POST", "/chat/completions", payload)
+
+        choices = _items(body.get("choices"), self.provider_name, "choices")
+        if not choices:
+            raise CloudProviderError("opencode_zen response contained no choices")
+
+        choice_map = _mapping(choices[0], self.provider_name, "choice")
+        message_map = _mapping(choice_map.get("message"), self.provider_name, "message")
+        content = message_map.get("content")
+        if not isinstance(content, str):
+            raise CloudProviderError("opencode_zen response contained no output text")
+
+        usage = _mapping(body.get("usage", {}), self.provider_name, "usage")
+        prompt_tokens = _token_count(usage.get("prompt_tokens"))
+        completion_tokens = _token_count(usage.get("completion_tokens"))
+        total_tokens = _token_count(usage.get("total_tokens"))
+
+        return ModelCompletionResponse(
+            content=content,
+            model_id=model.model_id,
+            provider_type=self.provider_type,
+            finish_reason=str(choice_map.get("finish_reason") or "unknown"),
+            usage=TokenUsage(prompt_tokens, completion_tokens, total_tokens),
+            latency_ms=(time.perf_counter() - started) * 1000.0,
+        )
+
+
 def _capabilities(raw: str, provider: str) -> frozenset[ModelCapability]:
     values = [value.strip().lower() for value in raw.split(",") if value.strip()]
     if not values:
@@ -578,6 +653,21 @@ def build_configured_cloud_providers(
                 ),
                 secret_ref=settings.anthropic_api_key_ref,
                 api_version=settings.anthropic_api_version,
+                **common,
+            )
+        )
+    if settings.opencode_zen_model.strip():
+        providers.append(
+            OpenCodeZenModelProvider(
+                models=(
+                    _descriptor(
+                        model_id=settings.opencode_zen_model,
+                        provider_type=ModelProviderType.OPENCODE_ZEN,
+                        context_window=settings.opencode_zen_context_window,
+                        capabilities=settings.opencode_zen_capabilities,
+                    ),
+                ),
+                secret_ref=settings.opencode_zen_api_key_ref,
                 **common,
             )
         )

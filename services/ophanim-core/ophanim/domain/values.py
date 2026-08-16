@@ -65,9 +65,9 @@ class RiskLevel(StrEnum):
     CRITICAL = "critical"
 
 
-class PrivacyMode(StrEnum):
-    STANDARD = "standard"
-    PRIVATE = "private"
+class RoutingMode(StrEnum):
+    HYBRID_ROUTED = "hybrid_routed"
+    CLOUD_ONLY = "cloud_only"
     LOCAL_ONLY = "local_only"
 
 

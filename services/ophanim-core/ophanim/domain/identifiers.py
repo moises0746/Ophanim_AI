@@ -115,6 +115,25 @@ class AgentRunId:
 
 
 @dataclass(frozen=True, slots=True)
+class SkillRunId:
+    value: UUID
+
+    def __post_init__(self) -> None:
+        object.__setattr__(self, "value", _uuid(self.value))
+
+    @classmethod
+    def new(cls) -> SkillRunId:
+        return cls(uuid4())
+
+    @classmethod
+    def from_str(cls, value: str) -> SkillRunId:
+        return cls(_uuid(value))
+
+    def __str__(self) -> str:
+        return str(self.value)
+
+
+@dataclass(frozen=True, slots=True)
 class QualityGateRunId:
     value: UUID
 

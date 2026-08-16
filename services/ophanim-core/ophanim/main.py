@@ -1,6 +1,8 @@
 import asyncio
+from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 
 from ophanim.adapters.anythingllm import AnythingLLMClient
 from ophanim.adapters.cloud_model_providers import build_configured_cloud_providers
@@ -20,26 +22,74 @@ from ophanim.api.assistant_stream import (
 from ophanim.api.assistant_stream import (
     router as assistant_stream_router,
 )
+from ophanim.api.diagnostics import (
+    get_diagnostics_identity,
+    get_diagnostics_service,
+)
+from ophanim.api.diagnostics import router as diagnostics_router
+from ophanim.api.health import router as health_router
+from ophanim.api.knowledge import get_knowledge_repository
+from ophanim.api.knowledge import router as knowledge_router
+from ophanim.api.metrics import router as metrics_router
+from ophanim.api.skills import (
+    get_skill_registry,
+    get_skills_identity,
+)
+from ophanim.api.skills import router as skills_router
 from ophanim.browser.agent import BrowserAgentUnavailable, GovernedBrowserAgent
 from ophanim.browser.models import BrowserTask, BrowserTaskResult
 from ophanim.browser.policy import BrowserPolicyError
 from ophanim.config import get_settings
 from ophanim.domain.errors import DomainValidationError
+from ophanim.observability.logging import configure_logging
+from ophanim.observability.middleware import ObservabilityMiddleware
+from ophanim.observability.otel import init_otel, shutdown_otel
 from ophanim.runtime import build_runtime
 
-app = FastAPI(title="Ophanim Core", version="0.1.0")
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    settings = get_settings()
+    init_otel(settings)
+    yield
+    shutdown_otel()
+
+
+app = FastAPI(title="Ophanim Core", version="0.1.0", lifespan=lifespan)
+
+settings = get_settings()
+configure_logging(
+    level=settings.log_level,
+    service_name=settings.service_name,
+    environment=settings.environment,
+    log_path=settings.log_path,
+)
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=settings.cors_origin_list,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+app.add_middleware(ObservabilityMiddleware, metrics_enabled=settings.metrics_enabled)
+
+app.include_router(health_router)
 app.include_router(assistant_stream_router)
 app.include_router(assistant_chat_router)
+app.include_router(knowledge_router)
+app.include_router(diagnostics_router)
+app.include_router(skills_router)
+app.include_router(metrics_router)
 
-_runtime = build_runtime(get_settings(), get_event_broadcaster())
+_runtime = build_runtime(settings, get_event_broadcaster())
 app.dependency_overrides[get_chat_service] = lambda: _runtime.chat_service
 app.dependency_overrides[get_chat_identity] = lambda: _runtime.identity
 app.dependency_overrides[get_event_stream_authorizer] = lambda: _runtime.event_authorizer
-
-
-@app.get("/health")
-async def health() -> dict[str, str]:
-    return {"status": "ok", "service": "ophanim-core"}
+app.dependency_overrides[get_knowledge_repository] = lambda: _runtime.knowledge_repo
+app.dependency_overrides[get_diagnostics_service] = lambda: _runtime.diagnostics_service
+app.dependency_overrides[get_diagnostics_identity] = lambda: _runtime.identity
+app.dependency_overrides[get_skill_registry] = lambda: _runtime.skill_registry
+app.dependency_overrides[get_skills_identity] = lambda: _runtime.identity
 
 
 @app.get("/status/providers")

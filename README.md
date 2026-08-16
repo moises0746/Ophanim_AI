@@ -186,18 +186,18 @@ Sprint 00 task S00-T01 migrated the service, Python package, presentation string
 
 See [`STRUCTURE.md`](STRUCTURE.md) for the complete implemented/placeholder/vendor/private/deferred classification.
 
-## First Business MVP
+## First Business Skill MVP
 
-The first complete vertical slice is the **AI Transaction Investigation Agent**.
+Ophanim AI is an orchestration platform that hosts configurable skills. The first complete capability is the **Transaction Investigation Skill**.
 
 ```text
 Reference Number
    ↓
-Ophanim Task
-   ├─ Browser Agent -> approved test portal
-   ├─ DB Read Tool -> approved lookup
-   ├─ Log Tool -> approved search
-   └─ Knowledge Agent -> policy/runbook/MOP
+Ophanim Task (via Skill Manifest)
+   ├─ Browser Capability -> approved test portal
+   ├─ DB Read Capability -> approved lookup
+   ├─ Log Capability -> approved search
+   └─ Knowledge Capability -> policy/runbook/MOP
           ↓
 Evidence Correlation
           ↓
@@ -206,7 +206,7 @@ Issue Classification
 Findings + Recommended Next Steps
 ```
 
-The MVP stores screenshots/evidence/tool calls/audit history and performs **no remediation or write action** without explicit future authorization.
+The Skill MVP stores screenshots/evidence/tool calls/audit history and performs **no remediation or write action** without explicit future authorization.
 
 ## Delivery Phases
 
@@ -216,7 +216,7 @@ The MVP stores screenshots/evidence/tool calls/audit history and performs **no r
 - **Phase 3:** Animated Ophanim Assistant and voice MVP.
 - **Phase 4:** Native AI Browser.
 - **Phase 5:** MCP and integration fabric.
-- **Phase 6:** Transaction Investigation MVP.
+- **Phase 6:** Transaction Investigation Skill MVP.
 - **Phase 7:** Voice/meeting intelligence.
 - **Phase 8:** Approval-gated actions.
 - **Phase 9:** Enterprise platform.
@@ -237,7 +237,7 @@ See [`CODEX.md`](CODEX.md).
 
 ## Key ADRs
 
-The accepted baseline contains ADR-001 through ADR-017, covering Core modularity, governed model/tool execution, replaceable knowledge and model runtimes, MCP, integration preference, browser foundation, credential custody, human approval, event-driven Assistant behavior, authoritative persistence, Obsidian knowledge, evidence/audit, read-only MVP scope, vendor isolation, deterministic state-driven autonomous agent orchestration, and polyglot runtime boundaries.
+The accepted baseline contains ADR-001 through ADR-018, covering Core modularity, governed model/tool execution, replaceable knowledge and model runtimes, MCP, integration preference, browser foundation, credential custody, human approval, event-driven Assistant behavior, authoritative persistence, Obsidian knowledge, evidence/audit, read-only MVP scope, vendor isolation, deterministic state-driven autonomous agent orchestration, polyglot runtime boundaries, and Extensible Skill Architecture.
 
 See the [`docs/adr/` index](docs/adr/README.md) for the authoritative titles and records.
 

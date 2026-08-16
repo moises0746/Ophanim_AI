@@ -19,7 +19,7 @@ from ophanim.domain.model_routing import (
     ModelRole,
     TokenUsage,
 )
-from ophanim.domain.values import PrivacyMode
+from ophanim.domain.values import RoutingMode
 from ophanim.ports.model_router import ModelProviderPort
 from ophanim.ports.secret_resolver import SecretResolverPort
 
@@ -150,12 +150,11 @@ class LMStudioModelProvider(ModelProviderPort):
     ) -> ModelCompletionResponse:
         if model != self._model:
             raise DomainValidationError("model is not registered with LM Studio")
-        if request.privacy_mode not in {
-            PrivacyMode.LOCAL_ONLY,
-            PrivacyMode.PRIVATE,
-            PrivacyMode.STANDARD,
+        if request.routing_mode not in {
+            RoutingMode.LOCAL_ONLY,
+            RoutingMode.HYBRID_ROUTED,
         }:
-            raise DomainValidationError("unsupported privacy mode")
+            raise DomainValidationError("unsupported routing mode")
         if not request.required_capabilities.issubset(model.capabilities):
             raise DomainValidationError("request capabilities are not supported by LM Studio")
         if len(request.messages) > self._max_messages:

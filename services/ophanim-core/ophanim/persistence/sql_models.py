@@ -23,8 +23,8 @@ from ophanim.domain.identity import DeviceStatus, DeviceType
 from ophanim.domain.policy import PolicyEffect
 from ophanim.domain.values import (
     Environment,
-    PrivacyMode,
     RiskLevel,
+    RoutingMode,
     TaskStatus,
     TaskStepStatus,
 )
@@ -155,10 +155,10 @@ class TaskRecord(Base):
         nullable=False,
         default=RiskLevel.LOW,
     )
-    privacy_mode: Mapped[PrivacyMode] = mapped_column(
-        SQLEnum(PrivacyMode, name="privacy_mode_enum", native_enum=False),
+    routing_mode: Mapped[RoutingMode] = mapped_column(
+        SQLEnum(RoutingMode, name="routing_mode_enum", native_enum=False),
         nullable=False,
-        default=PrivacyMode.PRIVATE,
+        default=RoutingMode.HYBRID_ROUTED,
     )
     priority: Mapped[int] = mapped_column(Integer, nullable=False, default=100)
     correlation_id: Mapped[str] = mapped_column(String(36), nullable=False, index=True)

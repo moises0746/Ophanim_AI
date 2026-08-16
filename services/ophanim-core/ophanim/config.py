@@ -13,6 +13,8 @@ class Settings(BaseSettings):
     )
 
     environment: str = Field(default="development")
+    cors_origins: str = Field(default="http://localhost:5173,http://127.0.0.1:5173")
+
     anythingllm_base_url: AnyHttpUrl = Field(default="http://localhost:3001")
     anythingllm_api_key: str | None = Field(default=None)
     lmstudio_base_url: AnyHttpUrl = Field(default="http://localhost:1234/v1")
@@ -53,6 +55,11 @@ class Settings(BaseSettings):
     anthropic_capabilities: str = Field(default="chat")
     anthropic_api_version: str = Field(default="2023-06-01", min_length=1)
 
+    opencode_zen_api_key_ref: str = Field(default="OPHANIM_OPENCODE_ZEN_API_KEY", min_length=1)
+    opencode_zen_model: str = Field(default="")
+    opencode_zen_context_window: int = Field(default=1, ge=1)
+    opencode_zen_capabilities: str = Field(default="chat")
+
     browser_enabled: bool = Field(default=False)
     browser_headless: bool = Field(default=False)
     browser_model: str = Field(default="")
@@ -60,9 +67,32 @@ class Settings(BaseSettings):
     browser_allowed_domains: str = Field(default="")
     browser_require_approval_for_writes: bool = Field(default=True)
 
+    diagnostics_db_dsn: str = Field(default="")
+    diagnostics_log_path: str = Field(default="")
+    diagnostics_max_rows: int = Field(default=100, ge=1, le=10_000)
+    diagnostics_max_records: int = Field(default=100, ge=1, le=10_000)
+    diagnostics_max_cell_chars: int = Field(default=1_000, ge=1, le=100_000)
+
+    service_name: str = Field(default="ophanim-core", min_length=1)
+    log_level: str = Field(default="INFO", min_length=1)
+    log_path: str = Field(default="")
+    metrics_enabled: bool = Field(default=True)
+    otel_enabled: bool = Field(default=False)
+    otel_otlp_endpoint: str = Field(default="http://localhost:4318", min_length=1)
+    readyz_timeout_seconds: float = Field(default=3.0, gt=0, le=30.0)
+    readyz_required_components: str = Field(default="")
+
     @property
     def browser_domain_allowlist(self) -> list[str]:
         return [item.strip() for item in self.browser_allowed_domains.split(",") if item.strip()]
+
+    @property
+    def cors_origin_list(self) -> list[str]:
+        return [item.strip() for item in self.cors_origins.split(",") if item.strip()]
+
+    @property
+    def readyz_required_components_list(self) -> list[str]:
+        return [item.strip() for item in self.readyz_required_components.split(",") if item.strip()]
 
 
 @lru_cache

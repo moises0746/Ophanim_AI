@@ -4,7 +4,7 @@
 
 This document is the authoritative product-requirements baseline established by S00-T04. It distinguishes long-term product direction from the first production vertical slice. It defines outcomes and constraints, not implementation contracts or authorization to build future capabilities.
 
-The first production vertical slice is the read-only AI Transaction Investigation Agent described in [MVP Scope](mvp-scope.md). Personas, journeys, and quality requirements are defined in [Personas](personas.md), [User Journeys](user-journeys.md), and [Non-Functional Requirements](non-functional-requirements.md).
+The first production vertical slice is the read-only Transaction Investigation Skill described in [Transaction Investigation Skill Scope](skills/transaction-investigation.md). Personas, journeys, and quality requirements are defined in [Personas](personas.md), [User Journeys](user-journeys.md), and [Non-Functional Requirements](non-functional-requirements.md).
 
 ## Product Vision
 

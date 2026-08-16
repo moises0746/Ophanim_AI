@@ -26,7 +26,9 @@ class GovernedBrowserAgent:
     and returns verifiable evidence for MVP read-only actions.
     """
 
-    def __init__(self, settings: Settings, registry: ApprovedApplicationRegistry | None = None) -> None:
+    def __init__(
+        self, settings: Settings, registry: ApprovedApplicationRegistry | None = None
+    ) -> None:
         self._settings = settings
         self._registry = registry
 
@@ -40,7 +42,9 @@ class GovernedBrowserAgent:
                 approval_reason=f"Browser action '{task.action_type}' requires explicit approval",
             )
 
-        driver = PlaywrightDriver(allowed_domains=task.allowed_domains, headless=self._settings.browser_headless)
+        driver = PlaywrightDriver(
+            allowed_domains=task.allowed_domains, headless=self._settings.browser_headless
+        )
         evidence = []
 
         try:
@@ -66,7 +70,7 @@ class GovernedBrowserAgent:
                         timestamp=datetime.now(UTC).isoformat(),
                         url=final_url or "",
                         action_type=BrowserActionType.READ.value,
-                        extracted_data={"text": text[:2000]} # bounding read payload
+                        extracted_data={"text": text[:2000]},  # bounding read payload
                     )
                 )
 
@@ -75,15 +79,13 @@ class GovernedBrowserAgent:
                 summary="Browser task completed successfully",
                 final_url=final_url,
                 steps=len(evidence),
-                evidence=evidence
+                evidence=evidence,
             )
 
         except BrowserDriverError as e:
             logger.error(f"Browser execution failed: {e}")
             return BrowserTaskResult(
-                status="failed",
-                summary=f"Browser driver error: {e}",
-                evidence=evidence
+                status="failed", summary=f"Browser driver error: {e}", evidence=evidence
             )
         finally:
             await driver.stop()

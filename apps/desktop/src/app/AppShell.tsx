@@ -2,16 +2,16 @@ import { useEffect, useRef, useState, type ReactNode } from 'react';
 import {
   Bell,
   Menu,
-  NavArrowDown,
+  ChevronDown as NavArrowDown,
   Search,
-  SidebarCollapse,
+  PanelLeftClose as SidebarCollapse,
   UserCircle,
-  Xmark,
-} from 'iconoir-react';
+  X as Xmark,
+} from 'lucide-react';
 import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import type {
   AssistantModel,
-  PrivacyMode,
+  RoutingMode,
   RuntimeConnectionState,
 } from '../types/events';
 import {
@@ -29,9 +29,9 @@ interface AppShellProps {
   connection: RuntimeConnectionState;
   models: AssistantModel[];
   selectedModelKey: string;
-  privacyMode: PrivacyMode;
+  routingMode: RoutingMode;
   onModelChange: (modelKey: string) => void;
-  onPrivacyChange: (mode: PrivacyMode) => void;
+  onRoutingChange: (mode: RoutingMode) => void;
 }
 
 const NavigationSection = ({
@@ -65,9 +65,9 @@ export function AppShell({
   connection,
   models,
   selectedModelKey,
-  privacyMode,
+  routingMode,
   onModelChange,
-  onPrivacyChange,
+  onRoutingChange,
 }: AppShellProps) {
   const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -191,11 +191,11 @@ export function AppShell({
 
           <div className="topbar-controls">
             <label className="compact-select">
-              <span className="sr-only">Privacy mode</span>
-              <select value={privacyMode} onChange={(event) => onPrivacyChange(event.target.value as PrivacyMode)}>
+              <span className="sr-only">Routing mode</span>
+              <select value={routingMode} onChange={(event) => onRoutingChange(event.target.value as RoutingMode)}>
                 <option value="LOCAL_ONLY">Local only</option>
-                <option value="PRIVATE">Private local</option>
-                <option value="CLOUD_ASSISTED">Cloud assisted</option>
+                <option value="CLOUD_ONLY">Cloud Only</option>
+                <option value="HYBRID_ROUTED">Hybrid / Cloud Assisted</option>
               </select>
               <NavArrowDown width={14} height={14} aria-hidden />
             </label>

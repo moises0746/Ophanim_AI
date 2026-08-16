@@ -35,16 +35,16 @@ export function App({ eventStreamClient, runtimeClient }: AppProps) {
         connection={workspace.connection}
         models={workspace.models}
         selectedModelKey={workspace.selectedModelKey}
-        privacyMode={workspace.privacyMode}
+        routingMode={workspace.routingMode}
         onModelChange={workspace.changeModel}
-        onPrivacyChange={workspace.setPrivacyMode}
+        onRoutingChange={workspace.setRoutingMode}
       >
         <Routes>
           <Route path="/" element={<AssistantPage workspace={workspace} />} />
           <Route path="/models" element={<ModelsPage models={workspace.models} selectedModelKey={workspace.selectedModelKey} connection={workspace.connection} onSelect={workspace.changeModel} />} />
           <Route path="/knowledge" element={<KnowledgePage citations={workspace.citations} />} />
           <Route path="/automations" element={<AutomationsPage />} />
-          <Route path="/system-health" element={<SystemHealthPage connection={workspace.connection} models={workspace.models} eventCount={workspace.events.length} />} />
+          <Route path="/system-health" element={<SystemHealthPage connection={workspace.connection} models={workspace.models} eventCount={workspace.events.length} providerStatus={workspace.providerStatus} />} />
           <Route path="/activity" element={<ActivityPage events={workspace.events} />} />
           <Route path="/approvals" element={<ApprovalsPage request={workspace.pendingApproval} onDismiss={workspace.dismissApproval} />} />
           <Route path="/tasks" element={<UnavailablePage eyebrow="Work" title="Tasks" description="Authoritative task state and bounded execution history." detail="The current Desktop runtime does not expose a task-list contract. Assistant chat and Core events remain available without fabricating task records." icon={TaskList} />} />

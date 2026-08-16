@@ -1,14 +1,14 @@
-# AI Transaction Investigation MVP Scope
+# Transaction Investigation Skill Scope
 
-## MVP Outcome
+## Skill Outcome
 
-The first production vertical slice lets an authorized operations user submit a transaction/reference number and receive an evidence-grounded issue classification, findings, limitations, and recommended next steps from approved read-only sources. The user can observe real progress through the Ophanim Assistant and review evidence and audit activity. Ophanim performs no remediation or external write action.
+The first production skill on the orchestration platform lets an authorized operations user submit a transaction/reference number and receive an evidence-grounded issue classification, findings, limitations, and recommended next steps from approved read-only sources. The user can observe real progress through the Ophanim Assistant and review evidence and audit activity. The skill performs no remediation or external write action.
 
 ## Primary Workflow
 
 1. The user submits a transaction/reference number with authorized environment/scope context.
-2. Ophanim Core creates an investigation task.
-3. Ophanim determines a bounded investigation plan.
+2. Ophanim Core instantiates the Transaction Investigation Skill.
+3. The Skill execution determines a bounded investigation plan based on its manifest.
 4. Policy authorizes the required read-only capabilities and tools.
 5. Approved tools retrieve transaction information.
 6. If structured interfaces are unavailable or insufficient, Ophanim may navigate an approved test/read-only portal with a dedicated profile.
@@ -38,7 +38,7 @@ The first production vertical slice lets an authorized operations user submit a 
 
 ## Explicit Non-Goals
 
-The MVP does not perform or expose:
+The Skill does not perform or expose:
 
 - automatic remediation;
 - restarting services;
@@ -61,11 +61,11 @@ The MVP does not perform or expose:
 - mandatory voice recognition, VAD, STT, TTS, wake word, or always-on microphone processing;
 - general-purpose research, content publishing, meeting coaching, or multi-user enterprise administration.
 
-## Read-Only Boundary
+## Read-Only Skill Boundary
 
 Read-only is an execution boundary, not a label. Tool definitions, policy, browser action classification, database operations, log operations, MCP capabilities, and fallbacks must deny state changes. If a source requires a write, unsafe login flow, upload, form submission, arbitrary query, or unsupported fallback, the step stops safely and the result records the limitation.
 
-Future human approval does not make writes part of this MVP. Any future consequential action requires ADR-009 controls and a separately authorized Phase 8 implementation.
+Future human approval does not make writes part of this Skill MVP. Any future consequential action requires ADR-009 controls and a separately authorized Phase 8 implementation.
 
 ## Browser Boundary
 

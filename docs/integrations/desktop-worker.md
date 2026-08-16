@@ -86,4 +86,4 @@ A process exit code alone is not proof of business success. The tool contract mu
 
 ## MVP Boundary
 
-The AI Transaction Investigation MVP does not require general desktop execution. Its browser, database, log, and knowledge access should use purpose-built read-only tools. Desktop Worker implementation belongs to a separately authorized later Sprint after persistent task state, policy enforcement, worker identity, evidence, audit, cancellation, and approval foundations exist.
+The Transaction Investigation Skill does not require general desktop execution. Its browser, database, log, and knowledge access should use purpose-built read-only tools. Desktop Worker implementation belongs to a separately authorized later Sprint after persistent task state, policy enforcement, worker identity, evidence, audit, cancellation, and approval foundations exist.

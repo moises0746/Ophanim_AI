@@ -15,6 +15,11 @@ dependencies = [
 browser = [
   "playwright>=1.61,<1.62",
 ]
+otel = [
+  "opentelemetry-api>=1.30,<2.0",
+  "opentelemetry-sdk>=1.30,<2.0",
+  "opentelemetry-exporter-otlp-proto-http>=1.30,<2.0",
+]
 dev = [
   "pytest>=8.4,<9.0",
   "pytest-asyncio>=1.1,<2.0",

@@ -109,6 +109,12 @@ class AssistantEventType(StrEnum):
     VOICE_SPEECH_INTERRUPTED = "voice.speech_interrupted"
     VOICE_MICROPHONE_MUTED = "voice.microphone_muted"
 
+    # Skill lifecycle (ADR-018)
+    SKILL_STARTED = "skill.started"
+    SKILL_DENIED = "skill.denied"
+    SKILL_COMPLETED = "skill.completed"
+    SKILL_FAILED = "skill.failed"
+
 
 _FORBIDDEN_PAYLOAD_KEYS = frozenset(
     {
@@ -163,6 +169,7 @@ class EventEnvelope:
     approval_id: ApprovalId | None = None
     evidence_refs: tuple[EvidenceId, ...] = ()
     artifact_refs: tuple[str, ...] = ()
+    skill_id: str | None = None
     sequence: int | None = None
 
     def __post_init__(self) -> None:
@@ -198,6 +205,8 @@ class EventEnvelope:
             raise DomainValidationError("policy.evaluated event requires policy_decision_id")
         if etype.startswith("approval.") and self.approval_id is None:
             raise DomainValidationError(f"event '{etype}' requires approval_id")
+        if etype.startswith("skill.") and not self.skill_id:
+            raise DomainValidationError(f"event '{etype}' requires skill_id")
         if (
             etype == AssistantEventType.EVIDENCE_CAPTURED
             and not self.evidence_refs
@@ -228,12 +237,14 @@ class EventEnvelope:
         approval_id: ApprovalId | None = None,
         evidence_refs: tuple[EvidenceId, ...] = (),
         artifact_refs: tuple[str, ...] = (),
+        skill_id: str | None = None,
         causation_id: EventId | None = None,
         sequence: int | None = None,
     ) -> EventEnvelope:
         now = datetime.now(UTC)
         occ = occurred_at or now
         scope = data_scope or DataScope(workspace_id)
+        normalized_skill_id = _text(skill_id, "skill_id", max_length=128) if skill_id else None
         return cls(
             event_id=EventId.new(),
             event_type=event_type,
@@ -258,5 +269,6 @@ class EventEnvelope:
             approval_id=approval_id,
             evidence_refs=evidence_refs,
             artifact_refs=artifact_refs,
+            skill_id=normalized_skill_id,
             sequence=sequence,
         )

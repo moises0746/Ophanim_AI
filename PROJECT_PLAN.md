@@ -90,11 +90,11 @@ Goal: standard governed tool connectivity without custom API code for every syst
 
 Includes MCP client/registry, capability discovery, resource/tool contracts, authorization mediation, schema validation, audit/evidence, GitHub/log/database read tools, and selected enterprise adapters.
 
-### Phase 6 — Transaction Investigation MVP
+### Phase 6 — Transaction Investigation Skill MVP
 
-Goal: deliver the first complete business vertical slice.
+Goal: deliver the first complete skill on the orchestration platform.
 
-Includes reference intake, approved portal search, read-only DB lookup, log search, policy/runbook retrieval, evidence correlation, classification, findings, recommendation, screenshots, and audit trail.
+Includes skill manifest, reference intake, approved portal search, read-only DB lookup, log search, policy/runbook retrieval, evidence correlation, classification, findings, recommendation, screenshots, and audit trail.
 
 ### Phase 7 — Voice and Meeting Intelligence
 
@@ -164,6 +164,6 @@ Minimum layers:
 - desktop component tests;
 - end-to-end tests for released vertical slices.
 
-## First MVP Acceptance
+## First Skill MVP Acceptance
 
-The first business MVP is complete only when a reference number can create an investigation that uses approved read-only sources, captures auditable evidence, correlates results, produces findings and recommended next steps, and performs no write/remediation action without explicit authorization.
+The first Skill MVP (Transaction Investigation) is complete only when a reference number can create an investigation through a registered Skill that uses approved read-only sources, captures auditable evidence, correlates results, produces findings and recommended next steps, and performs no write/remediation action without explicit authorization.

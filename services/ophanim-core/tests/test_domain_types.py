@@ -8,8 +8,8 @@ from ophanim.domain.task import Task, TaskStep
 from ophanim.domain.values import (
     DataScope,
     Environment,
-    PrivacyMode,
     RiskLevel,
+    RoutingMode,
     TaskStatus,
     TaskStepStatus,
 )
@@ -24,7 +24,7 @@ def _task(**overrides: object) -> Task:
         "environment": Environment.TEST,
         "data_scope": DataScope("workspace-1"),
         "risk_level": RiskLevel.LOW,
-        "privacy_mode": PrivacyMode.PRIVATE,
+        "routing_mode": RoutingMode.HYBRID_ROUTED,
         "correlation_id": CorrelationId.new(),
     }
     values.update(overrides)
@@ -64,7 +64,7 @@ def test_task_step_must_belong_to_task_and_cannot_self_depend() -> None:
         environment=task.environment,
         data_scope=task.data_scope,
         risk_level=task.risk_level,
-        privacy_mode=task.privacy_mode,
+        routing_mode=task.routing_mode,
         correlation_id=task.correlation_id,
         steps=(step,),
     )

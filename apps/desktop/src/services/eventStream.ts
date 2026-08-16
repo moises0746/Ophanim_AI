@@ -92,7 +92,7 @@ export class AssistantEventStreamClient {
     private readonly workspaceId: string,
     private readonly authorizationProvider: AuthorizationProvider,
     handlers: EventStreamHandlers = {},
-    private readonly fetchImpl: typeof fetch = fetch,
+    private readonly fetchImpl: typeof fetch = (input, init) => fetch(input, init),
   ) {
     this.handlers = handlers;
   }

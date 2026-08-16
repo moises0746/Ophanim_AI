@@ -1,20 +1,17 @@
 import type { ForwardRefExoticComponent, RefAttributes, SVGProps } from 'react';
 import {
-  Activity,
-  Book,
-  ChatBubble,
-  Dashboard,
+  LayoutDashboard,
+  MessageSquare,
+  Users,
+  GitBranch,
+  FileText,
   Database,
-  Flash,
-  Folder,
-  Group,
-  Internet,
-  Puzzle,
+  Cpu,
+  Zap,
+  Plug,
+  BarChart,
   Settings,
-  ShieldCheck,
-  SystemRestart,
-  TaskList,
-} from 'iconoir-react';
+} from 'lucide-react';
 
 export interface NavigationItem {
   label: string;
@@ -24,21 +21,19 @@ export interface NavigationItem {
 }
 
 export const primaryNavigation: NavigationItem[] = [
-  { label: 'Assistant', path: '/', icon: ChatBubble, end: true },
-  { label: 'Tasks', path: '/tasks', icon: TaskList },
-  { label: 'Projects', path: '/projects', icon: Folder },
-  { label: 'AI Team', path: '/ai-team', icon: Group },
-  { label: 'Knowledge', path: '/knowledge', icon: Book },
-  { label: 'Automations', path: '/automations', icon: Flash },
-  { label: 'Browser', path: '/browser', icon: Internet },
+  { label: 'Dashboard', path: '/', icon: LayoutDashboard, end: true },
+  { label: 'Chat', path: '/chat', icon: MessageSquare },
+  { label: 'Agents', path: '/agents', icon: Users },
+  { label: 'Workflows', path: '/workflows', icon: GitBranch },
+  { label: 'Documents', path: '/documents', icon: FileText },
+  { label: 'Knowledge Vault', path: '/knowledge', icon: Database },
 ];
 
 export const operationsNavigation: NavigationItem[] = [
-  { label: 'Approvals', path: '/approvals', icon: ShieldCheck },
-  { label: 'Activity', path: '/activity', icon: Activity },
-  { label: 'Integrations', path: '/integrations', icon: Puzzle },
-  { label: 'Models & Runtimes', path: '/models', icon: Database },
-  { label: 'System Health', path: '/system-health', icon: SystemRestart },
+  { label: 'Models & Runtimes', path: '/models', icon: Cpu },
+  { label: 'Automations', path: '/automations', icon: Zap },
+  { label: 'Integrations', path: '/integrations', icon: Plug },
+  { label: 'Analytics', path: '/analytics', icon: BarChart },
   { label: 'Settings', path: '/settings', icon: Settings },
 ];
 
@@ -47,5 +42,3 @@ export const allNavigation = [...primaryNavigation, ...operationsNavigation];
 export const routeTitles = new Map(
   allNavigation.map((item) => [item.path, item.label]),
 );
-
-export const DashboardIcon = Dashboard;

@@ -13,6 +13,7 @@ from ophanim.adapters.cloud_model_providers import (
     CloudProviderError,
     GeminiModelProvider,
     OpenAIModelProvider,
+    OpenCodeZenModelProvider,
     build_configured_cloud_providers,
 )
 from ophanim.adapters.environment_secrets import EnvironmentSecretResolver, SecretAccessDenied
@@ -27,7 +28,7 @@ from ophanim.domain.model_routing import (
     ModelProviderType,
     ModelRole,
 )
-from ophanim.domain.values import PrivacyMode
+from ophanim.domain.values import RoutingMode
 
 
 class MutableSecretResolver:
@@ -52,14 +53,14 @@ def descriptor(provider_type: ModelProviderType, model_id: str) -> ModelDescript
 
 
 def completion_request(
-    *, privacy_mode: PrivacyMode = PrivacyMode.STANDARD
+    *, routing_mode: RoutingMode = RoutingMode.HYBRID_ROUTED
 ) -> ModelCompletionRequest:
     return ModelCompletionRequest(
         messages=(
             ModelMessage(role=ModelRole.SYSTEM, content="Answer briefly."),
             ModelMessage(role=ModelRole.USER, content="Hello"),
         ),
-        privacy_mode=privacy_mode,
+        routing_mode=routing_mode,
         max_tokens=128,
     )
 
@@ -197,6 +198,62 @@ async def test_anthropic_messages_adapter_maps_request_and_response() -> None:
     assert response.content == "Claude reply"
     assert response.provider_type == ModelProviderType.ANTHROPIC
     assert response.usage.total_tokens == 8
+
+
+@pytest.mark.asyncio
+async def test_opencode_zen_adapter_maps_request_and_response() -> None:
+    captured: dict[str, object] = {}
+
+    async def handler(request: httpx.Request) -> httpx.Response:
+        captured["url"] = str(request.url)
+        captured["authorization"] = request.headers["Authorization"]
+        captured["body"] = json.loads(request.content)
+        return httpx.Response(
+            200,
+            json={
+                "id": "chatcmpl-123",
+                "object": "chat.completion",
+                "created": 1677652288,
+                "model": "deepseek-v4-pro",
+                "system_fingerprint": "fp_44709d6fcb",
+                "choices": [
+                    {
+                        "index": 0,
+                        "message": {
+                            "role": "assistant",
+                            "content": "OpenCode Zen reply",
+                        },
+                        "logprobs": None,
+                        "finish_reason": "stop",
+                    }
+                ],
+                "usage": {"prompt_tokens": 9, "completion_tokens": 12, "total_tokens": 21},
+            },
+        )
+
+    async with httpx.AsyncClient(transport=httpx.MockTransport(handler)) as client:
+        model = descriptor(ModelProviderType.OPENCODE_ZEN, "deepseek-v4-pro")
+        provider = OpenCodeZenModelProvider(
+            models=(model,),
+            secret_ref="OPHANIM_OPENCODE_ZEN_API_KEY",
+            secret_resolver=MutableSecretResolver(),
+            http_client=client,
+        )
+        response = await provider.complete(completion_request(), model)
+
+    assert captured["url"] == "https://opencode.ai/zen/v1/chat/completions"
+    assert captured["authorization"] == "Bearer test-credential"
+    assert captured["body"] == {
+        "model": "deepseek-v4-pro",
+        "messages": [
+            {"role": "system", "content": "Answer briefly."},
+            {"role": "user", "content": "Hello"},
+        ],
+        "max_tokens": 128,
+    }
+    assert response.content == "OpenCode Zen reply"
+    assert response.provider_type == ModelProviderType.OPENCODE_ZEN
+    assert response.usage.total_tokens == 21
 
 
 @pytest.mark.asyncio
@@ -378,24 +435,26 @@ async def test_router_blocks_configured_cloud_providers_in_local_only_mode() -> 
         openai_model="configured-openai-model",
         gemini_model="configured-gemini-model",
         anthropic_model="configured-claude-model",
+        opencode_zen_model="configured-opencode-zen-model",
     )
     providers = build_configured_cloud_providers(settings, MutableSecretResolver())
     router = ModelRouter(providers)
 
     with pytest.raises(DomainValidationError, match="No local model available"):
-        await router.complete(completion_request(privacy_mode=PrivacyMode.LOCAL_ONLY))
+        await router.complete(completion_request(routing_mode=RoutingMode.LOCAL_ONLY))
 
     assert [provider.list_models()[0].provider_type for provider in providers] == [
         ModelProviderType.OPENAI,
         ModelProviderType.GEMINI,
         ModelProviderType.ANTHROPIC,
+        ModelProviderType.OPENCODE_ZEN,
     ]
 
 
 @pytest.mark.asyncio
-@pytest.mark.parametrize("privacy_mode", [PrivacyMode.LOCAL_ONLY, PrivacyMode.PRIVATE])
-async def test_adapter_direct_call_also_denies_private_modes(
-    privacy_mode: PrivacyMode,
+@pytest.mark.parametrize("routing_mode", [RoutingMode.LOCAL_ONLY])
+async def test_adapter_direct_call_also_denies_local_modes(
+    routing_mode: RoutingMode,
 ) -> None:
     resolver = MutableSecretResolver()
     model = descriptor(ModelProviderType.OPENAI, "configured-model")
@@ -405,8 +464,8 @@ async def test_adapter_direct_call_also_denies_private_modes(
         secret_resolver=resolver,
     )
 
-    with pytest.raises(DomainValidationError, match="prohibited by privacy mode"):
-        await provider.complete(completion_request(privacy_mode=privacy_mode), model)
+    with pytest.raises(DomainValidationError, match="prohibited by routing mode"):
+        await provider.complete(completion_request(routing_mode=routing_mode), model)
 
     assert resolver.calls == []
 
@@ -467,7 +526,7 @@ async def test_openai_rejects_unsupported_stop_sequences_before_network() -> Non
     )
     request = ModelCompletionRequest(
         messages=(ModelMessage(role=ModelRole.USER, content="Hello"),),
-        privacy_mode=PrivacyMode.STANDARD,
+        routing_mode=RoutingMode.HYBRID_ROUTED,
         stop_sequences=("STOP",),
     )
     with pytest.raises(DomainValidationError, match="stop sequences"):
@@ -486,7 +545,7 @@ async def test_cloud_request_budget_is_enforced_before_secret_resolution() -> No
     )
     request = ModelCompletionRequest(
         messages=(ModelMessage(role=ModelRole.USER, content="Hello"),),
-        privacy_mode=PrivacyMode.STANDARD,
+        routing_mode=RoutingMode.HYBRID_ROUTED,
         max_tokens=65,
     )
 
