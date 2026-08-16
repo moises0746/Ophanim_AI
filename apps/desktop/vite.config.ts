@@ -9,6 +9,9 @@ export default defineConfig({
     port: 1420,
     strictPort: true,
     allowedHosts: ['terminal.local'],
+    watch: {
+      ignored: ['**/src-tauri/**']
+    }
   },
   test: {
     environment: 'jsdom',

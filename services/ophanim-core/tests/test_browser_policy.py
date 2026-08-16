@@ -24,9 +24,8 @@ def test_write_action_requires_approval() -> None:
         require_approval=False,
     )
 
-    guarded = enforce_browser_policy(task, settings)
-
-    assert guarded.require_approval is True
+    with pytest.raises(BrowserPolicyError, match="state-changing and denied in MVP"):
+        enforce_browser_policy(task, settings)
 
 
 def test_domain_allowlist_rejects_unapproved_domain() -> None:

@@ -17,6 +17,7 @@ class BrowserActionType(StrEnum):
 class BrowserTask(BaseModel):
     objective: str = Field(min_length=1, max_length=4000)
     start_url: str | None = None
+    app_id: str | None = None
     allowed_domains: list[str] = Field(default_factory=list)
     action_type: BrowserActionType = BrowserActionType.READ
     max_steps: int = Field(default=20, ge=1, le=100)
@@ -33,6 +34,14 @@ class BrowserTask(BaseModel):
         return value
 
 
+class BrowserEvidence(BaseModel):
+    timestamp: str
+    url: str
+    action_type: str
+    extracted_data: dict[str, str] | None = None
+    screenshot_ref: str | None = None
+
+
 class BrowserTaskResult(BaseModel):
     status: str
     summary: str | None = None
@@ -40,4 +49,4 @@ class BrowserTaskResult(BaseModel):
     steps: int = 0
     requires_approval: bool = False
     approval_reason: str | None = None
-    evidence: list[str] = Field(default_factory=list)
+    evidence: list[BrowserEvidence] = Field(default_factory=list)

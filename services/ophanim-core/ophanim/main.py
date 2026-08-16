@@ -20,7 +20,7 @@ from ophanim.api.assistant_stream import (
 from ophanim.api.assistant_stream import (
     router as assistant_stream_router,
 )
-from ophanim.browser.agent import BrowserAgentUnavailable, BrowserUseAgent
+from ophanim.browser.agent import BrowserAgentUnavailable, GovernedBrowserAgent
 from ophanim.browser.models import BrowserTask, BrowserTaskResult
 from ophanim.browser.policy import BrowserPolicyError
 from ophanim.config import get_settings
@@ -88,7 +88,7 @@ async def provider_status() -> dict[str, object]:
 async def browser_task(task: BrowserTask) -> BrowserTaskResult:
     """Execute read-only browser tasks; write-like tasks stop for future UI approval."""
     settings = get_settings()
-    agent = BrowserUseAgent(settings)
+    agent = GovernedBrowserAgent(settings)
 
     try:
         return await agent.run(task, approved=False)
