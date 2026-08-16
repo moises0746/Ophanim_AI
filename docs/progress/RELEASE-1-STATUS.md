@@ -88,7 +88,7 @@
 ## 4. Next Task & Continuation
 
 * **Release 1 Status**: COMPLETE — all R1-01..17 tasks IMPLEMENTED and MERGED; verification gate PASSED (10/10) with security audit on record; merged to `main` via PR #20 at `2c6334d`.
-* **Next Eligible Task**: Release 2 planning (Sprint 02 scope — planning only, not implementation authorization).
+* **Next Eligible Task**: Release 2 planning completed in `docs/sprints/SPRINT-02.md` (planning only — not implementation authorization). Upon plan approval, R2-01 (execution-control ADR + global emergency-stop) is the first implementation task.
 * **Continuation Command**:
   ```powershell
   git switch main
