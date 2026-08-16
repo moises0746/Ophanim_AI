@@ -241,6 +241,25 @@ The accepted baseline contains ADR-001 through ADR-017, covering Core modularity
 
 See the [`docs/adr/` index](docs/adr/README.md) for the authoritative titles and records.
 
+## Running the Application & Troubleshooting
+
+To run Ophanim AI locally (which starts both the FastAPI backend and the Tauri desktop app), run:
+```powershell
+cd apps/desktop
+npm run app:dev
+```
+
+### Troubleshooting
+- **"Port 8080 or 1420 already in use" or Background Task Conflicts**  
+  If the application fails to start with port binding errors or PowerShell script failures, ensure that no other instance (or coding agent background task) is already running. You can kill orphaned processes using your task manager.
+- **Running Web UI Only (No Native GUI)**  
+  If you only want to access the web frontend via your browser without launching the native Tauri window:
+  1. Start the backend: `cd services/ophanim-core` then `python -m uvicorn ophanim.main:app --port 8080`
+  2. Start the frontend: `cd apps/desktop` then `npm run dev`
+  3. Open `http://localhost:1420` in your web browser.
+- **"EBUSY" or File Watcher Errors (Windows)**  
+  Vite's file watcher may attempt to lock the compiled Rust binaries, causing an `EBUSY` crash. This is mitigated by the `ignored: ['**/src-tauri/**']` directive in `vite.config.ts`. If it recurs, ensure your `target/` directory is properly excluded.
+
 ## Current Status
 
 **Do not start broad feature implementation.** UI-R1-T01 is the completed active task. Run the local app with `cd apps/desktop` followed by `npm.cmd run app:dev` after configuring at least one model as described in [local setup](docs/development/local-setup.md). The route and state behavior is documented in the [desktop experience contract](docs/product/desktop-experience.md). Governed browser automation remains the recommended next task but is not automatically authorized.
