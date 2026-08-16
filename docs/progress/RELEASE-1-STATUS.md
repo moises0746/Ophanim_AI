@@ -1,26 +1,8 @@
 # Ophanim AI — Release 1 Status and Progress Tracker
 
-**Document Version**: 1.13.0
+**Document Version**: 1.15.0
 **Current Release Objective**: Deliver Ophanim AI Release 1 — A secure, testable, local-first AI Coworker vertical slice with Python Hub/Core, Tauri/React Desktop Assistant, lightweight Rust Device Node, governed tool execution, knowledge citations, and AI Transaction Investigation.  
-**Last Updated**: 2026-08-15  
-
----
-
-## 1. Release 1 Milestone & Program Backlog
-
-| Task ID | Component / Area | Description | Dependencies | Status | Branch / PR / Checkpoint |
-|---|---|---|---|---|---|
-| **R1-01** | Governance & Reconcile | Merge PR #6 & PR #7, reconcile ADRs (ADR-016 AAO-001, ADR-017 Polyglot), verify vendor governance | None | **MERGED** | PR #6, PR #7, `docs/adr/ADR-017-polyglot-runtime-boundaries.md` |
-| **R1-02** | Core Domain & Policy | Default-Deny Policy interface and engine (S01-T04), Task capability contracts, boundary validation | R1-01 | **MERGED** | PR #8, `docs/checkpoints/S01-T04.md` |
-| **R1-03** | Core Events & Audit | Python event envelope and domain event contracts (S01-T05), audit/evidence domain records | R1-02 | **MERGED** | PR #9, `docs/checkpoints/S01-T05.md` |
-| **R1-04** | Core Persistence | PostgreSQL & SQLite database models, session management, and SQL repository adapters | R1-02, R1-03 | **MERGED** | PR #10, `docs/checkpoints/R1-04.md` |
-| **R1-05** | Identity & Multi-Tenancy | Tenant, workspace, user, and device identity with scoped RBAC & API key / token validation | R1-04 | **MERGED** | PR #11, `docs/checkpoints/R1-05.md` |
-| **R1-06** | Model Router | Capability-based Model Router (LM Studio, Ollama, Cloud) with privacy tier routing | R1-02 | **MERGED** | PR #12, `docs/checkpoints/R1-06.md` |
-| **R1-06A** | Cloud Model Providers | Governed OpenAI, Gemini, and Anthropic text adapters with execution-time secrets and privacy isolation | R1-06 | **IMPLEMENTED** | `task/r1-06a-cloud-providers`, `docs/checkpoints/R1-06A.md` |
-| **R1-07** | Knowledge & Citations | Knowledge ingestion/retrieval adapters with source citations, provenance, Obsidian/Markdown support | R1-06 | **MERGED** | PR #13, `docs/checkpoints/R1-07.md` |
-| **R1-08** | Hub/Node Protocol | Versioned JSON/WSS protocol schemas, message contracts, security invariants, anti-replay | R1-05 | **MERGED** | PR #14, `docs/checkpoints/R1-08.md` |
-**Current Release Objective**: Deliver Ophanim AI Release 1 — A secure, testable, local-first AI Coworker vertical slice with Python Hub/Core, Tauri/React Desktop Assistant, lightweight Rust Device Node, governed tool execution, knowledge citations, and AI Transaction Investigation.  
-**Last Updated**: 2026-08-15  
+**Last Updated**: 2026-08-16  
 
 ---
 
@@ -44,17 +26,17 @@
 | **R1-RUN-01** | Runtime Composition | Complete Tauri/Core composition, authenticated chat use case, secure credential bridge, and one-command local launcher | R1-12, R1-06A | **IMPLEMENTED** | `task/r1-run-01-runtime-composition`, `docs/checkpoints/R1-RUN-01.md` |
 | **UI-R1-T01** | Desktop Experience | Responsive Assistant-first desktop workspace, canonical state visuals, operational routes, and truthful unavailable boundaries | R1-RUN-01 | **IMPLEMENTED** | `agent/ui-r1-ophanim-assistant`, `docs/checkpoints/UI-R1-T01.md` |
 | **R1-13** | Governed Browser Automation | Playwright-based browser driver, domain allowlist enforcement, read-only session capture | R1-02, R1-09 | **IMPLEMENTED** | `task/adr-018-skill-architecture` |
-| **R1-14** | Diagnostic DB & Log Tools | Parameterized read-only DB query tool and structured log search tool with sanitization | R1-02, R1-09 | PENDING | — |
-| **R1-15** | Transaction Investigation Skill | Transaction Investigation Skill vertical slice end-to-end integration (Portal, DB, Logs, Knowledge) | R1-06..14 | PENDING | — |
-| **R1-16** | Observability & Packaging | OpenTelemetry instrumentation, health probes, Docker compose and local build configs | R1-15 | PENDING | — |
-| **R1-17** | Hardening & Release Gate | End-to-end security audit, negative policy tests, release verification suite, Release 1 closure | R1-01..16 | PENDING | — |
+| **R1-14** | Diagnostic DB & Log Tools | Parameterized read-only DB query tool and structured log search tool with sanitization | R1-02, R1-09 | **IMPLEMENTED** | `docs/checkpoints/R1-14.md` |
+| **R1-15** | Transaction Investigation Skill | Transaction Investigation Skill vertical slice end-to-end integration (Portal, DB, Logs, Knowledge) | R1-06..14 | **IMPLEMENTED** | `task/adr-018-skill-architecture`, `docs/checkpoints/R1-15.md` |
+| **R1-16** | Observability & Packaging | OpenTelemetry instrumentation, health probes, Docker compose and local build configs | R1-15 | **IMPLEMENTED** | `task/adr-018-skill-architecture`, `docs/checkpoints/R1-16.md` |
+| **R1-17** | Hardening & Release Gate | End-to-end security audit, negative policy tests, release verification suite, Release 1 closure | R1-01..16 | **IMPLEMENTED** | `task/adr-018-skill-architecture`, `docs/checkpoints/R1-17.md` |
 
 ---
 
 ## 2. Current Execution State
 
-* **Active Task**: `R1-14` (Diagnostic DB & Log Tools)
-* **Active Branch**: `task/r1-14-diagnostic-tools`
+* **Active Task**: None — Release 1 complete (R1-17 closed, awaiting review/merge)
+* **Active Branch**: `task/adr-018-skill-architecture` (R1-16/R1-17 work uncommitted pending review)
 * **Base Branch**: `main` with R1-13 and prior work reconciled
 * **Open PRs**: None.
 * **Completed & Merged Tasks**:
@@ -69,16 +51,23 @@
   - `R1-09`: Rust Device Node core daemon and governed executor (PR #15 merged at `f64bd46`).
   - `R1-10`: Capability scheduling, task leases, and offline recovery (PR #16 merged at `fcaf471`).
   - `R1-11`: Desktop Assistant shell and 12-state visualizer (PR #17 merged at `560ebf1`).
+  - `R1-12`: Assistant Event Stream (authenticated SSE delivery).
+   - `R1-13`: Governed Browser Automation and hybrid routing refactor.
+   - `R1-14`: Diagnostic DB & Log Tools (read-only, policy-governed, sanitized).
+   - `R1-15`: Transaction Investigation Skill (core engine + synthetic sources, evidence audit trail).
+   - `R1-16`: Observability & Packaging (OpenTelemetry-ready instrumentation, /health + /readyz probes, structured JSONL logging with redaction, dependency-free Prometheus metrics, Docker compose + local build configs).
+   - `R1-17`: Hardening & Release Gate (release-1-security-audit, negative/security hardening suite, deterministic `scripts/verify_release.ps1` gate + `docs/development/release-verification.md`, Release 1 closure).
 * **Validation Results**:
   - `npm.cmd run build`: 0 errors in `apps/desktop`.
-  - `npm.cmd run test`: 13 passed in Vitest, including automated accessibility checks.
+  - `npm.cmd run test`: 18 passed in Vitest.
   - `npm.cmd run test:e2e`: 8 passed across four responsive viewports.
   - Desktop Tauri `cargo test`: 2 passed.
   - `cargo test`: 4 passed in `services/ophanim-node`.
-  - `pytest`: 147 passed across `services/ophanim-core`.
+   - `pytest`: 280 passed across `services/ophanim-core` (incl. 10 new security-hardening tests).
   - `npm.cmd audit`: 0 vulnerabilities.
   - `ruff check` & `ruff format --check`: passed across all Python files.
   - `git diff --check main...HEAD`: passed.
+  - `scripts/verify_release.ps1`: **10/10 PASS** (git whitespace, ruff, pytest, npm build/test/e2e, cargo test, secret scan).
 * **Blockers**: None.
 
 ---
@@ -88,15 +77,16 @@
 * **ADR-001 through ADR-015**: Accepted foundational baseline.
 * **ADR-016**: Deterministic State-Driven Autonomous Agent Orchestration (AAO-001).
 * **ADR-017**: Polyglot Runtime Boundaries — Python 3.12+/FastAPI control plane (Hub/Core), Rust lightweight endpoint daemon (Node), Tauri + React/TypeScript (Desktop Assistant), evidence-gated server Rust extraction.
-* **Desktop UI Invariant**: The Assistant surface renders authoritative Core state (all 12 states), provides visible human approval dialogs, and includes a dedicated Emergency Stop control.
+* **Desktop UI Invariant**: The Assistant surface renders authoritative Core state (all 12 states), provides visible human approval dialogs, and shows an honest Stop control that does not claim unimplemented cancellation. A core-level global emergency-stop capability is deferred (see `docs/security/release-1-security-audit.md`).
 * **Vendor Governance**: `anything-llm/` and `ollama/` are protected vendor source. Modifications are strictly isolated behind domain adapters.
 
 ---
 
 ## 4. Next Task & Continuation
 
-* **Next Eligible Task**: `R1-14` (Diagnostic DB & Log Tools)
+* **Release 1 Status**: COMPLETE — all R1-01..17 tasks IMPLEMENTED/MERGED; verification gate PASSED (10/10) with security audit on record.
+* **Next Eligible Task**: Release 1 review & merge of the R1-16/R1-17 work on `task/adr-018-skill-architecture`, then Release 2 planning.
 * **Continuation Command**:
   ```powershell
-  git switch -c task/r1-14-diagnostic-tools
+  git switch task/adr-018-skill-architecture
   ```

@@ -1,0 +1,96 @@
+# Reproducible local infrastructure for Ophanim AI.
+# Optional observability services (Prometheus, Grafana, OTel Collector) run on
+# demand; the Core service image builds only with the "core" profile enabled.
+#
+#   docker compose up -d              # postgres + redis + telemetry stack
+#   docker compose --profile core up  # additionally build & run Ophanim Core
+
+name: ophanim
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: ophanim
+      POSTGRES_USER: ophanim
+      POSTGRES_PASSWORD: ophanim-dev
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ophanim -d ophanim"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  otel-collector:
+    image: otel/opentelemetry-collector-contrib:0.117.0
+    command: ["--config=/etc/otelcol/config.yaml"]
+    volumes:
+      - ./otel-collector.yaml:/etc/otelcol/config.yaml:ro
+    ports:
+      - "4317:4317"
+      - "4318:4318"
+
+  prometheus:
+    image: prom/prometheus:v2.55.1
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+      - --storage.tsdb.path=/prometheus
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus_data:/prometheus
+    ports:
+      - "9090:9090"
+    depends_on:
+      - otel-collector
+
+  grafana:
+    image: grafana/grafana:11.4.0
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: ophanim-dev
+    volumes:
+      - ./grafana/provisioning:/etc/grafana/provisioning:ro
+      - grafana_data:/var/lib/grafana
+    ports:
+      - "3000:3000"
+    depends_on:
+      - prometheus
+
+  ophanim-core:
+    profiles: ["core"]
+    build:
+      context: ../../services/ophanim-core
+      dockerfile: Dockerfile
+    environment:
+      OPHANIM_ENVIRONMENT: development
+      OPHANIM_OTEL_ENABLED: "true"
+      OPHANIM_OTEL_OTLP_ENDPOINT: http://otel-collector:4318
+      OPHANIM_READYZ_REQUIRED_COMPONENTS: ""
+    ports:
+      - "8000:8000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+volumes:
+  postgres_data:
+  redis_data:
+  prometheus_data:
+  grafana_data:

@@ -67,6 +67,21 @@ class Settings(BaseSettings):
     browser_allowed_domains: str = Field(default="")
     browser_require_approval_for_writes: bool = Field(default=True)
 
+    diagnostics_db_dsn: str = Field(default="")
+    diagnostics_log_path: str = Field(default="")
+    diagnostics_max_rows: int = Field(default=100, ge=1, le=10_000)
+    diagnostics_max_records: int = Field(default=100, ge=1, le=10_000)
+    diagnostics_max_cell_chars: int = Field(default=1_000, ge=1, le=100_000)
+
+    service_name: str = Field(default="ophanim-core", min_length=1)
+    log_level: str = Field(default="INFO", min_length=1)
+    log_path: str = Field(default="")
+    metrics_enabled: bool = Field(default=True)
+    otel_enabled: bool = Field(default=False)
+    otel_otlp_endpoint: str = Field(default="http://localhost:4318", min_length=1)
+    readyz_timeout_seconds: float = Field(default=3.0, gt=0, le=30.0)
+    readyz_required_components: str = Field(default="")
+
     @property
     def browser_domain_allowlist(self) -> list[str]:
         return [item.strip() for item in self.browser_allowed_domains.split(",") if item.strip()]
@@ -74,6 +89,10 @@ class Settings(BaseSettings):
     @property
     def cors_origin_list(self) -> list[str]:
         return [item.strip() for item in self.cors_origins.split(",") if item.strip()]
+
+    @property
+    def readyz_required_components_list(self) -> list[str]:
+        return [item.strip() for item in self.readyz_required_components.split(",") if item.strip()]
 
 
 @lru_cache

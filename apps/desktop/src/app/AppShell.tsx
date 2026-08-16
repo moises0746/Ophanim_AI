@@ -2,12 +2,12 @@ import { useEffect, useRef, useState, type ReactNode } from 'react';
 import {
   Bell,
   Menu,
-  NavArrowDown,
+  ChevronDown as NavArrowDown,
   Search,
-  SidebarCollapse,
+  PanelLeftClose as SidebarCollapse,
   UserCircle,
-  Xmark,
-} from 'iconoir-react';
+  X as Xmark,
+} from 'lucide-react';
 import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import type {
   AssistantModel,

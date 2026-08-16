@@ -305,6 +305,7 @@ async def test_lmstudio_provider_maps_openai_compatible_chat() -> None:
         )
 
     settings = Settings(
+        lmstudio_base_url="http://localhost:1234/v1",
         lmstudio_model="local-chat",
         lmstudio_context_window=8_192,
         lmstudio_capabilities="chat",
