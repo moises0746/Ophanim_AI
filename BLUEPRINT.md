@@ -266,18 +266,18 @@ Non-negotiable controls:
 - append-only audit semantics for consequential actions;
 - emergency stop and cancellation checks between steps.
 
-## First Business Vertical Slice
+## First Business Skill MVP
 
-AI Transaction Investigation Agent:
+Transaction Investigation Skill:
 
 ```text
 Reference Number
    ↓
-Task
-   ├─ Browser Agent -> approved test portal
-   ├─ DB Read Tool -> approved lookup
-   ├─ Log Tool -> approved search
-   └─ Knowledge Agent -> MOP/runbook/policy
+Task (via Skill Manifest)
+   ├─ Browser Capability -> approved test portal
+   ├─ DB Read Capability -> approved lookup
+   ├─ Log Capability -> approved search
+   └─ Knowledge Capability -> MOP/runbook/policy
           ↓
 Evidence Correlation
           ↓

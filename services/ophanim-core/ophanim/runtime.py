@@ -7,6 +7,7 @@ from dataclasses import dataclass
 from ophanim.adapters.cloud_model_providers import build_configured_cloud_providers
 from ophanim.adapters.environment_secrets import EnvironmentSecretResolver
 from ophanim.adapters.event_broadcaster import IdentityEventStreamAuthorizer
+from ophanim.adapters.knowledge import InMemoryKnowledgeAdapter
 from ophanim.adapters.lmstudio import build_configured_lmstudio_provider
 from ophanim.adapters.model_router import ModelRouter
 from ophanim.adapters.runtime_identity import EnvironmentRuntimeIdentity
@@ -15,6 +16,7 @@ from ophanim.config import Settings
 from ophanim.domain.values import Environment
 from ophanim.ports.event_broadcaster import EventBroadcasterPort, EventStreamAuthorizerPort
 from ophanim.ports.identity import IdentityAuthenticationPort
+from ophanim.ports.knowledge import KnowledgeRepositoryPort
 from ophanim.ports.model_router import ModelProviderPort
 
 
@@ -24,6 +26,7 @@ class RuntimeComposition:
     event_authorizer: EventStreamAuthorizerPort
     chat_service: AssistantChatService
     providers: tuple[ModelProviderPort, ...]
+    knowledge_repo: KnowledgeRepositoryPort
 
 
 def _environment(value: str) -> Environment:
@@ -59,9 +62,11 @@ def build_runtime(
     if local_provider is not None:
         providers.append(local_provider)
     providers.extend(build_configured_cloud_providers(settings, secret_resolver))
+    knowledge_repo = InMemoryKnowledgeAdapter()
     chat_service = AssistantChatService(
         model_router=ModelRouter(providers),
         event_broadcaster=event_broadcaster,
+        knowledge_repo=knowledge_repo,
         environment=_environment(settings.environment),
     )
     return RuntimeComposition(
@@ -69,4 +74,5 @@ def build_runtime(
         event_authorizer=IdentityEventStreamAuthorizer(identity),
         chat_service=chat_service,
         providers=tuple(providers),
+        knowledge_repo=knowledge_repo,
     )

@@ -1,6 +1,7 @@
 import asyncio
 
 from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 
 from ophanim.adapters.anythingllm import AnythingLLMClient
 from ophanim.adapters.cloud_model_providers import build_configured_cloud_providers
@@ -20,6 +21,8 @@ from ophanim.api.assistant_stream import (
 from ophanim.api.assistant_stream import (
     router as assistant_stream_router,
 )
+from ophanim.api.knowledge import get_knowledge_repository
+from ophanim.api.knowledge import router as knowledge_router
 from ophanim.browser.agent import BrowserAgentUnavailable, GovernedBrowserAgent
 from ophanim.browser.models import BrowserTask, BrowserTaskResult
 from ophanim.browser.policy import BrowserPolicyError
@@ -28,13 +31,25 @@ from ophanim.domain.errors import DomainValidationError
 from ophanim.runtime import build_runtime
 
 app = FastAPI(title="Ophanim Core", version="0.1.0")
+
+settings = get_settings()
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=settings.cors_origin_list,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 app.include_router(assistant_stream_router)
 app.include_router(assistant_chat_router)
+app.include_router(knowledge_router)
 
-_runtime = build_runtime(get_settings(), get_event_broadcaster())
+_runtime = build_runtime(settings, get_event_broadcaster())
 app.dependency_overrides[get_chat_service] = lambda: _runtime.chat_service
 app.dependency_overrides[get_chat_identity] = lambda: _runtime.identity
 app.dependency_overrides[get_event_stream_authorizer] = lambda: _runtime.event_authorizer
+app.dependency_overrides[get_knowledge_repository] = lambda: _runtime.knowledge_repo
 
 
 @app.get("/health")

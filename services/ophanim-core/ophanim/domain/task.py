@@ -10,8 +10,8 @@ from .identifiers import CorrelationId, TaskId, TaskStepId
 from .values import (
     DataScope,
     Environment,
-    PrivacyMode,
     RiskLevel,
+    RoutingMode,
     TaskStatus,
     TaskStepStatus,
     _text,
@@ -60,7 +60,7 @@ class Task:
     environment: Environment
     data_scope: DataScope
     risk_level: RiskLevel
-    privacy_mode: PrivacyMode
+    routing_mode: RoutingMode
     correlation_id: CorrelationId
     status: TaskStatus = TaskStatus.CREATED
     priority: int = 0

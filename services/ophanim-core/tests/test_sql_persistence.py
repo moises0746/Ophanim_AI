@@ -20,8 +20,8 @@ from ophanim.domain.task import Task, TaskStep
 from ophanim.domain.values import (
     DataScope,
     Environment,
-    PrivacyMode,
     RiskLevel,
+    RoutingMode,
     TaskStatus,
     TaskStepStatus,
 )
@@ -73,7 +73,7 @@ def test_task_repository_save_and_get(session_factory) -> None:
         environment=Environment.TEST,
         data_scope=DataScope("workspace-alpha", ("portal-db", "log-store")),
         risk_level=RiskLevel.LOW,
-        privacy_mode=PrivacyMode.PRIVATE,
+        routing_mode=RoutingMode.HYBRID_ROUTED,
         correlation_id=corr_id,
         steps=(step1, step2),
     )
@@ -112,7 +112,7 @@ def test_task_repository_step_sync_and_updates(session_factory) -> None:
         environment=Environment.TEST,
         data_scope=DataScope("ws-1"),
         risk_level=RiskLevel.LOW,
-        privacy_mode=PrivacyMode.PRIVATE,
+        routing_mode=RoutingMode.HYBRID_ROUTED,
         correlation_id=CorrelationId.new(),
         steps=(step1,),
     )
@@ -133,7 +133,7 @@ def test_task_repository_step_sync_and_updates(session_factory) -> None:
         environment=Environment.TEST,
         data_scope=DataScope("ws-1"),
         risk_level=RiskLevel.LOW,
-        privacy_mode=PrivacyMode.PRIVATE,
+        routing_mode=RoutingMode.HYBRID_ROUTED,
         correlation_id=task.correlation_id,
         steps=(step1_updated, step2),
     )
@@ -154,7 +154,7 @@ def test_task_repository_step_sync_and_updates(session_factory) -> None:
         environment=Environment.TEST,
         data_scope=DataScope("ws-1"),
         risk_level=RiskLevel.LOW,
-        privacy_mode=PrivacyMode.PRIVATE,
+        routing_mode=RoutingMode.HYBRID_ROUTED,
         correlation_id=task.correlation_id,
         steps=(step2,),
     )
@@ -182,7 +182,7 @@ def test_task_repository_list_by_owner_and_workspace(session_factory) -> None:
         environment=Environment.TEST,
         data_scope=DataScope("ws-1"),
         risk_level=RiskLevel.LOW,
-        privacy_mode=PrivacyMode.PRIVATE,
+        routing_mode=RoutingMode.HYBRID_ROUTED,
         correlation_id=CorrelationId.new(),
     )
     task2 = Task(
@@ -194,7 +194,7 @@ def test_task_repository_list_by_owner_and_workspace(session_factory) -> None:
         environment=Environment.TEST,
         data_scope=DataScope("ws-1"),
         risk_level=RiskLevel.LOW,
-        privacy_mode=PrivacyMode.PRIVATE,
+        routing_mode=RoutingMode.HYBRID_ROUTED,
         correlation_id=CorrelationId.new(),
     )
     task3 = Task(
@@ -206,7 +206,7 @@ def test_task_repository_list_by_owner_and_workspace(session_factory) -> None:
         environment=Environment.TEST,
         data_scope=DataScope("ws-2"),
         risk_level=RiskLevel.LOW,
-        privacy_mode=PrivacyMode.PRIVATE,
+        routing_mode=RoutingMode.HYBRID_ROUTED,
         correlation_id=CorrelationId.new(),
     )
 

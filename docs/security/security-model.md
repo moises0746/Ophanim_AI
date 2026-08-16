@@ -177,7 +177,7 @@ Avoid by default:
 
 ## MVP Security Gate
 
-The Transaction Investigation MVP cannot be released unless it demonstrates:
+The Transaction Investigation Skill cannot be released unless it demonstrates:
 
 - read-only access only;
 - allowlisted test applications/tools;

@@ -1,15 +1,18 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, beforeEach, afterEach, vi } from 'vitest';
 import { Event, UnlistenFn } from '@tauri-apps/api/event';
 import {
   TauriAssistantRuntimeClient,
-  toCorePrivacyMode,
+  HttpAssistantRuntimeClient,
+  toCoreRoutingMode,
+  isTauri,
+  resolveRuntimeClient,
 } from '../services/runtime';
 
 describe('Tauri Assistant runtime bridge', () => {
-  it('maps Desktop privacy modes to Core values', () => {
-    expect(toCorePrivacyMode('LOCAL_ONLY')).toBe('local_only');
-    expect(toCorePrivacyMode('PRIVATE')).toBe('private');
-    expect(toCorePrivacyMode('CLOUD_ASSISTED')).toBe('standard');
+  it('maps Desktop routing modes to Core values', () => {
+    expect(toCoreRoutingMode('LOCAL_ONLY')).toBe('local_only');
+    expect(toCoreRoutingMode('CLOUD_ONLY')).toBe('cloud_only');
+    expect(toCoreRoutingMode('HYBRID_ROUTED')).toBe('hybrid_routed');
   });
 
   it('sends only a typed chat request and never adds credentials', async () => {
@@ -37,7 +40,7 @@ describe('Tauri Assistant runtime bridge', () => {
 
     const response = await client.sendChat({
       messages: [{ role: 'user', content: 'Hello' }],
-      privacyMode: 'CLOUD_ASSISTED',
+      routingMode: 'HYBRID_ROUTED',
       provider: 'openai',
       modelId: 'cloud-model',
     });
@@ -48,7 +51,7 @@ describe('Tauri Assistant runtime bridge', () => {
     expect(calls[0].args).toEqual({
       request: {
         messages: [{ role: 'user', content: 'Hello' }],
-        privacyMode: 'standard',
+        routing_mode: 'hybrid_routed',
         provider: 'openai',
         modelId: 'cloud-model',
         maxTokens: undefined,
@@ -89,5 +92,95 @@ describe('Tauri Assistant runtime bridge', () => {
     expect(states).toEqual(['working']);
     disconnect();
     expect(listeners.size).toBe(0);
+  });
+});
+
+describe('Runtime Client Resolution', () => {
+  beforeEach(() => {
+    vi.stubGlobal('window', {});
+    vi.stubEnv('VITE_OPHANIM_CORE_URL', 'http://test-core');
+  });
+
+  afterEach(() => {
+    vi.unstubAllGlobals();
+    vi.unstubAllEnvs();
+  });
+
+  it('resolves HttpAssistantRuntimeClient when not in Tauri', () => {
+    expect(isTauri()).toBe(false);
+    const client = resolveRuntimeClient();
+    expect(client).toBeInstanceOf(HttpAssistantRuntimeClient);
+  });
+
+  it('resolves TauriAssistantRuntimeClient when in Tauri', () => {
+    vi.stubGlobal('window', { __TAURI_IPC__: vi.fn() });
+    expect(isTauri()).toBe(true);
+    const client = resolveRuntimeClient();
+    expect(client).toBeInstanceOf(TauriAssistantRuntimeClient);
+  });
+});
+
+describe('HttpAssistantRuntimeClient', () => {
+  let fetchMock: any;
+  let client: HttpAssistantRuntimeClient;
+
+  beforeEach(() => {
+    fetchMock = vi.fn();
+    vi.stubGlobal('fetch', fetchMock);
+    client = new HttpAssistantRuntimeClient('http://test-core');
+  });
+
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
+
+  it('fetches models via HTTP', async () => {
+    fetchMock.mockResolvedValue({
+      ok: true,
+      json: async () => [{ model_id: 'test-model' }]
+    });
+
+    const models = await client.listModels();
+    expect(models).toEqual([{ model_id: 'test-model' }]);
+    expect(fetchMock).toHaveBeenCalledWith(
+      'http://test-core/api/v1/assistant/models?workspace_id=00000000-0000-0000-0000-000000000002',
+      { headers: { Authorization: 'Bearer dev-token-123' } },
+    );
+  });
+
+  it('handles offline core cleanly via getConfig', async () => {
+    fetchMock.mockResolvedValue({ ok: false, status: 503 });
+
+    await expect(client.getConfig()).rejects.toThrow('Core unavailable: HTTP 503');
+  });
+
+  it('maps sendChat payload correctly', async () => {
+    fetchMock.mockResolvedValue({
+      ok: true,
+      json: async () => ({ content: 'response' })
+    });
+
+    const res = await client.sendChat({
+      messages: [{ role: 'user', content: 'hello' }],
+      routingMode: 'LOCAL_ONLY',
+      provider: 'lm_studio',
+      modelId: 'test-model'
+    });
+
+    expect(res.content).toBe('response');
+    expect(fetchMock).toHaveBeenCalledWith('http://test-core/api/v1/assistant/chat', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: 'Bearer dev-token-123',
+      },
+      body: JSON.stringify({
+        workspace_id: '00000000-0000-0000-0000-000000000002',
+        messages: [{ role: 'user', content: 'hello' }],
+        routing_mode: 'local_only',
+        provider: 'lm_studio',
+        model_id: 'test-model',
+      })
+    });
   });
 });

@@ -13,7 +13,7 @@ from ophanim.domain.model_routing import (
     ModelProviderType,
     TokenUsage,
 )
-from ophanim.domain.values import PrivacyMode
+from ophanim.domain.values import RoutingMode
 from ophanim.ports.model_router import ModelProviderPort, ModelRouterPort
 
 
@@ -72,7 +72,7 @@ class MockModelProviderAdapter:
 
 
 class ModelRouter(ModelRouterPort):
-    """Router that selects and invokes model providers based on capabilities and PrivacyMode."""
+    """Router that selects and invokes model providers based on capabilities and RoutingMode."""
 
     def __init__(self, providers: Sequence[ModelProviderPort]) -> None:
         self._providers = list(providers)
@@ -98,10 +98,10 @@ class ModelRouter(ModelRouterPort):
                     and model.model_id != request.preferred_model_id
                 ):
                     continue
-                # Privacy Mode enforcement
-                if request.privacy_mode == PrivacyMode.LOCAL_ONLY and not model.is_local:
+                # Routing Mode enforcement
+                if request.routing_mode == RoutingMode.LOCAL_ONLY and not model.is_local:
                     continue
-                if request.privacy_mode == PrivacyMode.PRIVATE and not model.is_local:
+                if request.routing_mode == RoutingMode.CLOUD_ONLY and model.is_local:
                     continue
 
                 # Capability matching
@@ -111,7 +111,7 @@ class ModelRouter(ModelRouterPort):
                 candidates.append((provider, model))
 
         if not candidates:
-            if request.privacy_mode == PrivacyMode.LOCAL_ONLY:
+            if request.routing_mode == RoutingMode.LOCAL_ONLY:
                 raise DomainValidationError(
                     f"No local model available with capabilities {set(request.required_capabilities)}"
                 )
@@ -127,18 +127,29 @@ class ModelRouter(ModelRouterPort):
         """Route request and execute completion with fallback handling."""
         candidates = self._find_all_eligible_candidates(request)
         if not candidates:
-            if request.privacy_mode == PrivacyMode.LOCAL_ONLY:
+            if request.routing_mode == RoutingMode.LOCAL_ONLY:
                 raise DomainValidationError(
                     f"No local model available with capabilities {set(request.required_capabilities)}"
+                )
+            if request.routing_mode == RoutingMode.CLOUD_ONLY:
+                raise DomainValidationError(
+                    f"No cloud model available with capabilities {set(request.required_capabilities)}"
                 )
             raise DomainValidationError(
                 f"No model available satisfying requirements: {set(request.required_capabilities)}"
             )
 
         last_error: Exception | None = None
-        for provider, model in candidates:
+        for index, (provider, model) in enumerate(candidates):
             try:
-                return await provider.complete(request, model)
+                response = await provider.complete(request, model)
+                import dataclasses
+
+                return dataclasses.replace(
+                    response,
+                    routing_reason=f"fallback attempt {index}" if index > 0 else "optimal match",
+                    fallback_occurrence=(index > 0),
+                )
             except Exception as exc:  # noqa: BLE001
                 last_error = exc
                 continue
@@ -161,9 +172,9 @@ class ModelRouter(ModelRouterPort):
                     and model.model_id != request.preferred_model_id
                 ):
                     continue
-                if request.privacy_mode == PrivacyMode.LOCAL_ONLY and not model.is_local:
+                if request.routing_mode == RoutingMode.LOCAL_ONLY and not model.is_local:
                     continue
-                if request.privacy_mode == PrivacyMode.PRIVATE and not model.is_local:
+                if request.routing_mode == RoutingMode.CLOUD_ONLY and model.is_local:
                     continue
                 if not request.required_capabilities.issubset(model.capabilities):
                     continue

@@ -34,12 +34,16 @@ def enforce_browser_policy(
         if not requested_domains:
             task.allowed_domains = app.domains.copy()
         elif not requested_domains.issubset(set(app.domains)):
-            raise BrowserPolicyError("Task requests domains outside the approved application's allowlist")
+            raise BrowserPolicyError(
+                "Task requests domains outside the approved application's allowlist"
+            )
     elif configured_domains:
         if not requested_domains:
             task.allowed_domains = sorted(configured_domains)
         elif not requested_domains.issubset(configured_domains):
-            raise BrowserPolicyError("Task requests domains outside the configured global allowlist")
+            raise BrowserPolicyError(
+                "Task requests domains outside the configured global allowlist"
+            )
 
     task.max_steps = min(task.max_steps, settings.browser_max_steps)
 

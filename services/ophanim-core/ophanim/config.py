@@ -13,6 +13,8 @@ class Settings(BaseSettings):
     )
 
     environment: str = Field(default="development")
+    cors_origins: str = Field(default="http://localhost:5173,http://127.0.0.1:5173")
+
     anythingllm_base_url: AnyHttpUrl = Field(default="http://localhost:3001")
     anythingllm_api_key: str | None = Field(default=None)
     lmstudio_base_url: AnyHttpUrl = Field(default="http://localhost:1234/v1")
@@ -53,6 +55,11 @@ class Settings(BaseSettings):
     anthropic_capabilities: str = Field(default="chat")
     anthropic_api_version: str = Field(default="2023-06-01", min_length=1)
 
+    opencode_zen_api_key_ref: str = Field(default="OPHANIM_OPENCODE_ZEN_API_KEY", min_length=1)
+    opencode_zen_model: str = Field(default="")
+    opencode_zen_context_window: int = Field(default=1, ge=1)
+    opencode_zen_capabilities: str = Field(default="chat")
+
     browser_enabled: bool = Field(default=False)
     browser_headless: bool = Field(default=False)
     browser_model: str = Field(default="")
@@ -63,6 +70,10 @@ class Settings(BaseSettings):
     @property
     def browser_domain_allowlist(self) -> list[str]:
         return [item.strip() for item in self.browser_allowed_domains.split(",") if item.strip()]
+
+    @property
+    def cors_origin_list(self) -> list[str]:
+        return [item.strip() for item in self.cors_origins.split(",") if item.strip()]
 
 
 @lru_cache

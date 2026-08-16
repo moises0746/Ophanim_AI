@@ -9,6 +9,7 @@ class BrowserProfile(StrEnum):
     RESEARCH = "research"
     TEST_PORTAL = "test-portal"
 
+
 class ApprovedApplication(BaseModel):
     id: str
     domains: list[str] = Field(default_factory=list)
@@ -17,9 +18,10 @@ class ApprovedApplication(BaseModel):
     read_actions: list[str] = Field(default_factory=list)
     write_actions: list[str] = Field(default_factory=list)
 
+
 class ApprovedApplicationRegistry:
     """In-memory registry of approved applications for the browser."""
-    
+
     def __init__(self, applications: list[ApprovedApplication] | None = None) -> None:
         self._apps = {app.id: app for app in (applications or [])}
 
@@ -30,7 +32,4 @@ class ApprovedApplicationRegistry:
         app = self.get(app_id)
         if not app:
             return False
-        return any(
-            domain == allowed or domain.endswith(f".{allowed}")
-            for allowed in app.domains
-        )
+        return any(domain == allowed or domain.endswith(f".{allowed}") for allowed in app.domains)

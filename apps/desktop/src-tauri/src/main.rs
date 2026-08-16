@@ -158,6 +158,22 @@ async fn assistant_models(state: State<'_, RuntimeState>) -> Result<Value, Strin
 }
 
 #[tauri::command]
+async fn provider_status(state: State<'_, RuntimeState>) -> Result<Value, String> {
+    let config = state.configured()?.clone();
+    let response = state
+        .client
+        .get(format!(
+            "{}/status/providers?workspace_id={}",
+            config.core_base_url, config.workspace_id
+        ))
+        .bearer_auth(&config.api_token)
+        .send()
+        .await
+        .map_err(|_| "Ophanim Core is unavailable".to_string())?;
+    checked_json(response).await
+}
+
+#[tauri::command]
 async fn assistant_chat(
     request: ChatRequest,
     state: State<'_, RuntimeState>,
@@ -261,6 +277,7 @@ fn main() {
         .invoke_handler(tauri::generate_handler![
             runtime_config,
             assistant_models,
+            provider_status,
             assistant_chat,
             start_assistant_events
         ])

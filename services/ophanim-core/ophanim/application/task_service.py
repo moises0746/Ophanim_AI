@@ -10,7 +10,7 @@ from threading import RLock
 from ophanim.domain.identifiers import CorrelationId, TaskId
 from ophanim.domain.lifecycle_rules import transition_task
 from ophanim.domain.task import Task
-from ophanim.domain.values import DataScope, Environment, PrivacyMode, RiskLevel, TaskStatus
+from ophanim.domain.values import DataScope, Environment, RiskLevel, RoutingMode, TaskStatus
 
 from .errors import TaskConflictError, TaskNotFoundError
 
@@ -23,7 +23,7 @@ class CreateTask:
     environment: Environment
     data_scope: DataScope
     risk_level: RiskLevel
-    privacy_mode: PrivacyMode
+    routing_mode: RoutingMode
     priority: int = 0
     correlation_id: CorrelationId | None = None
 
@@ -46,7 +46,7 @@ class InMemoryTaskService:
             environment=command.environment,
             data_scope=command.data_scope,
             risk_level=command.risk_level,
-            privacy_mode=command.privacy_mode,
+            routing_mode=command.routing_mode,
             correlation_id=command.correlation_id or CorrelationId.new(),
             priority=command.priority,
             created_at=now,

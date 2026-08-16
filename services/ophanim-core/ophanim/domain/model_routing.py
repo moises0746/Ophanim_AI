@@ -6,7 +6,7 @@ from dataclasses import dataclass, field
 from enum import StrEnum
 
 from ophanim.domain.errors import DomainValidationError
-from ophanim.domain.values import PrivacyMode, _text
+from ophanim.domain.values import RoutingMode, _text
 
 
 class ModelProviderType(StrEnum):
@@ -15,6 +15,7 @@ class ModelProviderType(StrEnum):
     OPENAI = "openai"
     GEMINI = "gemini"
     ANTHROPIC = "anthropic"
+    OPENCODE_ZEN = "opencode_zen"
     CLOUD = "cloud"
     MOCK = "mock"
 
@@ -77,7 +78,7 @@ class ModelDescriptor:
 @dataclass(frozen=True, slots=True)
 class ModelCompletionRequest:
     messages: tuple[ModelMessage, ...]
-    privacy_mode: PrivacyMode
+    routing_mode: RoutingMode
     required_capabilities: frozenset[ModelCapability] = field(
         default_factory=lambda: frozenset({ModelCapability.CHAT})
     )
@@ -93,8 +94,8 @@ class ModelCompletionRequest:
             raise DomainValidationError("messages cannot be empty")
         if any(not isinstance(m, ModelMessage) for m in self.messages):
             raise DomainValidationError("all messages must be ModelMessage instances")
-        if not isinstance(self.privacy_mode, PrivacyMode):
-            raise DomainValidationError("privacy_mode must be a valid PrivacyMode")
+        if not isinstance(self.routing_mode, RoutingMode):
+            raise DomainValidationError("routing_mode must be a valid RoutingMode")
         if self.temperature < 0.0 or self.temperature > 2.0:
             raise DomainValidationError("temperature must be between 0.0 and 2.0")
         if self.max_tokens is not None and self.max_tokens <= 0:
@@ -136,6 +137,8 @@ class ModelCompletionResponse:
     finish_reason: str
     usage: TokenUsage
     latency_ms: float
+    routing_reason: str = "direct"
+    fallback_occurrence: bool = False
 
     def __post_init__(self) -> None:
         object.__setattr__(
@@ -144,6 +147,9 @@ class ModelCompletionResponse:
         object.__setattr__(self, "model_id", _text(self.model_id, "model_id", max_length=128))
         object.__setattr__(
             self, "finish_reason", _text(self.finish_reason, "finish_reason", max_length=64)
+        )
+        object.__setattr__(
+            self, "routing_reason", _text(self.routing_reason, "routing_reason", max_length=128)
         )
         if self.latency_ms < 0:
             raise DomainValidationError("latency_ms must be non-negative")

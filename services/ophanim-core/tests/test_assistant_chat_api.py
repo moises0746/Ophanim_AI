@@ -7,6 +7,7 @@ import pytest
 from fastapi.testclient import TestClient
 
 from ophanim.adapters.environment_secrets import EnvironmentSecretResolver
+from ophanim.adapters.knowledge import InMemoryKnowledgeAdapter
 from ophanim.adapters.lmstudio import (
     LMStudioModelProvider,
     build_configured_lmstudio_provider,
@@ -93,6 +94,7 @@ def chat_runtime():
     service = AssistantChatService(
         model_router=ModelRouter([local, cloud]),
         event_broadcaster=broadcaster,
+        knowledge_repo=InMemoryKnowledgeAdapter(),
         environment=Environment.TEST,
     )
     original_service = app.dependency_overrides[get_chat_service]
@@ -128,7 +130,7 @@ def test_chat_routes_local_only_and_publishes_sanitized_events(chat_runtime) -> 
         json={
             "workspace_id": str(workspace_id),
             "messages": [{"role": "user", "content": "Synthetic private prompt"}],
-            "privacy_mode": "local_only",
+            "routing_mode": "local_only",
         },
         headers={"Authorization": "Bearer valid"},
     )
@@ -155,7 +157,7 @@ def test_chat_honors_explicit_cloud_provider_and_model(chat_runtime) -> None:
         json={
             "workspace_id": str(workspace_id),
             "messages": [{"role": "user", "content": "Use cloud"}],
-            "privacy_mode": "standard",
+            "routing_mode": "hybrid_routed",
             "provider": "openai",
             "model_id": "cloud-model",
         },
@@ -175,7 +177,7 @@ def test_chat_denies_cloud_selection_in_local_only_mode(chat_runtime) -> None:
         json={
             "workspace_id": str(workspace_id),
             "messages": [{"role": "user", "content": "Keep this local"}],
-            "privacy_mode": "local_only",
+            "routing_mode": "local_only",
             "provider": "openai",
             "model_id": "cloud-model",
         },
@@ -222,6 +224,7 @@ def test_provider_failure_is_sanitized() -> None:
     service = AssistantChatService(
         model_router=ModelRouter([provider]),
         event_broadcaster=RecordingBroadcaster(),
+        knowledge_repo=InMemoryKnowledgeAdapter(),
         environment=Environment.TEST,
     )
     original_service = app.dependency_overrides[get_chat_service]
@@ -314,12 +317,12 @@ async def test_lmstudio_provider_maps_openai_compatible_chat() -> None:
     assert isinstance(provider, LMStudioModelProvider)
     model = provider.list_models()[0]
     from ophanim.domain.model_routing import ModelCompletionRequest, ModelMessage, ModelRole
-    from ophanim.domain.values import PrivacyMode
+    from ophanim.domain.values import RoutingMode
 
     response = await provider.complete(
         ModelCompletionRequest(
             messages=(ModelMessage(ModelRole.USER, "Hello local model"),),
-            privacy_mode=PrivacyMode.LOCAL_ONLY,
+            routing_mode=RoutingMode.LOCAL_ONLY,
         ),
         model,
     )

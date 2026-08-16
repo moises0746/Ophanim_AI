@@ -36,7 +36,7 @@ class PlaywrightDriver:
         self._browser = await self._playwright.chromium.launch(headless=self.headless)
         self._context = await self._browser.new_context()
         self._page = await self._context.new_page()
-        
+
         await self._page.route("**/*", self._route_handler)
 
     async def stop(self) -> None:
@@ -75,17 +75,19 @@ class PlaywrightDriver:
         # (TimeoutError, TargetClosedError, Error) which we normalize into our driver boundary.
         except Exception as e:  # noqa: BLE001
             raise BrowserDriverError(f"Navigation failed: {e}")
-        
+
         final_url = self._page.url
         if not self._is_url_allowed(final_url):
-            raise BrowserDriverError(f"Redirected to {final_url}, which is not permitted by the allowlist.")
+            raise BrowserDriverError(
+                f"Redirected to {final_url}, which is not permitted by the allowlist."
+            )
 
         return final_url
 
     async def read_text(self, selector: str = "body") -> str:
         if not self._page:
             raise BrowserDriverError("Session not started.")
-        
+
         try:
             return await self._page.inner_text(selector, timeout=5000)
         except Exception as e:  # noqa: BLE001

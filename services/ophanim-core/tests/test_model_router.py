@@ -1,4 +1,4 @@
-"""Unit and contract tests for ModelRouter, provider adapters, and PrivacyMode boundaries."""
+"""Unit and contract tests for ModelRouter, provider adapters, and RoutingMode boundaries."""
 
 import pytest
 
@@ -12,7 +12,7 @@ from ophanim.domain.model_routing import (
     ModelProviderType,
     ModelRole,
 )
-from ophanim.domain.values import PrivacyMode
+from ophanim.domain.values import RoutingMode
 
 
 @pytest.fixture
@@ -88,7 +88,7 @@ async def test_local_only_routes_to_local_provider(
 
     request = ModelCompletionRequest(
         messages=(ModelMessage(role=ModelRole.USER, content="Explain transaction failure"),),
-        privacy_mode=PrivacyMode.LOCAL_ONLY,
+        routing_mode=RoutingMode.LOCAL_ONLY,
         required_capabilities=frozenset({ModelCapability.CHAT}),
     )
 
@@ -108,7 +108,7 @@ async def test_local_only_rejects_cloud_when_capability_missing(
     # Request VISION capability which Ollama lacks and only Cloud has
     request = ModelCompletionRequest(
         messages=(ModelMessage(role=ModelRole.USER, content="Analyze portal screenshot"),),
-        privacy_mode=PrivacyMode.LOCAL_ONLY,
+        routing_mode=RoutingMode.LOCAL_ONLY,
         required_capabilities=frozenset({ModelCapability.VISION}),
     )
 
@@ -126,7 +126,7 @@ async def test_standard_privacy_routes_to_cloud_for_advanced_capability(
 
     request = ModelCompletionRequest(
         messages=(ModelMessage(role=ModelRole.USER, content="Multimodal check"),),
-        privacy_mode=PrivacyMode.STANDARD,
+        routing_mode=RoutingMode.HYBRID_ROUTED,
         required_capabilities=frozenset({ModelCapability.VISION}),
     )
 
@@ -146,7 +146,7 @@ async def test_provider_fallback_on_error(
 
     request = ModelCompletionRequest(
         messages=(ModelMessage(role=ModelRole.USER, content="General chat query"),),
-        privacy_mode=PrivacyMode.LOCAL_ONLY,
+        routing_mode=RoutingMode.LOCAL_ONLY,
         required_capabilities=frozenset({ModelCapability.CHAT}),
     )
 
@@ -163,7 +163,7 @@ async def test_json_response_formatting(local_lm_studio: MockModelProviderAdapte
 
     request = ModelCompletionRequest(
         messages=(ModelMessage(role=ModelRole.USER, content="Extract transaction IDs as JSON"),),
-        privacy_mode=PrivacyMode.LOCAL_ONLY,
+        routing_mode=RoutingMode.LOCAL_ONLY,
         required_capabilities=frozenset({ModelCapability.STRUCTURED_OUTPUT}),
         response_format_json=True,
     )

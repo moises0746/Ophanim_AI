@@ -29,6 +29,12 @@ function runtimeClient(): AssistantRuntimeClient {
       capabilities: ['text'],
       is_local: true,
     }]),
+    getProviderStatus: vi.fn(async () => ({
+      anythingllm: { status: 'available' as const },
+      lmstudio: { status: 'available' as const },
+      cloud_models: [],
+      browser: { enabled: true, model: null, allowed_domains: [], write_approval_required: true },
+    })),
     sendChat: vi.fn(async () => ({
       correlation_id: 'corr-1',
       content: 'Bounded response from Core.',
@@ -85,7 +91,7 @@ describe('Ophanim Desktop experience', () => {
     expect(client.sendChat).toHaveBeenCalledWith(expect.objectContaining({
       provider: 'lm_studio',
       modelId: 'local-model',
-      privacyMode: 'LOCAL_ONLY',
+      routingMode: 'LOCAL_ONLY',
     }));
   });
 
