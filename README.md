@@ -6,7 +6,7 @@ Ophanim AI is the product and control plane. It accepts goals through voice or t
 
 The Assistant is the default product experience. AnythingLLM, LM Studio, Ollama, MCP servers, cloud models, browser engines, and enterprise systems are replaceable subsystems behind Ophanim-owned contracts.
 
-> Project status: **Sprint 00 and Release 1 tasks R1-01 through R1-11 are merged. R1-12, R1-06A, and R1-RUN-01 are committed and checkpointed on the current stack but not merged. UI-R1-T01 adds the responsive, Assistant-first Ophanim desktop experience and preserves truthful Core-backed state.**
+> Project status: **Release 1 is complete and merged to `main` (PR #20, `2c6334d`). All R1-01 through R1-17 tasks are implemented, checkpointed, and merged. Next step is Release 2 planning (Sprint 02) — not automatic implementation authorization.**
 
 ## Start Here
 
@@ -225,7 +225,7 @@ See [`PROJECT_PLAN.md`](PROJECT_PLAN.md).
 
 ## Delivery Status
 
-Sprint 00 is complete and merged. Release 1 tasks R1-01 through R1-11 are merged. R1-12 is preserved in commit `bab5949`, R1-06A in `d6c031d`, and R1-RUN-01 in `515223f`; they are not yet merged to `main`. UI-R1-T01 rebuilds the runtime on that stack as an Assistant-first responsive desktop workspace with canonical Core state, truthful operational routes, and explicit unavailable boundaries. The original S01-T03 acceptance caveat and unimplemented S01-T06 through S01-T08 records remain explicit rather than being retroactively rewritten.
+Sprint 00 is complete and merged. Release 1 is complete: R1-01 through R1-17 are all implemented, checkpointed, and merged to `main` (R1-12, R1-06A, R1-RUN-01, UI-R1-T01, and R1-13..R1-17 landed together via PR #20 at `2c6334d`). UI-R1-T01 rebuilt the runtime as an Assistant-first responsive desktop workspace with canonical Core state, truthful operational routes, and explicit unavailable boundaries. The original S01-T03 acceptance caveat and unimplemented S01-T06 through S01-T08 records remain explicit rather than being retroactively rewritten.
 
 See [`docs/sprints/SPRINT-00-CLOSURE.md`](docs/sprints/SPRINT-00-CLOSURE.md), [`docs/sprints/SPRINT-01.md`](docs/sprints/SPRINT-01.md), and [`docs/architecture/autonomous-agent-orchestration.md`](docs/architecture/autonomous-agent-orchestration.md).
 
@@ -262,4 +262,4 @@ npm run app:dev
 
 ## Current Status
 
-**Do not start broad feature implementation.** UI-R1-T01 is the completed active task. Run the local app with `cd apps/desktop` followed by `npm.cmd run app:dev` after configuring at least one model as described in [local setup](docs/development/local-setup.md). The route and state behavior is documented in the [desktop experience contract](docs/product/desktop-experience.md). Governed browser automation remains the recommended next task but is not automatically authorized.
+**Release 1 is complete and merged to `main`.** The next step is Release 2 planning (Sprint 02) — planning only, not implementation authorization. Run the local app with `cd apps/desktop` followed by `npm.cmd run app:dev` after configuring at least one model as described in [local setup](docs/development/local-setup.md). The route and state behavior is documented in the [desktop experience contract](docs/product/desktop-experience.md). Release verification is documented in [release verification](docs/development/release-verification.md); the deterministic gate is `scripts/verify_release.ps1`.

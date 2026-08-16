@@ -1,6 +1,6 @@
 # Ophanim AI — Release 1 Status and Progress Tracker
 
-**Document Version**: 1.15.0
+**Document Version**: 1.16.0
 **Current Release Objective**: Deliver Ophanim AI Release 1 — A secure, testable, local-first AI Coworker vertical slice with Python Hub/Core, Tauri/React Desktop Assistant, lightweight Rust Device Node, governed tool execution, knowledge citations, and AI Transaction Investigation.  
 **Last Updated**: 2026-08-16  
 
@@ -16,29 +16,29 @@
 | **R1-04** | Core Persistence | PostgreSQL & SQLite database models, session management, and SQL repository adapters | R1-02, R1-03 | **MERGED** | PR #10, `docs/checkpoints/R1-04.md` |
 | **R1-05** | Identity & Multi-Tenancy | Tenant, workspace, user, and device identity with scoped RBAC & API key / token validation | R1-04 | **MERGED** | PR #11, `docs/checkpoints/R1-05.md` |
 | **R1-06** | Model Router | Capability-based Model Router (LM Studio, Ollama, Cloud) with privacy tier routing | R1-02 | **MERGED** | PR #12, `docs/checkpoints/R1-06.md` |
-| **R1-06A** | Cloud Model Providers | Governed OpenAI, Gemini, and Anthropic text adapters with execution-time secrets and privacy isolation | R1-06 | **IMPLEMENTED** | `task/r1-06a-cloud-providers`, `docs/checkpoints/R1-06A.md` |
+| **R1-06A** | Cloud Model Providers | Governed OpenAI, Gemini, and Anthropic text adapters with execution-time secrets and privacy isolation | R1-06 | **MERGED** | PR #20, `task/r1-06a-cloud-providers`, `docs/checkpoints/R1-06A.md` |
 | **R1-07** | Knowledge & Citations | Knowledge ingestion/retrieval adapters with source citations, provenance, Obsidian/Markdown support | R1-06 | **MERGED** | PR #13, `docs/checkpoints/R1-07.md` |
 | **R1-08** | Hub/Node Protocol | Versioned JSON/WSS protocol schemas, message contracts, security invariants, anti-replay | R1-05 | **MERGED** | PR #14, `docs/checkpoints/R1-08.md` |
 | **R1-09** | Rust Device Node Core | Lightweight Rust Node daemon, device enrollment, heartbeat, diagnostic slice | R1-08 | **MERGED** | PR #15, `docs/checkpoints/R1-09.md` |
 | **R1-10** | Scheduling & Task Leases | Hub capability-aware device scheduling, task leases, cancellation, offline recovery | R1-08, R1-09 | **MERGED** | PR #16, `docs/checkpoints/R1-10.md` |
 | **R1-11** | Desktop Assistant Shell | Tauri + React + TypeScript desktop application shell, state renderer for 12 presentation states | R1-01 | **MERGED** | PR #17, `docs/checkpoints/R1-11.md` |
-| **R1-12** | Assistant Event Stream | Authenticated SSE delivery from Core to Desktop UI, real-time activity and approval presentation | R1-11, R1-03 | **IMPLEMENTED** | `task/r1-12-assistant-event-stream`, `docs/checkpoints/R1-12.md` |
-| **R1-RUN-01** | Runtime Composition | Complete Tauri/Core composition, authenticated chat use case, secure credential bridge, and one-command local launcher | R1-12, R1-06A | **IMPLEMENTED** | `task/r1-run-01-runtime-composition`, `docs/checkpoints/R1-RUN-01.md` |
-| **UI-R1-T01** | Desktop Experience | Responsive Assistant-first desktop workspace, canonical state visuals, operational routes, and truthful unavailable boundaries | R1-RUN-01 | **IMPLEMENTED** | `agent/ui-r1-ophanim-assistant`, `docs/checkpoints/UI-R1-T01.md` |
-| **R1-13** | Governed Browser Automation | Playwright-based browser driver, domain allowlist enforcement, read-only session capture | R1-02, R1-09 | **IMPLEMENTED** | `task/adr-018-skill-architecture` |
-| **R1-14** | Diagnostic DB & Log Tools | Parameterized read-only DB query tool and structured log search tool with sanitization | R1-02, R1-09 | **IMPLEMENTED** | `docs/checkpoints/R1-14.md` |
-| **R1-15** | Transaction Investigation Skill | Transaction Investigation Skill vertical slice end-to-end integration (Portal, DB, Logs, Knowledge) | R1-06..14 | **IMPLEMENTED** | `task/adr-018-skill-architecture`, `docs/checkpoints/R1-15.md` |
-| **R1-16** | Observability & Packaging | OpenTelemetry instrumentation, health probes, Docker compose and local build configs | R1-15 | **IMPLEMENTED** | `task/adr-018-skill-architecture`, `docs/checkpoints/R1-16.md` |
-| **R1-17** | Hardening & Release Gate | End-to-end security audit, negative policy tests, release verification suite, Release 1 closure | R1-01..16 | **IMPLEMENTED** | `task/adr-018-skill-architecture`, `docs/checkpoints/R1-17.md` |
+| **R1-12** | Assistant Event Stream | Authenticated SSE delivery from Core to Desktop UI, real-time activity and approval presentation | R1-11, R1-03 | **MERGED** | PR #20, `task/r1-12-assistant-event-stream`, `docs/checkpoints/R1-12.md` |
+| **R1-RUN-01** | Runtime Composition | Complete Tauri/Core composition, authenticated chat use case, secure credential bridge, and one-command local launcher | R1-12, R1-06A | **MERGED** | PR #20, `task/r1-run-01-runtime-composition`, `docs/checkpoints/R1-RUN-01.md` |
+| **UI-R1-T01** | Desktop Experience | Responsive Assistant-first desktop workspace, canonical state visuals, operational routes, and truthful unavailable boundaries | R1-RUN-01 | **MERGED** | PR #20, `agent/ui-r1-ophanim-assistant`, `docs/checkpoints/UI-R1-T01.md` |
+| **R1-13** | Governed Browser Automation | Playwright-based browser driver, domain allowlist enforcement, read-only session capture | R1-02, R1-09 | **MERGED** | PR #20, `task/adr-018-skill-architecture` |
+| **R1-14** | Diagnostic DB & Log Tools | Parameterized read-only DB query tool and structured log search tool with sanitization | R1-02, R1-09 | **MERGED** | PR #20, `docs/checkpoints/R1-14.md` |
+| **R1-15** | Transaction Investigation Skill | Transaction Investigation Skill vertical slice end-to-end integration (Portal, DB, Logs, Knowledge) | R1-06..14 | **MERGED** | PR #20, `task/adr-018-skill-architecture`, `docs/checkpoints/R1-15.md` |
+| **R1-16** | Observability & Packaging | OpenTelemetry instrumentation, health probes, Docker compose and local build configs | R1-15 | **MERGED** | PR #20, `task/adr-018-skill-architecture`, `docs/checkpoints/R1-16.md` |
+| **R1-17** | Hardening & Release Gate | End-to-end security audit, negative policy tests, release verification suite, Release 1 closure | R1-01..16 | **MERGED** | PR #20, `task/adr-018-skill-architecture`, `docs/checkpoints/R1-17.md` |
 
 ---
 
 ## 2. Current Execution State
 
-* **Active Task**: None — Release 1 complete (R1-17 closed, awaiting review/merge)
-* **Active Branch**: `task/adr-018-skill-architecture` (R1-16/R1-17 work uncommitted pending review)
-* **Base Branch**: `main` with R1-13 and prior work reconciled
-* **Open PRs**: None.
+* **Active Task**: None — Release 1 complete (R1-01..17 merged to `main`)
+* **Active Branch**: `main` (Release 1 merged via PR #20 at `2c6334d`)
+* **Base Branch**: `main`
+* **Open PRs**: None (PR #20 merged).
 * **Completed & Merged Tasks**:
   - `R1-01`: Repository and Documentation Reconciliation (PR #6 merged at `41a0552`, PR #7 merged at `7e80ff5`).
   - `R1-02`: Default-Deny Policy Interface & Core Policy Engine (PR #8 merged at `db37884`).
@@ -50,13 +50,16 @@
   - `R1-08`: Hub/Node versioned protocol schemas and anti-replay (PR #14 merged at `ffd12c8`).
   - `R1-09`: Rust Device Node core daemon and governed executor (PR #15 merged at `f64bd46`).
   - `R1-10`: Capability scheduling, task leases, and offline recovery (PR #16 merged at `fcaf471`).
-  - `R1-11`: Desktop Assistant shell and 12-state visualizer (PR #17 merged at `560ebf1`).
-  - `R1-12`: Assistant Event Stream (authenticated SSE delivery).
-   - `R1-13`: Governed Browser Automation and hybrid routing refactor.
-   - `R1-14`: Diagnostic DB & Log Tools (read-only, policy-governed, sanitized).
-   - `R1-15`: Transaction Investigation Skill (core engine + synthetic sources, evidence audit trail).
-   - `R1-16`: Observability & Packaging (OpenTelemetry-ready instrumentation, /health + /readyz probes, structured JSONL logging with redaction, dependency-free Prometheus metrics, Docker compose + local build configs).
-   - `R1-17`: Hardening & Release Gate (release-1-security-audit, negative/security hardening suite, deterministic `scripts/verify_release.ps1` gate + `docs/development/release-verification.md`, Release 1 closure).
+   - `R1-11`: Desktop Assistant shell and 12-state visualizer (PR #17 merged at `560ebf1`).
+   - `R1-12`: Assistant Event Stream (authenticated SSE delivery) — merged via PR #20.
+   - `R1-06A`: Governed OpenAI/Gemini/Anthropic/OpenCode Zen cloud providers — merged via PR #20.
+   - `R1-RUN-01`: Runtime Composition (authenticated chat, credential bridge, one-command launcher) — merged via PR #20.
+   - `UI-R1-T01`: Assistant-first responsive desktop workspace — merged via PR #20.
+   - `R1-13`: Governed Browser Automation and hybrid routing refactor — merged via PR #20.
+   - `R1-14`: Diagnostic DB & Log Tools (read-only, policy-governed, sanitized) — merged via PR #20.
+   - `R1-15`: Transaction Investigation Skill (core engine + synthetic sources, evidence audit trail) — merged via PR #20.
+   - `R1-16`: Observability & Packaging (OpenTelemetry-ready instrumentation, /health + /readyz probes, structured JSONL logging with redaction, dependency-free Prometheus metrics, Docker compose + local build configs) — merged via PR #20.
+   - `R1-17`: Hardening & Release Gate (release-1-security-audit, negative/security hardening suite, deterministic `scripts/verify_release.ps1` gate + `docs/development/release-verification.md`, Release 1 closure) — merged via PR #20.
 * **Validation Results**:
   - `npm.cmd run build`: 0 errors in `apps/desktop`.
   - `npm.cmd run test`: 18 passed in Vitest.
@@ -84,9 +87,9 @@
 
 ## 4. Next Task & Continuation
 
-* **Release 1 Status**: COMPLETE — all R1-01..17 tasks IMPLEMENTED/MERGED; verification gate PASSED (10/10) with security audit on record.
-* **Next Eligible Task**: Release 1 review & merge of the R1-16/R1-17 work on `task/adr-018-skill-architecture`, then Release 2 planning.
+* **Release 1 Status**: COMPLETE — all R1-01..17 tasks IMPLEMENTED and MERGED; verification gate PASSED (10/10) with security audit on record; merged to `main` via PR #20 at `2c6334d`.
+* **Next Eligible Task**: Release 2 planning (Sprint 02 scope — planning only, not implementation authorization).
 * **Continuation Command**:
   ```powershell
-  git switch task/adr-018-skill-architecture
+  git switch main
   ```
